@@ -12,3 +12,42 @@ gradle-app.setting
 
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
+# IntelliJ
+/*.iml
+.idea/
+*.ipr
+*.iws
+.idea_modules/
+out/
+
+# Gradle
+.gradle
+build/
+run/
+logs/
+
+# Eclipse + other common
+*.pydevproject
+.project
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+*.launch
+eclipse/
+libs/
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Mac crap
+.DS_Store
