@@ -1,7 +1,12 @@
 package deathtags.core;
 
+import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
+import harmonised.pmmo.ProjectMMOMod;
+import harmonised.pmmo.party.PartyMemberInfo;
+import harmonised.pmmo.pmmo_saved_data.PmmoSavedData;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.event.TickEvent.PlayerTickEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
@@ -70,6 +75,20 @@ public class EventHandler {
 		
 		PlayerEntity player = (PlayerEntity)event.player;
 		PlayerStats stats = MMOParties.GetStatsByName(player.getName().getContents());
+		
+		// Project MMO compatability
+		if ( PmmoSavedData.get().getParty(event.player.getUUID()) != null && ! stats.InParty() ) {
+			harmonised.pmmo.party.Party party = PmmoSavedData.get().getParty(event.player.getUUID());
+			
+			for ( ServerPlayerEntity member : party.getOnlineMembers(event.player.getServer()) ) {
+				if (MMOParties.GetStatsByName( member.getName().getContents() ).InParty()) {
+					MMOParties.GetStatsByName( member.getName().getContents() ).party.Join ( player ); // Join a party if it exists.
+					break;
+				}
+			}
+			
+			if ( !stats.InParty() ) Party.Create( player ); // Create a party if nonexistent
+		}
 		
 		// Process teleporting.
 		if (stats.teleportTicks > 0) {
