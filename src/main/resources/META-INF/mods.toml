@@ -1,0 +1,14 @@
+modLoader="javafml"
+loaderVersion="[28,)"
+issueTrackerURL="https://github.com/matthe815/mmo-parties"
+license="mit"
+
+[[mods]]
+modId="mmoparties"
+version="${version}"
+displayName="MMOParties"
+#updateJSONURL=""
+displayURL="https://github.com/matthe815/mmo-parties"
+#logoFile="logo.png"
+authors="Matthe815"
+description="Adds various food-related HUD improvements"
