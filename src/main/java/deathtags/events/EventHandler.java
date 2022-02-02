@@ -61,6 +61,16 @@ public class EventHandler {
 		EntityPlayerMP player = (EntityPlayerMP) event.player;
 		PlayerStats stats = MMOParties.GetStatsByName( player.getName() );
 		
+		// EXP synching.
+		float diff = stats.GetExperienceDifference( player.experience );
+		
+		if (diff > 0 && stats.InParty() ) {
+			for ( EntityPlayerMP member : stats.party.GetOnlinePlayers() ) {
+				member.addExperience( (int) diff / 5 ); 
+			}
+		}
+		
+		
 		// Process teleporting.
 		if (stats.teleportTicks > 0) {
 			stats.teleportTicks --;

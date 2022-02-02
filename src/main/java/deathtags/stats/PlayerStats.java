@@ -11,6 +11,8 @@ public class PlayerStats
 	public Party partyInvite = null;
 	public BlockPos deathPosition;
 	
+	public float experience = 0;
+	
 	public EntityPlayerMP target;
 	public int teleportTicks = 0;
 	
@@ -36,6 +38,17 @@ public class PlayerStats
 	 */
 	public boolean IsLeader () {
 		return party.leader == player;
+	}
+	
+	/**
+	 * Get the EXP difference return it and reset it.
+	 * @param exp To compare.
+	 * @return Difference
+	 */
+	public float GetExperienceDifference ( float exp ) {
+		float diff = exp - experience;
+		experience = exp;
+		return diff;
 	}
 
 	public void StartTeleport(EntityPlayerMP target) {
