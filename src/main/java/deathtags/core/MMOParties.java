@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 
 import deathtags.commands.*;
 import deathtags.events.EventHandler;
-import deathtags.gui.HealthBar;
+import deathtags.gui.GUIHandler;
 import deathtags.networking.MessageSendMemberData;
 import deathtags.networking.MessageUpdateParty;
 import deathtags.stats.Party;
@@ -22,7 +22,6 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
-import scala.collection.concurrent.Debug;
 
 @Mod(modid = MMOParties.MODID, version = MMOParties.VERSION, name = MMOParties.NAME)
 public class MMOParties {
@@ -63,13 +62,13 @@ public class MMOParties {
 		MinecraftForge.EVENT_BUS.register(new EventHandler());
 		
 	    if (event.getSide() == Side.CLIENT)
-	        MinecraftForge.EVENT_BUS.register(new HealthBar(Minecraft.getMinecraft()));
+	        MinecraftForge.EVENT_BUS.register(new GUIHandler(Minecraft.getMinecraft()));
 	}
 	
 	@Mod.EventHandler
 	public static void serverStarting(FMLServerStartingEvent event)
 	{
-		Debug.log("Registering commands");
+		System.out.println("Registering commands");
 		
 		event.registerServerCommand(new PartyCommand());
 		event.registerServerCommand(new MuteCommand());

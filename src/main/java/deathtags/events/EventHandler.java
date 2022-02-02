@@ -3,12 +3,7 @@ package deathtags.events;
 import deathtags.core.MMOParties;
 import deathtags.stats.PlayerStats;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.GameType;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -22,30 +17,16 @@ public class EventHandler {
 	@SubscribeEvent
 	public void onPlayerJoined(PlayerLoggedInEvent event)
 	{
-		System.out.println("Player connected to the server.");
-		
 		EntityPlayerMP player = (EntityPlayerMP) event.player;
 		
-		if (!MMOParties.PlayerStats.containsKey(player))
-			MMOParties.PlayerStats.put(player, new PlayerStats ( player ));
-	}
-	
-	@SubscribeEvent
-	public void onPlayerClone(PlayerEvent.Clone event)
-	{
-		if (event.getEntityPlayer().world.isRemote)
-			return;
-		
-		EntityPlayerMP player = (EntityPlayerMP) event.getEntityPlayer();
+		// If there's no key (which there shouldn't be) add one.
+		if (!MMOParties.PlayerStats.containsKey(player)) MMOParties.PlayerStats.put(player, new PlayerStats ( player ));
 	}
 	
 	@SubscribeEvent
 	public void onPlayerLeave(PlayerLoggedOutEvent event)
 	{
-		System.out.println("Player disconnected from the server.");
-		
-		if (MMOParties.GetStatsByName(event.player.getName()) == null)
-			return;
+		if ( MMOParties.GetStatsByName( event.player.getName() ) == null ) return; // No need to do anything if there's no player.
 		
 		PlayerStats playerStats = MMOParties.GetStatsByName( event.player.getName() );
 		EntityPlayerMP player = (EntityPlayerMP) event.player;
@@ -57,9 +38,9 @@ public class EventHandler {
 	}
 
 	@SubscribeEvent(priority=EventPriority.HIGHEST)
-	public void OnPlayerHurt(LivingHurtEvent event)
+	public void onPlayerHurt(LivingHurtEvent event)
 	{
-		if (event.getEntity().world.isRemote) return; // Perform on the server only.
+		if ( event.getEntity().world.isRemote ) return; // Perform on the server only.
 		if (! (event.getEntityLiving() instanceof EntityPlayerMP) || ! (event.getSource().getTrueSource() instanceof EntityPlayerMP) ) return; // Only perform on players.
 		
 		EntityPlayerMP player = (EntityPlayerMP) event.getEntityLiving();
@@ -70,21 +51,15 @@ public class EventHandler {
 		
 		if (!playerStats.InParty() || !sourceStats.InParty()) return; // Nothing matters if both players aren't in a party.
 		if (playerStats.party.IsMember( source )) event.setCanceled(true); // Cancel received damage if it's from a party member.
-		
-		if (playerStats.party.opposer == null) {
-			playerStats.party.opposer = sourceStats.party;
-			playerStats.party.opposer.opposer = playerStats.party;
-		}
 	}
 	
 	@SubscribeEvent
-	public void OnPlayerMove(PlayerTickEvent event)
+	public void onPlayerTick(PlayerTickEvent event)
 	{
-		if (event.player.world.isRemote)
-			return;
+		if ( event.player.world.isRemote ) return; // Server only.
 		
-		EntityPlayerMP player = (EntityPlayerMP)event.player;
-		PlayerStats stats = MMOParties.GetStatsByName(player.getName());
+		EntityPlayerMP player = (EntityPlayerMP) event.player;
+		PlayerStats stats = MMOParties.GetStatsByName( player.getName() );
 		
 		// Process teleporting.
 		if (stats.teleportTicks > 0) {
@@ -94,10 +69,5 @@ public class EventHandler {
 		}
 
 		if (stats.party != null) MMOParties.PlayerStats.get(player).party.SendPartyMemberData(player, false); // Sync the player.
-		
-		if (!player.isSpectator()) return;
-		
-		if (stats.deathPosition != null && player.getPosition().compareTo(stats.deathPosition) != 0)
-			player.setPosition(stats.deathPosition.getX(), stats.deathPosition.getY(), stats.deathPosition.getZ());
 	}
 }

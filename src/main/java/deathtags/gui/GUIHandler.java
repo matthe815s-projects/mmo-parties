@@ -8,53 +8,37 @@ import deathtags.config.Color;
 import deathtags.config.Config;
 import deathtags.core.ConfigHandler;
 import deathtags.core.MMOParties;
-import deathtags.stats.Party;
 import deathtags.stats.PartyMemberData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class HealthBar extends Gui {
-
-    public static final ResourceLocation TEXTURE_FRAME = new ResourceLocation(
-        MMOParties.MODID, "textures/frame.png");
-    public static final ResourceLocation TEXTURE_ICON = new ResourceLocation(MMOParties.MODID,
-        "textures/icons.png");
-    public static final ResourceLocation TEXTURE_BAR = new ResourceLocation(MMOParties.MODID, 
-    	"textures/bar.png");
-
-    public static final ResourceLocation HEART_TEXTURE = new ResourceLocation("minecraft", "textures/gui/icons.png");
+public class GUIHandler extends Gui {
+	
 	private static final String[] barColors = new String[] {"bf0000", "e66000", "e69900", "e6d300", "99e600", "4ce600", "00e699", "00e6e6", "0099e6", "0000e6", "9900e6", "d580ff", "8c8c8c", "e6e6e6"};
 	
     private Minecraft mc;
-    public static float targetHP;
-    public static float targetMaxHP;
     private int updateCounter = 0;
     private Random random;
 
-    public HealthBar(Minecraft mc) {
+    public GUIHandler(Minecraft mc) {
 
         super();
         this.mc = mc;
         random = new Random();
+        
     }
 
     @SubscribeEvent
     public void onRenderGameOverlay(RenderGameOverlayEvent event) {
-        if (event.getType() != ElementType.TEXT)
-            return;
+        
+    	if ( event.getType() != ElementType.TEXT ) return; // Only render on the text.
 
-        int posX = 4;
         float scale = Config.barScale;
 
         GL11.glScalef(scale, scale, 1);
@@ -65,10 +49,10 @@ public class HealthBar extends Gui {
         if (MMOParties.localParty != null && MMOParties.localParty.local_players.size() >= 2) {
             int pN = 0;
 
-            for (String p_player : MMOParties.localParty.local_players) {
-                if (!p_player.equals(Minecraft.getMinecraft().player.getName())) {
-                    PartyMemberData data = MMOParties.localParty.data.get(p_player);                   
-                    RenderOwnPartyMember(data, posX, pN, p_player);
+            for (String party_member : MMOParties.localParty.local_players) {
+                if (! party_member.equals( Minecraft.getMinecraft().player.getName() ) ) {
+                    PartyMemberData data = MMOParties.localParty.data.get(party_member);                   
+                    renderMember ( data, pN );
                     pN++;
                 }
             }
@@ -78,22 +62,15 @@ public class HealthBar extends Gui {
     }
 
     
-    void RenderOwnPartyMember(PartyMemberData data, int posX, int pN, String p_player) {
-        if (data == null)
-            return;
-
-        float currentHealth = data.health;
-        float maxHealth = data.maxHealth;
-        float currentArmor = data.armor;
-        float currentAbsorption = data.absorption;
+    void renderMember ( PartyMemberData data, int pN) 
+    {
         int iconRows = 0;
-
-        Minecraft.getMinecraft().getTextureManager().bindTexture(HEART_TEXTURE);
+        int posX = 4;
         
         /*
          * HP Bar.
          */
-        drawHealth(posX, 50 + (30 * (pN + 1)), currentHealth, maxHealth);
+        drawHealth(posX, 50 + (30 * (pN + 1)), data.health, data.maxHealth);
         iconRows++;
         
         /*
@@ -107,20 +84,18 @@ public class HealthBar extends Gui {
         /*
          * Absorption Bar.
          */
-        if (currentAbsorption > 0 && ConfigHandler.Client_Options.showAbsorption) {
-            drawAbsorption(posX, (50 + (10 * iconRows)) + (30 * (pN + 1)), currentAbsorption);
+        if (data.absorption > 0 && ConfigHandler.Client_Options.showAbsorption) {
+            drawAbsorption(posX, (50 + (10 * iconRows)) + (30 * (pN + 1)), data.absorption);
             iconRows++;	
         }
         
         /*
          * Armor Bar.
          */
-        if (currentArmor > 0 && ConfigHandler.Client_Options.showArmor) {
-            drawArmor(posX, (50 + (10 * iconRows)) + (30 * (pN + 1)), currentArmor);
+        if (data.armor > 0 && ConfigHandler.Client_Options.showArmor) {
+            drawArmor(posX, (50 + (10 * iconRows)) + (30 * (pN + 1)), data.armor);
             iconRows++;
         }
-        
-        Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE_ICON);
         
         /*
          * The shield gauge.
@@ -137,15 +112,12 @@ public class HealthBar extends Gui {
 
         FontRenderer fontRender = mc.fontRenderer;
 
-        String format3 = "%s";
-        String str3 = String.format(format3, p_player);
-
         GL11.glColor4f(255, 255, 255, 1f);
         
         if (data.leader) 
         	Minecraft.getMinecraft().ingameGUI.drawTexturedModalRect(10, (31 + (30 * (pN + 1))) - GuiIngameForge.right_height, 0, 18, 9, 9);
         
-        fontRender.drawStringWithShadow(str3, 10, (40 + (30 * (pN + 1))) - GuiIngameForge.right_height, 0xFFFFFF);
+        fontRender.drawStringWithShadow(data.name, 10, (40 + (30 * (pN + 1))) - GuiIngameForge.right_height, 0xFFFFFF);
     }
     
     private void drawHealth(int width, int height, float health, float maxHealth) {
@@ -279,32 +251,4 @@ public class HealthBar extends Gui {
             GL11.glColor4f(255, 255, 255, 1f);
         }
     }
-
-protected void drawBar(float x, float y, float width, float height, Color color, float fraction) {
-
-    mc.renderEngine.bindTexture(TEXTURE_BAR);
-    GL11.glColor4f(color.red, color.green, color.blue, .95f);
-    float barPosWidth = width * fraction;
-    float barPosX = x;
-    drawRect(barPosX, y, 0, 0, barPosWidth, height);
-}
-
-protected void drawBarFrame(float x, float y, float width, float height) {
-
-    mc.renderEngine.bindTexture(TEXTURE_FRAME);
-    GL11.glColor4f(1f, 1f, 1f, 1f);
-    drawRect(x, y, 0, 0, width, height);
-}
-
-public void drawRect(float x, float y, float u, float v, float width, float height) {
-
-    Tessellator tess = Tessellator.getInstance();
-    BufferBuilder buff = tess.getBuffer();
-    buff.begin(7, DefaultVertexFormats.POSITION_TEX);
-    buff.pos(x, y + height, 0).tex(0, 1).endVertex();
-    buff.pos(x + width, y + height, 0).tex(1, 1).endVertex();
-    buff.pos(x + width, y, 0).tex(1, 0).endVertex();
-    buff.pos(x, y, 0).tex(0, 0).endVertex();
-    tess.draw();
-}
 }

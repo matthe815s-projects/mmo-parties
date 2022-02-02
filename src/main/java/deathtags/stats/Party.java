@@ -23,9 +23,7 @@ public class Party extends PlayerGroup
 	
 	public Map<Integer, Party> local_parties = new HashMap<Integer, Party>();
 
-	public Alliance alliance = null;
 	public Map<String, PartyMemberData> data = new HashMap<String, PartyMemberData>();
-	public Alliance allianceInvite;
 
 	public Party(EntityPlayerMP player)
 	{
@@ -34,10 +32,7 @@ public class Party extends PlayerGroup
 		SendUpdate();
 	}
 	
-	public Party()
-	{
-		
-	}
+	public Party() {}
 	
 	/**
 	 * Create a new party and set the leader to a provided leader. Can error and do nothing.
@@ -162,53 +157,42 @@ public class Party extends PlayerGroup
 	@Override
 	public void SendPartyMemberData(EntityPlayerMP member, boolean bypassLimit)
 	{
-		if (IsDataDifferent(member) || bypassLimit)
-		{	
-			if (!this.pings.containsKey(member.getName()))
-				this.pings.put(member.getName(), new PlayerPing(member, 0, 0, 0, bypassLimit, 0, 0, 0, 0));
-				
-			if (Loader.isModLoaded("superiorshields")) {
-				IShieldCapability shields = member.getCapability(SuperiorShieldsCapabilityManager.shieldCapability, null);
-				
-				this.pings.get(member.getName()).Update(member.getHealth(), member.getMaxHealth(), member.getTotalArmorValue(), 
-						this.leader==member, member.getAbsorptionAmount(), shields.getCurrentHp(), shields.getMaxHp());
-			} else
-				this.pings.get(member.getName()).Update(member.getHealth(), member.getMaxHealth(), member.getTotalArmorValue(), 
-						this.leader==member, member.getAbsorptionAmount(), 0, 0);	
-			
-			if (Loader.isModLoaded("superiorshields")) {
-				IShieldCapability shields = member.getCapability(SuperiorShieldsCapabilityManager.shieldCapability, null);
-				
-				for (EntityPlayerMP party_player : players) {
-					MMOParties.network.sendTo(
-						new MessageSendMemberData(
-							new PartyPacketDataBuilder ()
-								.SetPlayer(member.getName())
-								.SetHealth(member.getHealth())
-								.SetMaxHealth(member.getMaxHealth())
-								.SetLeader(this.leader==member)
-								.SetArmor(member.getTotalArmorValue())
-								.SetAbsorption(member.getAbsorptionAmount())
-								.SetShields(shields.getCurrentHp())
-								.SetMaxShields(shields.getMaxHp())
-								.SetHunger(member.getFoodStats().getFoodLevel())
-					), party_player);
-				}	
-			} else {
-				for (EntityPlayerMP party_player : players) {			
-					MMOParties.network.sendTo(						
-						new MessageSendMemberData(
-							new PartyPacketDataBuilder ()
-							.SetPlayer(member.getName())
-							.SetHealth(member.getHealth())
-							.SetMaxHealth(member.getMaxHealth())
-							.SetArmor(member.getTotalArmorValue())
-							.SetLeader(this.leader==member)
-							.SetAbsorption(member.getAbsorptionAmount())
-							.SetHunger(member.getFoodStats().getFoodLevel())
-				), party_player);
-				}
-			}
+		if (!IsDataDifferent(member) && !bypassLimit) return; // Stop here if there's no bypass or data difference.
+		
+		if (!this.pings.containsKey(member.getName()))
+			this.pings.put(member.getName(), new PlayerPing(member, 0, 0, 0, bypassLimit, 0, 0, 0, 0));
+
+		if (Loader.isModLoaded("superiorshields")) {
+			IShieldCapability shields = member.getCapability(SuperiorShieldsCapabilityManager.shieldCapability, null);
+
+			this.pings.get(member.getName()).Update(member.getHealth(), member.getMaxHealth(), member.getTotalArmorValue(), 
+					this.leader==member, member.getAbsorptionAmount(), shields.getCurrentHp(), shields.getMaxHp());
+		} else
+			this.pings.get(member.getName()).Update(member.getHealth(), member.getMaxHealth(), member.getTotalArmorValue(), 
+					this.leader==member, member.getAbsorptionAmount(), 0, 0);
+
+		PartyPacketDataBuilder builder = new PartyPacketDataBuilder()
+				.SetPlayer(member.getName())
+				.SetHealth(member.getHealth())
+				.SetMaxHealth(member.getMaxHealth())
+				.SetLeader(this.leader==member)
+				.SetArmor(member.getTotalArmorValue())
+				.SetAbsorption(member.getAbsorptionAmount())
+				.SetHunger(member.getFoodStats().getFoodLevel());
+
+		if (Loader.isModLoaded("superiorshields")) {
+			IShieldCapability shields = member.getCapability(SuperiorShieldsCapabilityManager.shieldCapability, null);
+
+			builder
+			.SetShields(shields.getCurrentHp())
+			.SetMaxShields(shields.getMaxHp());
+		}
+
+		for (EntityPlayerMP player : players) {
+			MMOParties.network.sendTo(
+				new MessageSendMemberData(builder),
+				player
+			);	
 		}
 	}
 	
@@ -230,35 +214,6 @@ public class Party extends PlayerGroup
 		}
 		
 		return false;
-	}
-
-	@Override
-	public boolean IsAllDead() 
-	{
-		int numDead = 0;
-		
-		for (EntityPlayerMP player : this.players) {
-			if (player.isSpectator())
-				numDead++;
-		}
-		
-		return numDead == this.players.size();
-	}
-	
-	@Override
-	public void ReviveAll() 
-	{
-		for (EntityPlayerMP player : this.players) {
-			if (player.isSpectator()) {
-				player.respawnPlayer();
-				player.setGameType(GameType.SURVIVAL);
-			}
-		}
-	}
-
-	@Override
-	public String GetGroupAlias() {
-		return "party";
 	}
 
 	/**

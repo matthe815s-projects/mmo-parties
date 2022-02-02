@@ -48,17 +48,6 @@ public abstract class PlayerGroup {
 	public abstract boolean IsMember(EntityPlayerMP member);
 	
 	/**
-	 * If the entire group is dead.
-	 * @return
-	 */
-	public abstract boolean IsAllDead();
-	
-	/**
-	 * Resurrect the entire group.
-	 */
-	public abstract void ReviveAll();
-	
-	/**
 	 * Broadcast a message to the entire group.
 	 * @param message
 	 */
@@ -69,13 +58,7 @@ public abstract class PlayerGroup {
 	 * @return
 	 */
 	public abstract EntityPlayerMP[] GetOnlinePlayers();
-	
-	/**
-	 * The name used to represent this kind of group in system messages.
-	 * @return
-	 */
-	public abstract String GetGroupAlias();
-	
+
 	/**
 	 * Set a specific player to the group leader.
 	 * @param member
@@ -83,6 +66,6 @@ public abstract class PlayerGroup {
 	public void MakeLeader(EntityPlayerMP member)
 	{
 		this.leader = member;
-		this.Broadcast(String.format("%s is now the %s leader.", member.getName(), this.GetGroupAlias()));
+		this.Broadcast(String.format("%s is now the party leader.", member.getName()));
 	}
 }
