@@ -12,6 +12,7 @@ import deathtags.stats.PartyMemberData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -113,6 +114,8 @@ public class GUIHandler extends Gui {
         FontRenderer fontRender = mc.fontRenderer;
 
         GL11.glColor4f(255, 255, 255, 1f);
+        
+        Minecraft.getMinecraft().getTextureManager().bindTexture( new ResourceLocation(MMOParties.MODID, "textures/icons.png") );
         
         if (data.leader) 
         	Minecraft.getMinecraft().ingameGUI.drawTexturedModalRect(10, (31 + (30 * (pN + 1))) - GuiIngameForge.right_height, 0, 18, 9, 9);

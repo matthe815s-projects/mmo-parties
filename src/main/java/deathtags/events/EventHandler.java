@@ -66,6 +66,8 @@ public class EventHandler {
 		
 		if (diff > 0 && stats.InParty() ) {
 			for ( EntityPlayerMP member : stats.party.GetOnlinePlayers() ) {
+				if ( player == member ) return;
+				
 				member.addExperience( (int) diff / 5 ); 
 			}
 		}
