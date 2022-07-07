@@ -37,7 +37,6 @@ tmp/
 *.swp
 *~.nib
 local.properties
-.classpath
 .settings/
 *.launch
 eclipse/
