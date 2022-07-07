@@ -11,7 +11,7 @@ public class PlayerStats
 	public Party partyInvite = null;
 	public BlockPos deathPosition;
 	
-	public float experience = 0;
+	public int experience = 0;
 	
 	public EntityPlayerMP target;
 	public int teleportTicks = 0;
@@ -45,8 +45,8 @@ public class PlayerStats
 	 * @param exp To compare.
 	 * @return Difference
 	 */
-	public float GetExperienceDifference ( float exp ) {
-		float diff = exp - experience;
+	public int GetExperienceDifference ( int exp ) {
+		int diff = exp - experience;
 		experience = exp;
 		return diff;
 	}

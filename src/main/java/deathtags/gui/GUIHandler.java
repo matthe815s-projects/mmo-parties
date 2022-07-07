@@ -68,6 +68,8 @@ public class GUIHandler extends Gui {
         int iconRows = 0;
         int posX = 4;
         
+        Minecraft.getMinecraft().getTextureManager().bindTexture( Gui.ICONS );
+        
         /*
          * HP Bar.
          */
@@ -121,6 +123,8 @@ public class GUIHandler extends Gui {
         	Minecraft.getMinecraft().ingameGUI.drawTexturedModalRect(10, (31 + (30 * (pN + 1))) - GuiIngameForge.right_height, 0, 18, 9, 9);
         
         fontRender.drawStringWithShadow(data.name, 10, (40 + (30 * (pN + 1))) - GuiIngameForge.right_height, 0xFFFFFF);
+        
+        Minecraft.getMinecraft().getTextureManager().bindTexture( Gui.ICONS );
     }
     
     private void drawHealth(int width, int height, float health, float maxHealth) {

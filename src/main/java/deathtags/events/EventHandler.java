@@ -62,13 +62,14 @@ public class EventHandler {
 		PlayerStats stats = MMOParties.GetStatsByName( player.getName() );
 		
 		// EXP synching.
-		float diff = stats.GetExperienceDifference( player.experience );
+		int diff = stats.GetExperienceDifference( player.experienceTotal );
 		
 		if (diff > 0 && stats.InParty() ) {
-			for ( EntityPlayerMP member : stats.party.GetOnlinePlayers() ) {
-				if ( player == member ) return;
+			for ( EntityPlayerMP member : stats.party.players ) {
+				if ( player.getName() == member.getName() ) return;
 				
-				member.addExperience( (int) diff / 5 ); 
+				System.out.println("Add EXP: " + diff);
+				member.addExperience( diff );
 			}
 		}
 		
