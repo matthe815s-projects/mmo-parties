@@ -20,6 +20,8 @@ gradle-app.setting
 .idea_modules/
 out/
 
+.classpath
+
 # Gradle
 .gradle
 build/
