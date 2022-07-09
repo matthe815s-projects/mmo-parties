@@ -7,8 +7,8 @@ import com.google.common.base.Charsets;
 import deathtags.core.MMOParties;
 import deathtags.stats.Party;
 import deathtags.stats.PartyMemberData;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import io.netty.buffer.ByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 public class MessageSendMemberData {
 
@@ -23,7 +23,7 @@ public class MessageSendMemberData {
 	  this.builder = data;
   }
 
-  public static MessageSendMemberData decode(PacketBuffer buf) 
+  public static MessageSendMemberData decode(ByteBuf buf)
   {
 	  return new MessageSendMemberData( new PartyPacketDataBuilder()
 			  .SetPlayer(buf.readCharSequence(buf.readInt(), Charsets.UTF_8).toString())
@@ -38,7 +38,7 @@ public class MessageSendMemberData {
 			 
   }
 
-  public static void encode(MessageSendMemberData msg, PacketBuffer buf) 
+  public static void encode(MessageSendMemberData msg, ByteBuf buf)
   {
 	  buf.writeInt(msg.builder.nameLength);
 	  buf.writeCharSequence(msg.builder.playerId, Charsets.UTF_8);
