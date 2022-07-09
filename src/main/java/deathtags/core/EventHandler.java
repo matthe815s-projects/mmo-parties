@@ -1,18 +1,19 @@
 package deathtags.core;
 
+import deathtags.config.ConfigHolder;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
-import harmonised.pmmo.ProjectMMOMod;
-import harmonised.pmmo.party.PartyMemberInfo;
 import harmonised.pmmo.pmmo_saved_data.PmmoSavedData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.event.TickEvent.PlayerTickEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
 @EventBusSubscriber
@@ -21,19 +22,21 @@ public class EventHandler {
 	@SubscribeEvent
 	public void onPlayerJoined(PlayerLoggedInEvent event)
 	{
-		System.out.println("Player connected to the server.");
-		
 		PlayerEntity player = (PlayerEntity) event.getPlayer();
 		
 		if (!MMOParties.PlayerStats.containsKey(player))
 			MMOParties.PlayerStats.put(player, new PlayerStats ( player ));
 	}
+
+	@SubscribeEvent
+	public void disconnectFromServer(ClientPlayerNetworkEvent.LoggedOutEvent event)
+	{
+		MMOParties.localParty = null;
+	}
 	
 	@SubscribeEvent
 	public void onPlayerLeave(PlayerLoggedOutEvent event)
 	{
-		System.out.println("Player disconnected from the server.");
-		
 		if (MMOParties.GetStatsByName(event.getPlayer().getName().getContents()) == null)
 			return;
 		
@@ -57,9 +60,10 @@ public class EventHandler {
 		
 		PlayerStats playerStats = MMOParties.GetStatsByName( player.getName().getContents() );
 		PlayerStats sourceStats = MMOParties.GetStatsByName( source.getName().getContents() );
-		
+
+		if (!ConfigHolder.COMMON.friendlyFireDisabled.get()) return; // Friendly fire is allowed so this doesn't matter.
 		if (!playerStats.InParty() || !sourceStats.InParty()) return; // Nothing matters if both players aren't in a party.
-		if (playerStats.party.IsMember( source )) event.setCanceled(true); // Cancel received damage if it's from a party member.
+		if (playerStats.party.IsMember( source )) { event.setCanceled(true); return; } // Cancel received damage if it's from a party member.
 		
 		if (playerStats.party.opposer == null) {
 			playerStats.party.opposer = sourceStats.party;
@@ -75,9 +79,9 @@ public class EventHandler {
 		
 		PlayerEntity player = (PlayerEntity)event.player;
 		PlayerStats stats = MMOParties.GetStatsByName(player.getName().getContents());
-		
+
 		// Project MMO compatability
-		if ( PmmoSavedData.get().getParty(event.player.getUUID()) != null && ! stats.InParty() ) {
+		if (ModList.get().isLoaded("projectmmo") &&  PmmoSavedData.get().getParty(event.player.getUUID()) != null && ! stats.InParty() ) {
 			harmonised.pmmo.party.Party party = PmmoSavedData.get().getParty(event.player.getUUID());
 			
 			for ( ServerPlayerEntity member : party.getOnlineMembers(event.player.getServer()) ) {
