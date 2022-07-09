@@ -1,9 +1,9 @@
 package deathtags.stats;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 
 public class PlayerPing {
-	public PlayerEntity player;
+	public Player player;
 	
 	public float health;
 	public float maxHealth;
@@ -14,7 +14,7 @@ public class PlayerPing {
 	public float maxShields;
 	public float hunger;
 	
-	public PlayerPing(PlayerEntity player, float health, float maxHealth, float armor, boolean leader, float absorption, float shields, float maxShields, float hunger) 
+	public PlayerPing(Player player, float health, float maxHealth, float armor, boolean leader, float absorption, float shields, float maxShields, float hunger)
 	{
 		this.player = player;
 		
@@ -41,7 +41,7 @@ public class PlayerPing {
 		return this;
 	}
 
-	public boolean IsDifferent(PlayerEntity player) {
+	public boolean IsDifferent(Player player) {
 		if (player.getHealth() != this.health || player.getMaxHealth() != this.maxHealth 
 			|| player.getArmorValue() != this.armor || player.getAbsorptionAmount() != this.absorption)
 				return true;

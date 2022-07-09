@@ -1,12 +1,8 @@
 package deathtags.helpers;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.entity.player.Player;
 
 public class CommandMessageHelper {

@@ -10,13 +10,13 @@ import deathtags.core.MMOParties;
 import deathtags.helpers.CommandMessageHelper;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
-import net.minecraft.commands.CommandSource;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.world.entity.player.Player;
 
 public class PartyCommand {
 	
-	public static LiteralArgumentBuilder<CommandSource> register () {
+	public static LiteralArgumentBuilder<CommandSourceStack> register () {
 		return Commands.literal("party")
 				.requires(cs -> cs.hasPermission(0))
 				.then(Commands.argument("sub", StringArgumentType.string()).executes(ctx -> run(ctx, StringArgumentType.getString(ctx, "sub"), null))
@@ -49,9 +49,9 @@ public class PartyCommand {
 								));
 	}
 	
-	private static int run(CommandContext<CommandSource> context, String sub, String targetStr) throws CommandSyntaxException {
-		Player player = (Player)context.getSource();
-		Player target = ((Player) context.getSource()).getServer().getPlayerList().getPlayerByName(targetStr);
+	private static int run(CommandContext <CommandSourceStack> context, String sub, String targetStr) throws CommandSyntaxException {
+		Player player = (Player)context.getSource().getPlayerOrException();
+		Player target = ((Player) context.getSource().getPlayerOrException()).getServer().getPlayerList().getPlayerByName(targetStr);
 
 		if (player.getCommandSenderWorld().isClientSide) return 0; // Only perform operations on the server side.
 			

@@ -3,13 +3,13 @@ package deathtags.stats;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 
 public abstract class PlayerGroup {
 	/**
 	 * The group leader.
 	 */
-	public PlayerEntity leader = null;
+	public Player leader = null;
 	
 	/**
 	 * A cache of the last sent packet.
@@ -31,21 +31,21 @@ public abstract class PlayerGroup {
 	 * @param member The member in question.
 	 * @param bypassLimit Whether or not it should account for the last ping.
 	 */
-	public abstract void SendPartyMemberData(PlayerEntity member, boolean bypassLimit);
+	public abstract void SendPartyMemberData(Player member, boolean bypassLimit);
 	
 	/**
 	 * If the cached data, and the current data are identical.
 	 * @param member The member in question.
 	 * @return
 	 */
-	public abstract boolean IsDataDifferent(PlayerEntity member);
+	public abstract boolean IsDataDifferent(Player member);
 	
 	/**
 	 * If the player is a member of the player.
 	 * @param member The member in question.
 	 * @return
 	 */
-	public abstract boolean IsMember(PlayerEntity member);
+	public abstract boolean IsMember(Player member);
 	
 	/**
 	 * If the entire group is dead.
@@ -68,7 +68,7 @@ public abstract class PlayerGroup {
 	 * Get all of the players alive in the group.
 	 * @return
 	 */
-	public abstract PlayerEntity[] GetOnlinePlayers();
+	public abstract Player[] GetOnlinePlayers();
 	
 	/**
 	 * The name used to represent this kind of group in system messages.
@@ -80,7 +80,7 @@ public abstract class PlayerGroup {
 	 * Set a specific player to the group leader.
 	 * @param member
 	 */
-	public void MakeLeader(PlayerEntity member)
+	public void MakeLeader(Player member)
 	{
 		this.leader = member;
 		this.Broadcast(String.format("%s is now the %s leader.", member.getName(), this.GetGroupAlias()));

@@ -3,7 +3,9 @@ package deathtags.gui;
 import java.awt.*;
 import java.util.Random;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import deathtags.config.ConfigHolder;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
@@ -32,7 +34,8 @@ public class HealthBar {
     public static float targetMaxHP;
     private int updateCounter = 0;
     private Random random;
-    private MatrixStack stack = new MatrixStack();
+
+    private PoseStack stack = new PoseStack();
 
     public HealthBar(Minecraft mc) {
 
@@ -48,8 +51,6 @@ public class HealthBar {
             return;
         
         int posX = 4;
-
-        GL11.glScalef(1, 1, 1);
         
         /**
          * Party display.
@@ -58,7 +59,7 @@ public class HealthBar {
             int pN = 0;
 
             for (String p_player : MMOParties.localParty.local_players) {
-                if (!p_player.equals(Minecraft.getInstance().player.getName().getContents())) {
+                if (p_player.equals(Minecraft.getInstance().player.getName().getContents())) {
                     PartyMemberData data = MMOParties.localParty.data.get(p_player);                   
                     RenderOwnPartyMember(data, posX, pN, p_player);
                     pN++;
@@ -66,7 +67,7 @@ public class HealthBar {
             }
         }
         
-        Minecraft.getInstance().getTextureManager().bindForSetup(AbstractGui.GUI_ICONS_LOCATION);
+        Minecraft.getInstance().getTextureManager().bindForSetup(Gui.GUI_ICONS_LOCATION);
     }
 
 
@@ -84,7 +85,7 @@ public class HealthBar {
         int yOffset = (30 * (pN + 1));
         int healthBarOffset = 0;
 
-        Minecraft.getInstance().getTextureManager().bind(HEART_TEXTURE);
+        Minecraft.getInstance().getTextureManager().bindForSetup(HEART_TEXTURE);
         
         /*
          * HP Bar.
@@ -116,8 +117,7 @@ public class HealthBar {
             iconRows++;
         }
         
-        Minecraft.getInstance().getTextureManager().bind(TEXTURE_ICON);
-        GL11.glColor4f(255, 255, 255, 1f);
+        Minecraft.getInstance().getTextureManager().bindForSetup(TEXTURE_ICON);
         
         if (data.leader) // If the player is the party leader, draw a crown next to their name
         	Minecraft.getInstance().gui.blit(stack, 10, (31 + yOffset), 0, 18, 9, 9);
@@ -200,8 +200,6 @@ public class HealthBar {
                 Minecraft.getInstance().gui.blit(stack, startX, startY, 25, 9, 9, 9);
             
             barLength++;
-            
-            GL11.glColor4f(255, 255, 255, 1f);
         }
     }
     
@@ -230,8 +228,6 @@ public class HealthBar {
             	barLength = 0;
             	bars++;
             }
-            
-            GL11.glColor4f(255, 255, 255, 1f);
         }
     }
 

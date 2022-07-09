@@ -10,20 +10,19 @@ import deathtags.helpers.CommandMessageHelper;
 import deathtags.networking.MessageSendMemberData;
 import deathtags.networking.MessageUpdateParty;
 import deathtags.networking.PartyPacketDataBuilder;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.world.GameType;
-import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.NetworkDirection;
 
 public class Party extends PlayerGroup
 {	
-	public List<PlayerEntity> players = new ArrayList<PlayerEntity>();
+	public List<Player> players = new ArrayList<Player>();
 	public List<String> local_players = new ArrayList<String>();
 	
 	public Map<Integer, Party> local_parties = new HashMap<Integer, Party>();
 	public Map<String, PartyMemberData> data = new HashMap<String, PartyMemberData>();
 
-	public Party(PlayerEntity player)
+	public Party(Player player)
 	{
 		leader = player;
 		players.add(player);
@@ -39,7 +38,7 @@ public class Party extends PlayerGroup
 	 * Create a new party and set the leader to a provided leader. Can error and do nothing.
 	 * @param leader The player to attempt to make leader.
 	 */
-	public static void Create ( PlayerEntity leader ) {
+	public static void Create ( Player leader ) {
 		PlayerStats leaderStats = MMOParties.GetStatsByName( leader.getName().getContents() );
 		
 		if (leaderStats.InParty()) { CommandMessageHelper.SendError( leader, "You are already in a party." ); return; }
@@ -52,7 +51,7 @@ public class Party extends PlayerGroup
 	 * Invite a player to the party.
 	 * @param player Target player.
 	 */
-	public void Invite ( PlayerEntity invoker, PlayerEntity player ) {
+	public void Invite ( Player invoker, Player player ) {
 		PlayerStats targetPlayer = MMOParties.GetStatsByName( player.getName().getContents() );
 		PlayerStats invokerPlayer = MMOParties.GetStatsByName( invoker.getName().getContents() );
 		
@@ -72,7 +71,7 @@ public class Party extends PlayerGroup
 	 * Join a player to this party.
 	 * @param player The target.
 	 */
-	public void Join ( PlayerEntity player )
+	public void Join ( Player player )
 	{
 		if (this.players.size() >= 4)
 		 { CommandMessageHelper.SendError(player, "This party is currently full."); return; }
@@ -86,18 +85,18 @@ public class Party extends PlayerGroup
 		
 		Broadcast( String.format( "%s has joined the party!", player.getName().getContents() ) );
 		
-		for ( PlayerEntity member : players ) SendPartyMemberData( member, true ); // Update all of the party members.
+		for ( Player member : players ) SendPartyMemberData( member, true ); // Update all of the party members.
 		
 		SendUpdate(); // Send a player stat update.
 	}
 	
-	public void Leave (PlayerEntity player)
+	public void Leave (Player player)
 	{
 		this.players.remove(player);
 		
 		Broadcast( String.format( "%s has left the party..", player.getName().getContents() ) );
 		
-		for ( PlayerEntity member : players ) SendPartyMemberData ( member, true );
+		for ( Player member : players ) SendPartyMemberData ( member, true );
 		SendPartyMemberData(player, true); // Send one last update.
 		
 		if (player == this.leader && players.size() > 0) this.leader = players.get(0); // If the player was the leader, then assign a new leader.
@@ -117,7 +116,7 @@ public class Party extends PlayerGroup
 		
 		leader = null;
 		
-		for (PlayerEntity member : players) {
+		for (Player member : players) {
 			PlayerStats stats = MMOParties.GetStatsByName ( member.getName().getContents() );
 			stats.party = null;
 		}
@@ -130,13 +129,13 @@ public class Party extends PlayerGroup
 	@Override
 	public void Broadcast ( String message )
 	{
-		for (PlayerEntity member : players) CommandMessageHelper.SendInfo( member, message );
+		for (Player member : players) CommandMessageHelper.SendInfo( member, message );
 	}
 	
 	@Override
-	public PlayerEntity[] GetOnlinePlayers()
+	public Player[] GetOnlinePlayers()
 	{
-		return players.toArray(new PlayerEntity[] {});
+		return players.toArray(new Player[] {});
 	}
 	
 	@Override
@@ -145,21 +144,21 @@ public class Party extends PlayerGroup
 		String[] playerNames = new String[players.size()];
 		int i = 0;
 		
-		for (PlayerEntity party_player : players) {
+		for (Player party_player : players) {
 			playerNames[i] = party_player.getName().getContents();
 			i++;
 		}
 		
-		for (PlayerEntity party_player : players) {
-			if (!(party_player instanceof ServerPlayerEntity)) return;
+		for (Player party_player : players) {
+			if (!(party_player instanceof ServerPlayer)) return;
 			
 			System.out.println("Update:" + String.join(",", playerNames));
-			MMOParties.network.sendTo(new MessageUpdateParty(String.join(",", playerNames)), ((ServerPlayerEntity)party_player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+			MMOParties.network.sendTo(new MessageUpdateParty(String.join(",", playerNames)), ((ServerPlayer)party_player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
 		}
 	}
 	
 	@Override
-	public void SendPartyMemberData(PlayerEntity member, boolean bypassLimit)
+	public void SendPartyMemberData(Player member, boolean bypassLimit)
 	{
 		if (IsDataDifferent(member) || bypassLimit)
 		{	
@@ -169,8 +168,8 @@ public class Party extends PlayerGroup
 			this.pings.get( member.getName().getContents() ).Update(member.getHealth(), member.getMaxHealth(), member.getArmorValue(), 
 					this.leader==member, member.getAbsorptionAmount(), 0, 0);	
 			
-			for (PlayerEntity party_player : players) {
-				if (!(party_player instanceof ServerPlayerEntity)) return;
+			for (Player party_player : players) {
+				if (!(party_player instanceof ServerPlayer)) return;
 						
 				MMOParties.network.sendTo(						
 					new MessageSendMemberData(
@@ -182,13 +181,13 @@ public class Party extends PlayerGroup
 						.SetLeader(this.leader==member)
 						.SetAbsorption(member.getAbsorptionAmount())
 						.SetHunger(member.getFoodData().getFoodLevel())
-				), ((ServerPlayerEntity)party_player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+				), ((ServerPlayer)party_player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
 			}
 		}
 	}
 	
 	@Override
-	public boolean IsDataDifferent(PlayerEntity player)
+	public boolean IsDataDifferent(Player player)
 	{
 		if (!this.pings.containsKey( player.getName().getContents() ) || this.pings.get( player.getName().getContents() ).IsDifferent(player))
 			return true;
@@ -197,9 +196,9 @@ public class Party extends PlayerGroup
 	}
 
 	@Override
-	public boolean IsMember(PlayerEntity player) 
+	public boolean IsMember(Player player) 
 	{
-		for (PlayerEntity member : players) {
+		for (Player member : players) {
 			if (member.getName().equals(player.getName()))
 				return true;
 		}
@@ -212,23 +211,17 @@ public class Party extends PlayerGroup
 	{
 		int numDead = 0;
 		
-		for (PlayerEntity player : this.players) {
+		for (Player player : this.players) {
 			if (player.isSpectator())
 				numDead++;
 		}
 		
 		return numDead == this.players.size();
 	}
-	
+
 	@Override
-	public void ReviveAll() 
-	{
-		for (PlayerEntity player : this.players) {
-			if (player.isSpectator()) {
-				player.respawn();
-				player.setGameMode(GameType.SURVIVAL);
-			}
-		}
+	public void ReviveAll() {
+
 	}
 
 	@Override
@@ -241,7 +234,7 @@ public class Party extends PlayerGroup
 	 * @param player Player to teleport.
 	 * @param target Player to teleport to.
 	 */
-	public void Teleport(PlayerEntity player, PlayerEntity target) {
+	public void Teleport(Player player, Player target) {
 		if ( ! IsMember ( target ) ) 
 			{ CommandMessageHelper.SendError(player, "You may only teleport to players within your party."); return; }
 		
