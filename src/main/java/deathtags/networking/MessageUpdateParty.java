@@ -8,8 +8,7 @@ import com.google.common.base.Charsets;
 
 import deathtags.core.MMOParties;
 import deathtags.stats.Party;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 public class MessageUpdateParty {
 
@@ -21,7 +20,7 @@ public class MessageUpdateParty {
 		this.members = charSequence.toString();
 	}
 
-	public static MessageUpdateParty decode(PacketBuffer buf) 
+	public static MessageUpdateParty decode(PacketBuffer buf)
 	{
 		return new MessageUpdateParty(buf.readCharSequence(buf.readInt(), Charsets.UTF_8));
 	}

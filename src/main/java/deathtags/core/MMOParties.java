@@ -12,19 +12,19 @@ import deathtags.networking.MessageSendMemberData;
 import deathtags.networking.MessageUpdateParty;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 @Mod(value = MMOParties.MODID)
 public class MMOParties {
@@ -32,7 +32,7 @@ public class MMOParties {
 	public static final String MODID = "mmoparties";
 
 	public static Party localParty;
-	public static Map<PlayerEntity, PlayerStats> PlayerStats = new HashMap<PlayerEntity, PlayerStats>();
+	public static Map<Player, PlayerStats> PlayerStats = new HashMap<Player, PlayerStats>();
 
 	private static final String PROTOCOL_VERSION = "1";
 	
@@ -65,7 +65,7 @@ public class MMOParties {
 		MinecraftForge.EVENT_BUS.register(new EventHandler());
 	}
 
-	public void serverInitEvent(FMLServerStartingEvent event) {
+	public void serverInitEvent(ServerStartingEvent event) {
 		PartyHelper.Server.server = event.getServer(); // Set server instance
 	}
 
@@ -86,7 +86,7 @@ public class MMOParties {
 	 */
 	public static PlayerStats GetStatsByName(String name)
 	{
-		for (Entry<PlayerEntity, deathtags.stats.PlayerStats> plr : PlayerStats.entrySet()) {
+		for (Entry<Player, deathtags.stats.PlayerStats> plr : PlayerStats.entrySet()) {
 			if ( plr.getKey().getName().getContents().equals(name) )
 				return plr.getValue();
 		}

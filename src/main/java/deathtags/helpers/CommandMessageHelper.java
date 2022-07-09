@@ -1,9 +1,13 @@
 package deathtags.helpers;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.entity.player.Player;
 
 public class CommandMessageHelper {
 
@@ -12,10 +16,10 @@ public class CommandMessageHelper {
 	 * @param player A server player.
 	 * @param message The message to send.
 	 */
-	public static void SendInfo ( PlayerEntity player, String message ) 
+	public static void SendInfo (Player player, String message )
 	{
 		player.displayClientMessage( 
-			new StringTextComponent( message )
+			new TextComponent( message )
 			, false
 		);
 	}
@@ -25,12 +29,12 @@ public class CommandMessageHelper {
 	 * @param player A server player.
 	 * @param message The message to send.
 	 */
-	public static void SendError ( PlayerEntity player, String message ) 
+	public static void SendError ( Player player, String message )
 	{
 		player.displayClientMessage( 
-			new StringTextComponent( message )
+			new TextComponent( message )
 			.setStyle( 
-					Style.EMPTY.withColor(TextFormatting.RED)
+					Style.EMPTY.withColor(ChatFormatting.RED)
 			), false
 		);
 	}

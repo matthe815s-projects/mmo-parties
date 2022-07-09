@@ -4,16 +4,12 @@ import java.awt.*;
 import java.util.Random;
 
 import deathtags.config.ConfigHolder;
+import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.opengl.GL11;
-
-import com.mojang.blaze3d.matrix.MatrixStack;
 
 import deathtags.core.MMOParties;
 import deathtags.stats.PartyMemberData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.MinecraftForge;
@@ -70,7 +66,7 @@ public class HealthBar {
             }
         }
         
-        Minecraft.getInstance().getTextureManager().bind(AbstractGui.GUI_ICONS_LOCATION);
+        Minecraft.getInstance().getTextureManager().bindForSetup(AbstractGui.GUI_ICONS_LOCATION);
     }
 
 

@@ -10,9 +10,9 @@ import deathtags.core.MMOParties;
 import deathtags.helpers.CommandMessageHelper;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.commands.CommandSource;
+import net.minecraft.commands.Commands;
+import net.minecraft.world.entity.player.Player;
 
 public class PartyCommand {
 	
@@ -38,7 +38,7 @@ public class PartyCommand {
 								Commands.argument("player", StringArgumentType.string())
 									.executes(ctx -> run(ctx, StringArgumentType.getString(ctx, "sub"), StringArgumentType.getString(ctx, "player")))
 									.suggests((sourceCommandContext, suggestionsBuilder) -> {
-										for (ServerPlayerEntity playerName : sourceCommandContext.getSource().getServer().getPlayerList().getPlayers())
+										for (Player playerName : sourceCommandContext.getSource().getServer().getPlayerList().getPlayers())
 										{
 											if (sourceCommandContext.getSource().getPlayerOrException().getName().getContents() != playerName.getName().getContents())
 												suggestionsBuilder.suggest(playerName.getName().getContents());
@@ -50,8 +50,8 @@ public class PartyCommand {
 	}
 	
 	private static int run(CommandContext<CommandSource> context, String sub, String targetStr) throws CommandSyntaxException {
-		ServerPlayerEntity player = context.getSource().getPlayerOrException();
-		ServerPlayerEntity target = context.getSource().getServer().getPlayerList().getPlayerByName(targetStr);
+		Player player = (Player)context.getSource();
+		Player target = ((Player) context.getSource()).getServer().getPlayerList().getPlayerByName(targetStr);
 
 		if (player.getCommandSenderWorld().isClientSide) return 0; // Only perform operations on the server side.
 			
