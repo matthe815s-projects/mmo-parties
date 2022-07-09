@@ -6,6 +6,8 @@ import deathtags.stats.PlayerStats;
 import harmonised.pmmo.pmmo_saved_data.PmmoSavedData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.event.TickEvent.PlayerTickEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -22,13 +24,14 @@ public class EventHandler {
 	@SubscribeEvent
 	public void onPlayerJoined(PlayerLoggedInEvent event)
 	{
-		PlayerEntity player = (PlayerEntity) event.getPlayer();
+		PlayerEntity player = event.getPlayer();
 		
 		if (!MMOParties.PlayerStats.containsKey(player))
 			MMOParties.PlayerStats.put(player, new PlayerStats ( player ));
 	}
 
 	@SubscribeEvent
+	@OnlyIn(Dist.CLIENT)
 	public void disconnectFromServer(ClientPlayerNetworkEvent.LoggedOutEvent event)
 	{
 		MMOParties.localParty = null;

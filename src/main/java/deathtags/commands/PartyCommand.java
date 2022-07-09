@@ -23,6 +23,7 @@ public class PartyCommand {
 						.suggests(
 								(sourceCommandContext, suggestionsBuilder) -> {
 									suggestionsBuilder
+											.suggest("create")
 											.suggest("invite")
 											.suggest("accept")
 											.suggest("deny")

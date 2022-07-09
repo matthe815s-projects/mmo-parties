@@ -52,6 +52,7 @@ public class MMOParties {
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientInit);
 
 		MinecraftForge.EVENT_BUS.addListener(this::serverInit);
+		MinecraftForge.EVENT_BUS.addListener(this::serverInitEvent);
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 	
