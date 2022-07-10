@@ -3,6 +3,7 @@ package deathtags.gui;
 import java.awt.*;
 import java.util.Random;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import deathtags.config.ConfigHolder;
 import net.minecraft.client.gui.Gui;
@@ -59,7 +60,7 @@ public class HealthBar {
             int pN = 0;
 
             for (String p_player : MMOParties.localParty.local_players) {
-                if (p_player.equals(Minecraft.getInstance().player.getName().getContents())) {
+                if (!p_player.equals(Minecraft.getInstance().player.getName().getContents())) {
                     PartyMemberData data = MMOParties.localParty.data.get(p_player);                   
                     RenderOwnPartyMember(data, posX, pN, p_player);
                     pN++;
@@ -116,8 +117,8 @@ public class HealthBar {
             drawArmor(posX, (50 + (10 * iconRows)) + yOffset + healthBarOffset, currentArmor);
             iconRows++;
         }
-        
-        Minecraft.getInstance().getTextureManager().bindForSetup(TEXTURE_ICON);
+
+        RenderSystem.setShaderTexture(0, TEXTURE_ICON);
         
         if (data.leader) // If the player is the party leader, draw a crown next to their name
         	Minecraft.getInstance().gui.blit(stack, 10, (31 + yOffset), 0, 18, 9, 9);
