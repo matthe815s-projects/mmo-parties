@@ -1,9 +1,9 @@
 package deathtags.helpers;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.ColorHelper;
+import net.minecraft.util.text.*;
+import net.minecraft.util.text.event.ClickEvent;
 
 public class CommandMessageHelper {
 
@@ -17,6 +17,27 @@ public class CommandMessageHelper {
 		player.displayClientMessage( 
 			new StringTextComponent( message )
 			, false
+		);
+	}
+
+	public static void SendInfoWithButton ( PlayerEntity player, String message )
+	{
+		StringTextComponent component = new StringTextComponent( message );
+
+		IFormattableTextComponent button = new StringTextComponent(" [ACCEPT]").setStyle(
+				Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept")).withColor(Color.parseColor("#FFAA00"))
+		);
+
+		IFormattableTextComponent button2 = new StringTextComponent(" [DENY]").setStyle(
+				Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party deny")).withColor(Color.parseColor("#FF5555"))
+		);
+
+		component.append(button);
+		component.append(button2);
+
+		player.displayClientMessage(
+				component
+				, false
 		);
 	}
 	

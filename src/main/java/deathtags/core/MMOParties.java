@@ -7,13 +7,19 @@ import java.util.Map.Entry;
 import deathtags.api.PartyHelper;
 import deathtags.commands.PartyCommand;
 import deathtags.config.ConfigHolder;
+import deathtags.core.events.EventClient;
+import deathtags.core.events.EventCommon;
+import deathtags.core.events.EventServer;
 import deathtags.gui.HealthBar;
 import deathtags.networking.MessageSendMemberData;
 import deathtags.networking.MessageUpdateParty;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -30,10 +36,8 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 public class MMOParties {
 
 	public static final String MODID = "mmoparties";
-
 	public static Party localParty;
-	public static Map<PlayerEntity, PlayerStats> PlayerStats = new HashMap<PlayerEntity, PlayerStats>();
-
+	public static Map<PlayerEntity, PlayerStats> PlayerStats = new HashMap<>();
 	private static final String PROTOCOL_VERSION = "1";
 	
 	public static final SimpleChannel network = NetworkRegistry.ChannelBuilder
@@ -48,11 +52,13 @@ public class MMOParties {
 		// Construct configuration
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigHolder.COMMON_SPEC);
 
+		// Construct game events.
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::preInit);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientInit);
 
 		MinecraftForge.EVENT_BUS.addListener(this::serverInit);
 		MinecraftForge.EVENT_BUS.addListener(this::serverInitEvent);
+
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 	
@@ -63,13 +69,17 @@ public class MMOParties {
 		network.registerMessage(1, MessageUpdateParty.class, MessageUpdateParty::encode, MessageUpdateParty::decode, MessageUpdateParty.Handler::handle );
 		network.registerMessage(2, MessageSendMemberData.class, MessageSendMemberData::encode, MessageSendMemberData::decode, MessageSendMemberData.Handler::handle);
 
-		MinecraftForge.EVENT_BUS.register(new EventHandler());
+		// Register event handlers
+		MinecraftForge.EVENT_BUS.register(new EventCommon());
+		MinecraftForge.EVENT_BUS.register(new EventClient());
+		MinecraftForge.EVENT_BUS.register(new EventServer());
 	}
 
 	public void serverInitEvent(FMLServerStartingEvent event) {
 		PartyHelper.Server.server = event.getServer(); // Set server instance
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	public void clientInit(FMLClientSetupEvent event)
 	{
 		HealthBar.init();
@@ -93,6 +103,16 @@ public class MMOParties {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Get the stat value of a player.
+	 * @param player
+	 * @return
+	 */
+	public static PlayerStats GetStats(PlayerEntity player)
+	{
+		return GetStatsByName(player.getName().getString());
 	}
 
 }

@@ -15,12 +15,7 @@ public abstract class PlayerGroup {
 	 * A cache of the last sent packet.
 	 */
 	public Map<String, PlayerPing> pings = new HashMap<String, PlayerPing>();
-	
-	/**
-	 * The group attacking the player.
-	 */
-	public PlayerGroup opposer = null;
-	
+
 	/**
 	 * Send a member-list update to the entire group.
 	 */
@@ -46,17 +41,6 @@ public abstract class PlayerGroup {
 	 * @return
 	 */
 	public abstract boolean IsMember(PlayerEntity member);
-	
-	/**
-	 * If the entire group is dead.
-	 * @return
-	 */
-	public abstract boolean IsAllDead();
-	
-	/**
-	 * Resurrect the entire group.
-	 */
-	public abstract void ReviveAll();
 	
 	/**
 	 * Broadcast a message to the entire group.

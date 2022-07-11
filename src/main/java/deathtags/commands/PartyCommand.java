@@ -1,5 +1,6 @@
 package deathtags.commands;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -23,7 +24,6 @@ public class PartyCommand {
 						.suggests(
 								(sourceCommandContext, suggestionsBuilder) -> {
 									suggestionsBuilder
-											.suggest("create")
 											.suggest("invite")
 											.suggest("accept")
 											.suggest("deny")
@@ -54,9 +54,10 @@ public class PartyCommand {
 		ServerPlayerEntity player = context.getSource().getPlayerOrException();
 		ServerPlayerEntity target = context.getSource().getServer().getPlayerList().getPlayerByName(targetStr);
 
+		if (targetStr != null && target == null) { CommandMessageHelper.SendError( player, String.format("The player %s is not online.", targetStr) ); return 0; }
 		if (player.getCommandSenderWorld().isClientSide) return 0; // Only perform operations on the server side.
 			
-		PlayerStats stats = MMOParties.GetStatsByName( player.getName().getContents() );
+		PlayerStats stats = MMOParties.GetStats( player );
 		
 		switch (sub) {
 			case "tp":
@@ -73,7 +74,8 @@ public class PartyCommand {
 				break;
 			
 			case "invite":
-				if (!stats.InParty()) Party.Create ( player ); // Create a party to invite with if not existant.
+				if (targetStr == null) { CommandMessageHelper.SendError(player, "You must specify a player with this command"); return 0; }
+				if (!stats.InParty()) Party.Create ( player ); // Create a party to invite with if not existent.
 				
 				stats.party.Invite ( player, target ); // Send an invite to the target player.
 				break;
@@ -90,6 +92,7 @@ public class PartyCommand {
 				{ CommandMessageHelper.SendError( player , "You do not currently have an invite." ); return 0; }
 
 				stats.partyInvite = null; // Deny the invite.
+				CommandMessageHelper.SendInfo(player, "You have denied the invite");
 				break;
 			
 			case "leave":
@@ -108,6 +111,8 @@ public class PartyCommand {
 				
 				if (stats.party.leader != player) // Only the leader can promote
 				{ CommandMessageHelper.SendError( player, "Only the leader may promote members." ); return 0; }
+
+				if (targetStr == null) { CommandMessageHelper.SendError(player, "You must specify a player with this command"); return 0; }
 				
 				stats.party.leader = target; // Assign leadership.
 				stats.party.Broadcast(String.format( "%s has been given leadership of the party. ", target.getName() ) );

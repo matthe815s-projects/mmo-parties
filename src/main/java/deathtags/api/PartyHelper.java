@@ -1,12 +1,12 @@
 package deathtags.api;
 
+import deathtags.api.relation.EnumRelation;
 import deathtags.core.MMOParties;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.common.MinecraftForge;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +72,20 @@ public class PartyHelper {
         public static Party GetParty(ServerPlayerEntity player)
         {
             return MMOParties.GetStatsByName(player.getName().getString()).party;
+        }
+
+        /**
+         * Get the relation between two players.
+         * @param player
+         * @param target
+         * @return
+         */
+        public static EnumRelation GetRelation(ServerPlayerEntity player, ServerPlayerEntity target)
+        {
+            PlayerStats playerStats = MMOParties.GetStatsByName( player.getName().getContents() );
+
+            if (playerStats.InParty() && playerStats.party.IsMember( target )) return EnumRelation.PARTY; // The member is part of a part with the other.
+            return EnumRelation.NONE;
         }
     }
 }
