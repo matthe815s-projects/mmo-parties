@@ -1,8 +1,7 @@
 package deathtags.helpers;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.*;
 import net.minecraft.world.entity.player.Player;
 
 public class CommandMessageHelper {
@@ -17,6 +16,27 @@ public class CommandMessageHelper {
 		player.displayClientMessage( 
 			new TextComponent( message )
 			, false
+		);
+	}
+
+	public static void SendInfoWithButton ( Player player, String message )
+	{
+		TextComponent component = new TextComponent( message );
+
+		MutableComponent button = new TextComponent(" [ACCEPT]").setStyle(
+				Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept")).withColor(TextColor.parseColor("#FFAA00"))
+		);
+
+		MutableComponent button2 = new TextComponent(" [DENY]").setStyle(
+				Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party deny")).withColor(TextColor.parseColor("#FF5555"))
+		);
+
+		component.append(button);
+		component.append(button2);
+
+		player.displayClientMessage(
+				component
+				, false
 		);
 	}
 	

@@ -35,7 +35,6 @@ public class HealthBar {
     public static float targetMaxHP;
     private int updateCounter = 0;
     private Random random;
-
     private PoseStack stack = new PoseStack();
 
     public HealthBar(Minecraft mc) {
@@ -52,7 +51,8 @@ public class HealthBar {
             return;
         
         int posX = 4;
-        
+        int lastOffset = 0;
+
         /**
          * Party display.
          */
@@ -62,7 +62,7 @@ public class HealthBar {
             for (String p_player : MMOParties.localParty.local_players) {
                 if (!p_player.equals(Minecraft.getInstance().player.getName().getContents())) {
                     PartyMemberData data = MMOParties.localParty.data.get(p_player);                   
-                    RenderOwnPartyMember(data, posX, pN, p_player);
+                    lastOffset = RenderOwnPartyMember(data, posX, lastOffset, pN, p_player);
                     pN++;
                 }
             }
@@ -73,9 +73,9 @@ public class HealthBar {
 
 
     // Render a party member in the party
-    void RenderOwnPartyMember(PartyMemberData data, int posX, int pN, String p_player) {
+    int RenderOwnPartyMember(PartyMemberData data, int posX, int lastOffset, int pN, String p_player) {
         if (data == null)
-            return;
+            return 0;
     	
         float currentHealth = data.health;
         float maxHealth = data.maxHealth;
@@ -83,7 +83,8 @@ public class HealthBar {
         float currentAbsorption = data.absorption;
         int iconRows = 0;
 
-        int yOffset = (30 * (pN + 1));
+        int defaultOffset = ConfigHolder.CLIENT.uiYOffset.get();
+        int yOffset = (30 * (pN + 1)) + lastOffset;
         int healthBarOffset = 0;
 
         Minecraft.getInstance().getTextureManager().bindForSetup(HEART_TEXTURE);
@@ -91,39 +92,41 @@ public class HealthBar {
         /*
          * HP Bar.
          */
-        healthBarOffset += drawHealth(posX, 50 + yOffset, currentHealth, maxHealth);
+        healthBarOffset += drawHealth(posX, defaultOffset + yOffset, currentHealth, maxHealth);
         iconRows++;
         
         /*
          * Hunger Bar.
          */
-        if (ConfigHolder.COMMON.showHunger.get()) {
-            drawHunger(posX, (50 + (10 * iconRows)) + yOffset + healthBarOffset, data.hunger, 20);
+        if (ConfigHolder.CLIENT.showHunger.get()) {
+            drawHunger(posX, (defaultOffset + (10 * iconRows)) + yOffset + healthBarOffset, data.hunger, 20);
             iconRows++;
         }
         
         /*
          * Absorption Bar.
          */
-        if (currentAbsorption > 0 && ConfigHolder.COMMON.showAbsorption.get()) {
-            drawAbsorption(posX, (50 + (10 * iconRows)) + yOffset + healthBarOffset, currentAbsorption);
+        if (currentAbsorption > 0 && ConfigHolder.CLIENT.showAbsorption.get()) {
+            drawAbsorption(posX, (defaultOffset + (10 * iconRows)) + yOffset + healthBarOffset, currentAbsorption);
             iconRows++;	
         }
         
         /*
          * Armor Bar.
          */
-        if (currentArmor > 0 && ConfigHolder.COMMON.showArmor.get()) {
-            drawArmor(posX, (50 + (10 * iconRows)) + yOffset + healthBarOffset, currentArmor);
+        if (currentArmor > 0 && ConfigHolder.CLIENT.showArmor.get()) {
+            drawArmor(posX, (defaultOffset + (10 * iconRows)) + yOffset + healthBarOffset, currentArmor);
             iconRows++;
         }
 
         RenderSystem.setShaderTexture(0, TEXTURE_ICON);
         
         if (data.leader) // If the player is the party leader, draw a crown next to their name
-        	Minecraft.getInstance().gui.blit(stack, 10, (31 + yOffset), 0, 18, 9, 9);
+        	Minecraft.getInstance().gui.blit(stack, 10, ((defaultOffset - 20) + yOffset), 0, 18, 9, 9);
         
-        mc.font.draw(stack, String.format("%s", p_player), 10, 40 + yOffset, 0xFFFFFF);
+        mc.font.draw(stack, String.format("%s", p_player), 10, (defaultOffset - 10) + yOffset, 0xFFFFFF);
+
+        return healthBarOffset;
     }
 
     // Draw the player's health bar at a define width and height.

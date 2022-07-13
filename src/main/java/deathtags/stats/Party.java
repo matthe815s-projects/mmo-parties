@@ -18,8 +18,6 @@ public class Party extends PlayerGroup
 {	
 	public List<Player> players = new ArrayList<Player>();
 	public List<String> local_players = new ArrayList<String>();
-	
-	public Map<Integer, Party> local_parties = new HashMap<Integer, Party>();
 	public Map<String, PartyMemberData> data = new HashMap<String, PartyMemberData>();
 
 	public Party(Player player)
@@ -29,21 +27,18 @@ public class Party extends PlayerGroup
 		SendUpdate();
 	}
 	
-	public Party()
-	{
-		
-	}
+	public Party() {}
 	
 	/**
 	 * Create a new party and set the leader to a provided leader. Can error and do nothing.
 	 * @param leader The player to attempt to make leader.
 	 */
 	public static void Create ( Player leader ) {
-		PlayerStats leaderStats = MMOParties.GetStatsByName( leader.getName().getContents() );
+		PlayerStats stats = MMOParties.GetStatsByName( leader.getName().getContents() );
 		
-		if (leaderStats.InParty()) { CommandMessageHelper.SendError( leader, "You are already in a party." ); return; }
-		leaderStats.party = new Party (leader); // Set the leaders' party.
-		
+		if (stats.InParty()) { CommandMessageHelper.SendError( leader, "You are already in a party." ); return; }
+		stats.party = new Party (leader); // Set the leaders' party.
+
 		CommandMessageHelper.SendInfo( leader ,  "You have created a new party." );
 	}
 	
@@ -52,19 +47,19 @@ public class Party extends PlayerGroup
 	 * @param player Target player.
 	 */
 	public void Invite ( Player invoker, Player player ) {
-		PlayerStats targetPlayer = MMOParties.GetStatsByName( player.getName().getContents() );
-		PlayerStats invokerPlayer = MMOParties.GetStatsByName( invoker.getName().getContents() );
+		PlayerStats targetPlayer = MMOParties.GetStats( player );
+		PlayerStats invokerPlayer = MMOParties.GetStats( invoker );
 		
 		if ( invokerPlayer.party.leader != invoker ) // Only the leader may invite.
 			{ CommandMessageHelper.SendError( invoker , "You must be the leader of a party to invite others." ); return; }
 		
-		if ( targetPlayer.InParty () ) // Players already in a party may not be invited.
-			{ CommandMessageHelper.SendError( invoker, String.format( "%s is already in a party.", player.getName().getContents() ) ); return; }
+		//if ( targetPlayer.InParty () || targetPlayer.partyInvite != null ) // Players already in a party may not be invited.
+	//		{ CommandMessageHelper.SendError( invoker, String.format( "%s is already in a party.", player.getName().getContents() ) ); return; }
 		
 		targetPlayer.partyInvite = this;
 		
 		CommandMessageHelper.SendInfo( invoker, String.format( "You have invited %s to the party." , player.getName().getContents() ) );
-		CommandMessageHelper.SendInfo( player , String.format ( "%s has invited you to join their party.", invoker.getName().getContents() ) );
+		CommandMessageHelper.SendInfoWithButton(player, String.format("You have been invited to %s's party.", invoker.getName().getContents()));
 	}
 	
 	/**
@@ -204,24 +199,6 @@ public class Party extends PlayerGroup
 		}
 		
 		return false;
-	}
-
-	@Override
-	public boolean IsAllDead() 
-	{
-		int numDead = 0;
-		
-		for (Player player : this.players) {
-			if (player.isSpectator())
-				numDead++;
-		}
-		
-		return numDead == this.players.size();
-	}
-
-	@Override
-	public void ReviveAll() {
-
 	}
 
 	@Override

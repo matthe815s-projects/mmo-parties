@@ -60,11 +60,6 @@ public class EventHandler {
 		if (!ConfigHolder.COMMON.friendlyFireDisabled.get()) return; // Friendly fire is allowed so this doesn't matter.
 		if (!playerStats.InParty() || !sourceStats.InParty()) return; // Nothing matters if both players aren't in a party.
 		if (playerStats.party.IsMember( source )) { event.setCanceled(true); return; } // Cancel received damage if it's from a party member.
-		
-		if (playerStats.party.opposer == null) {
-			playerStats.party.opposer = sourceStats.party;
-			playerStats.party.opposer.opposer = playerStats.party;
-		}
 	}
 	
 	@SubscribeEvent
