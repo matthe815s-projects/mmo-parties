@@ -63,7 +63,7 @@ public class HealthBar {
             int pN = 0;
 
             for (String p_player : MMOParties.localParty.local_players) {
-                if (p_player.equals(Minecraft.getInstance().player.getName().getContents())) {
+                if (!p_player.equals(Minecraft.getInstance().player.getName().getContents())) {
                     PartyMemberData data = MMOParties.localParty.data.get(p_player);                   
                     lastOffset = RenderOwnPartyMember(data, posX, lastOffset, pN, p_player);
                     pN++;

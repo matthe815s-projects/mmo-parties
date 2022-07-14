@@ -23,6 +23,16 @@ public class EventCommon {
     {
         PlayerEntity player = event.getPlayer();
         if (!MMOParties.PlayerStats.containsKey(player)) MMOParties.PlayerStats.put(player, new PlayerStats( player ));
+
+        event.getPlayer().getServer().getPlayerList().getPlayers().forEach(serverPlayerEntity -> {
+            PlayerStats ply = MMOParties.GetStats(serverPlayerEntity);
+            if (ply.InParty() && !MMOParties.GetStats(player).InParty()) { // Check if in party
+                if (ply.party.IsMemberOffline(player)) { // Check if new player was last in that party
+                    ply.party.Join(player);
+                    return;
+                }
+            }
+        });
     }
 
     @SubscribeEvent
@@ -30,7 +40,9 @@ public class EventCommon {
     {
         PlayerStats playerStats = MMOParties.GetStatsByName(event.getPlayer().getName().getString());
 
-        playerStats.Leave(); // Leave if in a party.
+        // Only if in party.
+        if (playerStats.InParty()) playerStats.party.players.remove(event.getPlayer());
+
         MMOParties.PlayerStats.remove(event.getPlayer()); // Remove the player's temporary data.
     }
 

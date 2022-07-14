@@ -17,6 +17,7 @@ import net.minecraftforge.fml.network.NetworkDirection;
 public class Party extends PlayerGroup
 {	
 	public List<PlayerEntity> players = new ArrayList<PlayerEntity>();
+	public List<String> playersOffline = new ArrayList<>();
 	public List<String> local_players = new ArrayList<String>();
 	public Map<String, PartyMemberData> data = new HashMap<String, PartyMemberData>();
 
@@ -24,6 +25,7 @@ public class Party extends PlayerGroup
 	{
 		leader = player;
 		players.add(player);
+		playersOffline.add(player.getName().getString());
 		SendUpdate();
 	}
 	
@@ -53,8 +55,8 @@ public class Party extends PlayerGroup
 		if ( invokerPlayer.party.leader != invoker ) // Only the leader may invite.
 			{ CommandMessageHelper.SendError( invoker , "You must be the leader of a party to invite others." ); return; }
 		
-		//if ( targetPlayer.InParty () || targetPlayer.partyInvite != null ) // Players already in a party may not be invited.
-	//		{ CommandMessageHelper.SendError( invoker, String.format( "%s is already in a party.", player.getName().getContents() ) ); return; }
+		if ( targetPlayer.InParty () || targetPlayer.partyInvite != null ) // Players already in a party may not be invited.
+			{ CommandMessageHelper.SendError( invoker, String.format( "%s is already in a party.", player.getName().getContents() ) ); return; }
 		
 		targetPlayer.partyInvite = this;
 		
@@ -72,7 +74,8 @@ public class Party extends PlayerGroup
 		 { CommandMessageHelper.SendError(player, "This party is currently full."); return; }
 			
 		this.players.add(player);
-		
+		this.playersOffline.add(player.getName().getString());
+
 		PlayerStats stats = MMOParties.GetStatsByName( player.getName().getContents() );
 		
 		stats.party = this;
@@ -199,6 +202,11 @@ public class Party extends PlayerGroup
 		}
 		
 		return false;
+	}
+
+	public boolean IsMemberOffline(PlayerEntity player)
+	{
+		return playersOffline.contains(player.getName().getString());
 	}
 
 	@Override
