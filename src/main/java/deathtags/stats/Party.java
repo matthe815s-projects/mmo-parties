@@ -12,16 +12,15 @@ import deathtags.networking.MessageUpdateParty;
 import deathtags.networking.PartyPacketDataBuilder;
 import epicsquid.superiorshields.capability.shield.IShieldCapability;
 import epicsquid.superiorshields.capability.shield.SuperiorShieldsCapabilityManager;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.world.GameType;
 import net.minecraftforge.fml.common.Loader;
 
 public class Party extends PlayerGroup
 {	
 	public List<EntityPlayerMP> players = new ArrayList<EntityPlayerMP>();
 	public List<String> local_players = new ArrayList<String>();
-	
-	public Map<Integer, Party> local_parties = new HashMap<Integer, Party>();
+	public List<String> playersOffline = new ArrayList<>();
 
 	public Map<String, PartyMemberData> data = new HashMap<String, PartyMemberData>();
 
@@ -29,6 +28,7 @@ public class Party extends PlayerGroup
 	{
 		leader = player;
 		players.add(player);
+		playersOffline.add(player.getName());
 		SendUpdate();
 	}
 	
@@ -214,6 +214,11 @@ public class Party extends PlayerGroup
 		}
 		
 		return false;
+	}
+
+	public boolean IsMemberOffline(EntityPlayer player)
+	{
+		return playersOffline.contains(player.getName());
 	}
 
 	/**

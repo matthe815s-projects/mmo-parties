@@ -57,6 +57,14 @@ public class PlayerStats
 		
 		CommandMessageHelper.SendInfo ( player, "Commencing teleport in 5 seconds." );
 	}
+
+	public void TickTeleport() {
+		// Process teleporting.
+		if (teleportTicks > 0) {
+			teleportTicks --;
+			if (teleportTicks <= 0) CommenceTeleport(); // Teleport the player.
+		}
+	}
 	
 	public void CommenceTeleport() {
 		player.setPositionAndUpdate ( target.posX, target.posY, target.posZ );

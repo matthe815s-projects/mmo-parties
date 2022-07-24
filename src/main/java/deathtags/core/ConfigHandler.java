@@ -19,6 +19,9 @@ public class ConfigHandler {
 	public static class ServerOptions {
 		@Comment("Whether or not to allow party members to TP to each other.")
 		public boolean allowPartyTP = true;
+
+		@Comment("Whether or not players in a party will take friendly fire.")
+		public boolean friendlyFireDisabled = true;
 	}
 	
 	public static class DebugOptions {

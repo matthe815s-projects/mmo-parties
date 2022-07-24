@@ -12,6 +12,7 @@ import deathtags.networking.MessageUpdateParty;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -27,13 +28,13 @@ import net.minecraftforge.fml.relauncher.Side;
 public class MMOParties {
 
 	public static final String MODID = "mmoparties";
-	public static final String VERSION = "1.0.0";
+	public static final String VERSION = "2.1.2";
 	public static final String NAME = "RPG Parties";
 	
 	public static SimpleNetworkWrapper network;
 	
 	public static Party localParty;
-	public static Map<EntityPlayerMP, PlayerStats> PlayerStats = new HashMap<EntityPlayerMP, PlayerStats>();
+	public static Map<EntityPlayerMP, PlayerStats> PlayerStats = new HashMap<>();
 	
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) 
@@ -62,7 +63,7 @@ public class MMOParties {
 		MinecraftForge.EVENT_BUS.register(new EventHandler());
 		
 	    if (event.getSide() == Side.CLIENT)
-	        MinecraftForge.EVENT_BUS.register(new GUIHandler(Minecraft.getMinecraft()));
+	        GUIHandler.init();
 	}
 	
 	@Mod.EventHandler
@@ -71,7 +72,6 @@ public class MMOParties {
 		System.out.println("Registering commands");
 		
 		event.registerServerCommand(new PartyCommand());
-		event.registerServerCommand(new MuteCommand());
 	}
 	
 	/**
@@ -88,5 +88,14 @@ public class MMOParties {
 		
 		return null;
 	}
-	
+
+	/**
+	 * Get the stat value of a player.
+	 * @param player
+	 * @return
+	 */
+	public static PlayerStats GetStats(EntityPlayer player)
+	{
+		return GetStatsByName(player.getName());
+	}
 }

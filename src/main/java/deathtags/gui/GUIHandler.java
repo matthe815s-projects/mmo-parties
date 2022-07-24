@@ -2,6 +2,7 @@ package deathtags.gui;
 
 import java.util.Random;
 
+import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.opengl.GL11;
 
 import deathtags.config.Color;
@@ -40,9 +41,8 @@ public class GUIHandler extends Gui {
         
     	if ( event.getType() != ElementType.TEXT ) return; // Only render on the text.
 
-        float scale = Config.barScale;
-
-        GL11.glScalef(scale, scale, 1);
+        int posX = 4;
+        int lastOffset = 0;
         
         /**
          * Party display.
@@ -53,7 +53,7 @@ public class GUIHandler extends Gui {
             for (String party_member : MMOParties.localParty.local_players) {
                 if (! party_member.equals( Minecraft.getMinecraft().player.getName() ) ) {
                     PartyMemberData data = MMOParties.localParty.data.get(party_member);                   
-                    renderMember ( data, pN );
+                    lastOffset = renderMember ( data, posX, lastOffset, pN );
                     pN++;
                 }
             }
@@ -63,24 +63,27 @@ public class GUIHandler extends Gui {
     }
 
     
-    void renderMember ( PartyMemberData data, int pN) 
+    int renderMember ( PartyMemberData data, int posX, int lastOffset, int pN )
     {
         int iconRows = 0;
-        int posX = 4;
+
+        int defaultOffset = 0;
+        int yOffset = (30 * (pN + 1)) + lastOffset;
+        int healthbarOffset = 0;
         
         Minecraft.getMinecraft().getTextureManager().bindTexture( Gui.ICONS );
         
         /*
          * HP Bar.
          */
-        drawHealth(posX, 50 + (30 * (pN + 1)), data.health, data.maxHealth);
+        healthbarOffset = drawHealth(posX, defaultOffset + yOffset, data.health, data.maxHealth);
         iconRows++;
         
         /*
          * Hunger Bar.
          */
         if (ConfigHandler.Client_Options.showHunger) {
-            drawHunger(posX, (50 + (10 * iconRows)) + (30 * (pN + 1)), data.hunger, 20);
+            drawHunger(posX, (defaultOffset + (10 * iconRows)) + yOffset, data.hunger, 20);
             iconRows++;
         }
         
@@ -88,7 +91,7 @@ public class GUIHandler extends Gui {
          * Absorption Bar.
          */
         if (data.absorption > 0 && ConfigHandler.Client_Options.showAbsorption) {
-            drawAbsorption(posX, (50 + (10 * iconRows)) + (30 * (pN + 1)), data.absorption);
+            drawAbsorption(posX, (defaultOffset + (10 * iconRows)) + yOffset, data.absorption);
             iconRows++;	
         }
         
@@ -96,7 +99,7 @@ public class GUIHandler extends Gui {
          * Armor Bar.
          */
         if (data.armor > 0 && ConfigHandler.Client_Options.showArmor) {
-            drawArmor(posX, (50 + (10 * iconRows)) + (30 * (pN + 1)), data.armor);
+            drawArmor(posX, (defaultOffset + (10 * iconRows)) + yOffset, data.armor);
             iconRows++;
         }
         
@@ -108,29 +111,29 @@ public class GUIHandler extends Gui {
             float maxShields = data.maxShields;
             
             if (maxShields > 0) {
-                drawShields(posX, (50 + (10 * iconRows)) + (30 * (pN + 1)), shields, maxShields);
+                drawShields(posX, (defaultOffset + (10 * iconRows)) + yOffset, shields, maxShields);
                 iconRows++;	
             }
         }
 
         FontRenderer fontRender = mc.fontRenderer;
-
-        GL11.glColor4f(255, 255, 255, 1f);
-        
         Minecraft.getMinecraft().getTextureManager().bindTexture( new ResourceLocation(MMOParties.MODID, "textures/icons.png") );
         
         if (data.leader) 
-        	Minecraft.getMinecraft().ingameGUI.drawTexturedModalRect(10, (31 + (30 * (pN + 1))) - GuiIngameForge.right_height, 0, 18, 9, 9);
+        	Minecraft.getMinecraft().ingameGUI.drawTexturedModalRect(10, (defaultOffset - 20) + yOffset, 0, 18, 9, 9);
         
-        fontRender.drawStringWithShadow(data.name, 10, (40 + (30 * (pN + 1))) - GuiIngameForge.right_height, 0xFFFFFF);
+        fontRender.drawStringWithShadow(data.name, 10, (defaultOffset - 10) + yOffset - GuiIngameForge.right_height, 0xFFFFFF);
         
         Minecraft.getMinecraft().getTextureManager().bindTexture( Gui.ICONS );
+
+        return healthbarOffset;
     }
     
-    private void drawHealth(int width, int height, float health, float maxHealth) {
+    private int drawHealth(int width, int height, float health, float maxHealth) {
         int left = width / 2;
         int top = height - GuiIngameForge.right_height;
         int barLength = 0;
+        int bars = 0;
         
         for (int i = 0; i < maxHealth / 2; i++) {
             int dropletHalf = i * 2 + 1;
@@ -139,15 +142,23 @@ public class GUIHandler extends Gui {
 
             if (health <= 6.0f && updateCounter % (health * 3 + 1) == 0) startY = top + (random.nextInt(3) - 1);
             
-            Minecraft.getMinecraft().ingameGUI.drawTexturedModalRect(startX, startY, 16, 0, 9, 9);
+            Minecraft.getMinecraft().ingameGUI.drawTexturedModalRect(startX, startY + (4 * bars), 16, 0, 9, 9);
             
             if ((int) health > dropletHalf) 
-                Minecraft.getMinecraft().ingameGUI.drawTexturedModalRect(startX, startY, 52, 0, 9, 9);
+                Minecraft.getMinecraft().ingameGUI.drawTexturedModalRect(startX, startY  + (4 * bars), 52, 0, 9, 9);
             else if ((int) health == dropletHalf)
-                Minecraft.getMinecraft().ingameGUI.drawTexturedModalRect(startX, startY, 61, 0, 9, 9);
+                Minecraft.getMinecraft().ingameGUI.drawTexturedModalRect(startX, startY  + (4 * bars), 61, 0, 9, 9);
 
             barLength ++;
+
+            // Increase the number of bars
+            if (barLength > 9) {
+                bars++;
+                barLength = 0;
+            }
         }
+
+        return (4 * (bars - 1)) + 2;
     }
     
     private void drawHunger(int width, int height, float health, float maxHealth) {
@@ -257,5 +268,9 @@ public class GUIHandler extends Gui {
             
             GL11.glColor4f(255, 255, 255, 1f);
         }
+    }
+
+    public static void init() {
+        MinecraftForge.EVENT_BUS.register(new GUIHandler(Minecraft.getMinecraft()));
     }
 }
