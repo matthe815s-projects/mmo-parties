@@ -38,7 +38,7 @@ public class ConfigHolder {
             this.showAbsorption = builder.comment("Whether or not to display absorption hearts")
                     .define("Show Absorption", true);
             this.showArmor = builder.comment("Whether or not to display armor")
-                    .define("Show Absorption", true);
+                    .define("Show Armor", true);
             this.showHunger = builder.comment("Whether or not to display hunger")
                     .define("Show Hunger", true);
             this.uiYOffset = builder.comment("The vertical offset at which to display the party list at.")

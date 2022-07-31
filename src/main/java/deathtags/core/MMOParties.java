@@ -51,6 +51,7 @@ public class MMOParties {
 	{
 		// Construct configuration
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigHolder.COMMON_SPEC);
+		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigHolder.CLIENT_SPEC);
 
 		// Construct game events.
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::preInit);
