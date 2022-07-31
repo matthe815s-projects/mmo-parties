@@ -8,7 +8,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber
-@OnlyIn(Dist.CLIENT)
 public class EventClient {
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)

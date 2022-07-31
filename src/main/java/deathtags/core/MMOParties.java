@@ -78,7 +78,6 @@ public class MMOParties {
 		PartyHelper.Server.server = event.getServer(); // Set server instance
 	}
 
-	@OnlyIn(Dist.CLIENT)
 	public void clientInit(FMLClientSetupEvent event)
 	{
 		HealthBar.init();
