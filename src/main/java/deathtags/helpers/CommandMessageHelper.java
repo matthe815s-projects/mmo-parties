@@ -1,7 +1,6 @@
 package deathtags.helpers;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ColorHelper;
 import net.minecraft.util.text.*;
 import net.minecraft.util.text.event.ClickEvent;
 

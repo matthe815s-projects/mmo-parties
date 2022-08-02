@@ -73,6 +73,8 @@ public class EventCommon {
         PlayerEntity player = event.player;
         PlayerStats stats = MMOParties.GetStatsByName(player.getName().getContents());
 
+        if (stats == null) return;
+
         // Project MMO compatability
         if (ProjectMMOConnector.IsLoaded() // If the project MMO mod is installed, and you're in a party, automatically party you together.
                 && PmmoSavedData.get().getParty(event.player.getUUID()) != null && ! stats.InParty() ) {

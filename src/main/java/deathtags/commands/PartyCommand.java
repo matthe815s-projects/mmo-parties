@@ -9,17 +9,19 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import deathtags.config.ConfigHolder;
 import deathtags.core.MMOParties;
 import deathtags.helpers.CommandMessageHelper;
+import deathtags.networking.MessageOpenUI;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraftforge.fml.network.NetworkDirection;
 
 public class PartyCommand {
 	
 	public static LiteralArgumentBuilder<CommandSource> register () {
 		return Commands.literal("party")
-				.requires(cs -> cs.hasPermission(0))
+				.requires(commandSource -> commandSource.hasPermission(0))
 				.then(Commands.argument("sub", StringArgumentType.string()).executes(ctx -> run(ctx, StringArgumentType.getString(ctx, "sub"), null))
 						.suggests(
 								(sourceCommandContext, suggestionsBuilder) -> {
@@ -28,7 +30,8 @@ public class PartyCommand {
 											.suggest("accept")
 											.suggest("deny")
 											.suggest("leader")
-											.suggest("disband"); // Build suggestions
+											.suggest("disband") // Build suggestions
+											.suggest("gui");
 
 									if (ConfigHolder.COMMON.allowPartyTP.get()) // If you're allowed to party teleport, display the option
 										suggestionsBuilder.suggest("tp");
@@ -47,7 +50,7 @@ public class PartyCommand {
 
 										return suggestionsBuilder.buildFuture();
 									})
-								));
+								)).requires(commandSource -> true);
 	}
 	
 	private static int run(CommandContext<CommandSource> context, String sub, String targetStr) throws CommandSyntaxException {
@@ -127,6 +130,11 @@ public class PartyCommand {
 			
 				stats.party.Disband();
 				break;
+
+			case "gui":
+				MMOParties.network.sendTo(new MessageOpenUI(), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT); // Send open message
+				break;
+
 			default:
 				break;
 		}

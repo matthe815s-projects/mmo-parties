@@ -10,6 +10,7 @@ public class ConfigHolder {
 
         public final ForgeConfigSpec.ConfigValue<Boolean> allowPartyTP;
         public final ForgeConfigSpec.ConfigValue<Boolean> autoAssignParties;
+        public final ForgeConfigSpec.ConfigValue<Boolean> allowInviteAll;
 
         public Common(ForgeConfigSpec.Builder builder)
         {
@@ -21,6 +22,8 @@ public class ConfigHolder {
                             .define("Allow teleportation", true);
             this.autoAssignParties = builder.comment("Whether or not to auto-assign all players to a party")
                             .define("Auto-assign Parties", false);
+            this.allowInviteAll = builder.comment("Whether or not to allow invite all")
+                            .define("Allow Invite All", true);
             builder.pop();
         }
     }

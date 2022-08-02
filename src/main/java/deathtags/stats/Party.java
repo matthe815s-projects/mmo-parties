@@ -100,6 +100,9 @@ public class Party extends PlayerGroup
 		if (player == this.leader && players.size() > 0) this.leader = players.get(0); // If the player was the leader, then assign a new leader.
 
 		SendUpdate();
+
+		MMOParties.GetStats(player).party = null; // No party.
+		MMOParties.network.sendTo(new MessageUpdateParty(""), ((ServerPlayerEntity)player).connection.connection, NetworkDirection.PLAY_TO_CLIENT); // Clear the player's party.
 		
 		// Disband the party of 1 player.
 		if (players.size() == 1) Disband();
@@ -117,7 +120,10 @@ public class Party extends PlayerGroup
 		for (PlayerEntity member : players) {
 			PlayerStats stats = MMOParties.GetStatsByName ( member.getName().getContents() );
 			stats.party = null;
+			MMOParties.network.sendTo(new MessageUpdateParty(""), ((ServerPlayerEntity)member).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
 		}
+
+		players.clear();
 	}
 	
 	/**

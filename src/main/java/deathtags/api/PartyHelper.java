@@ -18,7 +18,7 @@ public class PartyHelper {
     public static class Client {
         /**
          * Get the client's local party. Can be null.
-         * @return
+         * @return Player Party | Null
          */
         public static Party GetParty()
         {
@@ -31,7 +31,8 @@ public class PartyHelper {
          */
         public static boolean IsPartyLeader()
         {
-            return MMOParties.localParty.leader == Minecraft.getInstance().player;
+            if (GetParty() == null) return false;
+            else return MMOParties.localParty.leader == Minecraft.getInstance().player;
         }
 
         /**
