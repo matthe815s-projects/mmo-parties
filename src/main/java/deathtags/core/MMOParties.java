@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import deathtags.api.PartyHelper;
 import deathtags.commands.PartyCommand;
 import deathtags.config.ConfigHolder;
@@ -15,10 +16,14 @@ import deathtags.networking.MessageSendMemberData;
 import deathtags.networking.MessageUpdateParty;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.ClientRegistry;
+import net.minecraftforge.client.settings.KeyBindingMap;
+import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
@@ -30,6 +35,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
+import org.lwjgl.glfw.GLFW;
 
 @Mod(value = MMOParties.MODID)
 public class MMOParties {
@@ -45,6 +51,8 @@ public class MMOParties {
 			.serverAcceptedVersions(s -> true)
 			.networkProtocolVersion(() -> PROTOCOL_VERSION)
 			.simpleChannel();
+
+	public static KeyMapping OPEN_GUI_KEY;
 	
 	public MMOParties ()
 	{
@@ -81,6 +89,9 @@ public class MMOParties {
 	public void clientInit(FMLClientSetupEvent event)
 	{
 		HealthBar.init();
+
+		OPEN_GUI_KEY = new KeyMapping("key.opengui.desc", KeyConflictContext.UNIVERSAL, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_P, "key.mmoparties.category"); // Open GUI on G.
+		ClientRegistry.registerKeyBinding(OPEN_GUI_KEY);
 	}
 	
 	public void serverInit(RegisterCommandsEvent event)
