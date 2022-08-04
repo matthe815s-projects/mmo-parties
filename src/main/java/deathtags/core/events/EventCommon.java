@@ -5,6 +5,7 @@ import deathtags.api.relation.EnumRelation;
 import deathtags.config.ConfigHolder;
 import deathtags.connectors.ProjectMMOConnector;
 import deathtags.core.MMOParties;
+import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
 import harmonised.pmmo.pmmo_saved_data.PmmoSavedData;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,6 +19,8 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber
 public class EventCommon {
+    public static Party globalParty = null;
+
     @SubscribeEvent
     public void onPlayerJoined(PlayerEvent.PlayerLoggedInEvent event)
     {
@@ -33,6 +36,12 @@ public class EventCommon {
                 }
             }
         });
+
+        // Handle auto-partying
+        if (!ConfigHolder.COMMON.autoAssignParties.get()) return;
+
+        if (globalParty == null) globalParty = new Party(event.getPlayer());
+        else globalParty.Join(event.getPlayer());
     }
 
     @SubscribeEvent
@@ -41,7 +50,12 @@ public class EventCommon {
         PlayerStats playerStats = MMOParties.GetStatsByName(event.getPlayer().getName().getString());
 
         // Only if in party.
-        if (playerStats.InParty()) playerStats.party.players.remove(event.getPlayer());
+        if (playerStats.InParty()) {
+            playerStats.party.players.remove(event.getPlayer());
+
+            // Change the leader when you leave.
+            if (playerStats.party.players.size() > 0) playerStats.party.MakeLeader(playerStats.party.players.get(0));
+        }
 
         MMOParties.PlayerStats.remove(event.getPlayer()); // Remove the player's temporary data.
     }
