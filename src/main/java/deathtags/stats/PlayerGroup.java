@@ -67,6 +67,7 @@ public abstract class PlayerGroup {
 	public void MakeLeader(PlayerEntity member)
 	{
 		this.leader = member;
-		this.Broadcast(String.format("%s is now the %s leader.", member.getName(), this.GetGroupAlias()));
+		this.Broadcast(String.format("%s is now the %s leader.", member.getName().getString(), this.GetGroupAlias()));
+		SendUpdate();
 	}
 }

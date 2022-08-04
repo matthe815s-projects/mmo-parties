@@ -3,7 +3,6 @@ package deathtags.core.events;
 import deathtags.core.MMOParties;
 import deathtags.gui.screens.PartyScreen;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
@@ -26,5 +25,10 @@ public class EventClient {
         if (MMOParties.OPEN_GUI_KEY.isDown()) { // Detect party GUI keybind.
             Minecraft.getInstance().setScreen(new PartyScreen());
         }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void openScreen() {
+        Minecraft.getInstance().setScreen(new PartyScreen());
     }
 }

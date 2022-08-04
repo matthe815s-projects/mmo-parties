@@ -6,25 +6,32 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import deathtags.config.ConfigHolder;
 import deathtags.core.MMOParties;
+import deathtags.core.events.EventClient;
 import deathtags.helpers.CommandMessageHelper;
 import deathtags.networking.MessageOpenUI;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
+import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.fml.network.NetworkDirection;
 
+import java.util.concurrent.CompletableFuture;
+
 public class PartyCommand {
 	
 	public static LiteralArgumentBuilder<CommandSource> register () {
 		return Commands.literal("party")
-				.requires(commandSource -> commandSource.hasPermission(0))
-				.then(Commands.argument("sub", StringArgumentType.string()).executes(ctx -> run(ctx, StringArgumentType.getString(ctx, "sub"), null))
-						.suggests(
-								(sourceCommandContext, suggestionsBuilder) -> {
+				.requires(commandSource -> true)
+				.then(
+						Commands.argument("sub", StringArgumentType.string())
+								.executes(ctx -> run(ctx, StringArgumentType.getString(ctx, "sub"), null))
+								.suggests((sourceCommandContext, suggestionsBuilder) -> {
 									suggestionsBuilder
 											.suggest("invite")
 											.suggest("accept")
@@ -37,20 +44,29 @@ public class PartyCommand {
 										suggestionsBuilder.suggest("tp");
 
 									return suggestionsBuilder.buildFuture();
-								}
-						).then(
-								Commands.argument("player", StringArgumentType.string())
-									.executes(ctx -> run(ctx, StringArgumentType.getString(ctx, "sub"), StringArgumentType.getString(ctx, "player")))
-									.suggests((sourceCommandContext, suggestionsBuilder) -> {
-										for (ServerPlayerEntity playerName : sourceCommandContext.getSource().getServer().getPlayerList().getPlayers())
-										{
-											if (sourceCommandContext.getSource().getPlayerOrException().getName().getContents() != playerName.getName().getContents())
-												suggestionsBuilder.suggest(playerName.getName().getContents());
-										}
+								})
+								.then(
+									Commands.argument("player", StringArgumentType.string())
+											.executes(ctx -> run(ctx, StringArgumentType.getString(ctx, "sub"), StringArgumentType.getString(ctx, "player")))
+											.suggests((sourceCommandContext, suggestionsBuilder) -> getSuggestions(sourceCommandContext, suggestionsBuilder))
+								));
+	}
 
-										return suggestionsBuilder.buildFuture();
-									})
-								)).requires(commandSource -> true);
+	private static CompletableFuture<Suggestions> getSuggestions (CommandContext<CommandSource> ctx, SuggestionsBuilder builder) {
+		String argument = StringArgumentType.getString(ctx, "sub").trim();
+
+		System.out.println(argument);
+
+		switch (argument) {
+			case "invite":
+			case "leader":
+				ctx.getSource().getServer().getPlayerList().getPlayers().forEach(player -> {
+					builder.suggest(player.getName().getString());
+				});
+				break;
+		}
+
+		return builder.buildFuture();
 	}
 	
 	private static int run(CommandContext<CommandSource> context, String sub, String targetStr) throws CommandSyntaxException {
@@ -132,8 +148,9 @@ public class PartyCommand {
 				break;
 
 			case "gui":
-				MMOParties.network.sendTo(new MessageOpenUI(), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT); // Send open message
-				break;
+				if (!player.getCommandSenderWorld().isClientSide) MMOParties.network.sendTo(new MessageOpenUI(), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT); // Send open message
+				else if (Minecraft.getInstance().hasSingleplayerServer()) EventClient.openScreen();
+ 				break;
 
 			default:
 				break;
