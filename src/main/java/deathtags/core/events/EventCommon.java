@@ -72,6 +72,7 @@ public class EventCommon {
         PlayerEntity player = (PlayerEntity) event.getEntityLiving();
         PlayerEntity source = (PlayerEntity) event.getSource().getDirectEntity();
 
+        // Handle friendly fire canceling.
         if (PartyHelper.Server.GetRelation((ServerPlayerEntity) player, (ServerPlayerEntity) source) == EnumRelation.PARTY) {
             event.setCanceled(true);
             return;
