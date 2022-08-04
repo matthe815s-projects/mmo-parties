@@ -5,12 +5,9 @@ import deathtags.config.ConfigHolder;
 import deathtags.core.MMOParties;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import io.netty.buffer.ByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.function.Supplier;
 
 public class MessageGUIInvitePlayer {
@@ -24,12 +21,12 @@ public class MessageGUIInvitePlayer {
 		this.action = action;
 	}
 
-	public static MessageGUIInvitePlayer decode(PacketBuffer buf)
+	public static MessageGUIInvitePlayer decode(ByteBuf buf)
 	{
 		return new MessageGUIInvitePlayer(buf.readCharSequence(buf.readInt(), Charsets.UTF_8), EnumPartyGUIAction.values()[buf.readInt()]);
 	}
 
-	public static void encode(MessageGUIInvitePlayer msg, PacketBuffer buf)
+	public static void encode(MessageGUIInvitePlayer msg, ByteBuf buf)
 	{
 		buf.writeInt(msg.name.length());
 		buf.writeCharSequence(msg.name, Charsets.UTF_8);

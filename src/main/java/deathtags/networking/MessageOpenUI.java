@@ -1,13 +1,12 @@
 package deathtags.networking;
 
 import deathtags.gui.screens.PartyScreen;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -18,8 +17,8 @@ import java.util.function.Supplier;
  */
 public class MessageOpenUI {
 	public MessageOpenUI() {}
-	public static MessageOpenUI decode(PacketBuffer buf) { return new MessageOpenUI(); }
-	public static void encode(MessageOpenUI msg, PacketBuffer buf) {}
+	public static MessageOpenUI decode(ByteBuf buf) { return new MessageOpenUI(); }
+	public static void encode(MessageOpenUI msg, ByteBuf buf) {}
 
 	public static class Handler
 	{
