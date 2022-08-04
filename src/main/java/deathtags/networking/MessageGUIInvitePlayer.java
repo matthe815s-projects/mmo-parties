@@ -70,6 +70,10 @@ public class MessageGUIInvitePlayer {
 					if (!stats.InParty()) return; // No-op.
 					stats.party.Disband();
 					break;
+				case LEAVE:
+					if (!stats.InParty()) return;
+					stats.Leave(); // Leave the party
+					break;
 			}
 
 		}

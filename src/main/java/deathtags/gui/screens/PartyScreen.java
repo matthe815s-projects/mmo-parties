@@ -79,6 +79,8 @@ public class PartyScreen extends Screen {
             }));
         });
 
+        this.addButton(CreateButton("Leave", this.buttons.size()+1, p_onPress_1_ -> MMOParties.network.sendToServer(new MessageGUIInvitePlayer("", EnumPartyGUIAction.LEAVE))));
+
         if (!MMOParties.localParty.data.get(Minecraft.getInstance().player.getName().getString()).leader) return; // Hide these options if not the leader.
 
         this.addButton(CreateButton("Disband", this.buttons.size()+1, p_onPress_1_ -> MMOParties.network.sendToServer(new MessageGUIInvitePlayer("", EnumPartyGUIAction.DISBAND))));

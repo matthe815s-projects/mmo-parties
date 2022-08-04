@@ -5,5 +5,6 @@ public enum EnumPartyGUIAction {
     INVITE,
     KICK,
     LEADER,
-    DISBAND
+    DISBAND,
+    LEAVE
 }
