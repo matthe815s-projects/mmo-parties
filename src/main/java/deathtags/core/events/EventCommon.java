@@ -31,7 +31,7 @@ public class EventCommon {
             PlayerStats ply = MMOParties.GetStats(serverPlayerEntity);
             if (ply.InParty() && !MMOParties.GetStats(player).InParty()) { // Check if in party
                 if (ply.party.IsMemberOffline(player)) { // Check if new player was last in that party
-                    ply.party.Join(player);
+                    ply.party.Join(player, false);
                     return;
                 }
             }
@@ -40,8 +40,11 @@ public class EventCommon {
         // Handle auto-partying
         if (!ConfigHolder.COMMON.autoAssignParties.get()) return;
 
-        if (globalParty == null) globalParty = new Party(event.getPlayer());
-        else globalParty.Join(event.getPlayer());
+        if (globalParty == null) globalParty = Party.CreateGlobalParty( player );
+        else {
+            // Don't double join.
+            if (!globalParty.IsMember(player)) globalParty.Join(event.getPlayer(), true);
+        }
     }
 
     @SubscribeEvent

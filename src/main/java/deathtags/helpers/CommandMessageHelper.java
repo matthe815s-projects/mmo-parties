@@ -11,17 +11,17 @@ public class CommandMessageHelper {
 	 * @param player A server player.
 	 * @param message The message to send.
 	 */
-	public static void SendInfo ( PlayerEntity player, String message ) 
+	public static void SendInfo ( PlayerEntity player, String message, String... arguments )
 	{
 		player.displayClientMessage( 
-			new StringTextComponent( message )
+			new TranslationTextComponent( message, arguments )
 			, false
 		);
 	}
 
-	public static void SendInfoWithButton ( PlayerEntity player, String message )
+	public static void SendInfoWithButton ( PlayerEntity player, String message, String... arguments )
 	{
-		StringTextComponent component = new StringTextComponent( message );
+		TranslationTextComponent component = new TranslationTextComponent( message, arguments );
 
 		IFormattableTextComponent button = new StringTextComponent(" [ACCEPT]").setStyle(
 				Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept")).withColor(Color.parseColor("#FFAA00"))
@@ -45,10 +45,10 @@ public class CommandMessageHelper {
 	 * @param player A server player.
 	 * @param message The message to send.
 	 */
-	public static void SendError ( PlayerEntity player, String message ) 
+	public static void SendError ( PlayerEntity player, String message, String... arguments )
 	{
 		player.displayClientMessage( 
-			new StringTextComponent( message )
+			new TranslationTextComponent( message, arguments )
 			.setStyle( 
 					Style.EMPTY.withColor(TextFormatting.RED)
 			), false

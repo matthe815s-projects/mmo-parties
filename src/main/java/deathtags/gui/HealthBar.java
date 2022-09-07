@@ -1,6 +1,5 @@
 package deathtags.gui;
 
-import java.awt.*;
 import java.util.Random;
 
 import deathtags.config.ConfigHolder;
@@ -12,7 +11,6 @@ import deathtags.core.MMOParties;
 import deathtags.stats.PartyMemberData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -21,37 +19,39 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class HealthBar {
 
-    public static final ResourceLocation TEXTURE_FRAME = new ResourceLocation(
-        MMOParties.MODID, "textures/frame.png");
     public static final ResourceLocation TEXTURE_ICON = new ResourceLocation(MMOParties.MODID,
         "textures/icons.png");
-    public static final ResourceLocation TEXTURE_BAR = new ResourceLocation(MMOParties.MODID, 
-    	"textures/bar.png");
 
     public static final ResourceLocation HEART_TEXTURE = new ResourceLocation("minecraft", "textures/gui/icons.png");
-	private static final String[] barColors = new String[] {"#bf0000", "#e66000", "#e69900", "#e6d300", "#99e600", "#4ce600", "#00e699", "#00e6e6", "#0099e6", "#0000e6", "#9900e6", "#d580ff", "#8c8c8c", "#e6e6e6"};
-	
-    private Minecraft mc;
-    public static float targetHP;
-    public static float targetMaxHP;
-    private int updateCounter = 0;
-    private Random random;
-    private MatrixStack stack = new MatrixStack();
+
+    private static Minecraft mc;
+    private static int updateCounter = 0;
+    private static Random random;
+    private static MatrixStack stack = new MatrixStack();
+
+    public static NuggetBar[] nuggetBars = new NuggetBar[] {
+        (data, xOffset, yOffset, compact) -> Draw(data.health, data.maxHealth, new UISpec(HEART_TEXTURE, xOffset, yOffset, 52, 0), 16, 9, compact),
+        (data, xOffset, yOffset, compact) -> Draw(data.hunger, 20, new UISpec(HEART_TEXTURE, xOffset, yOffset, 52, 27), 16, 9, compact),
+        (data, xOffset, yOffset, compact) -> Draw(data.armor, data.armor, new UISpec(HEART_TEXTURE, xOffset, yOffset, 34, 9), 16, -9, compact),
+        (data, xOffset, yOffset, compact) -> Draw(data.absorption, data.absorption, new UISpec(HEART_TEXTURE, xOffset, yOffset, 160, 0), 16, 9, compact),
+    };
 
     public HealthBar(Minecraft mc) {
-
         super();
         this.mc = mc;
         random = new Random();
     }
 
+    public static int Draw(float current, float max, UISpec UI, int backgroundOffset, int halfOffset, boolean compact) {
+        if (!compact) return DrawNuggetBar(current, max, UI, backgroundOffset, halfOffset);
+        else return DrawNuggetBarCompact(current, max, UI, backgroundOffset);
+    }
+
     @SubscribeEvent
     public void onRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
-    	
         if (event.getType() != ElementType.TEXT)
             return;
-        
-        int posX = 4;
+
         int lastOffset = 0;
 
         GL11.glScalef(1, 1, 1);
@@ -62,11 +62,13 @@ public class HealthBar {
         if (MMOParties.localParty != null && MMOParties.localParty.local_players.size() >= 1) {
             int pN = 0;
 
-            for (String p_player : MMOParties.localParty.local_players) {
-                if (!p_player.equals(Minecraft.getInstance().player.getName().getContents())) {
-                    PartyMemberData data = MMOParties.localParty.data.get(p_player);                   
-                    lastOffset = RenderOwnPartyMember(data, posX, lastOffset, pN, p_player);
-                    pN++;
+            for (int i=0;i<8;i++) {
+                for (String p_player : MMOParties.localParty.local_players) {
+                    if (p_player.equals(Minecraft.getInstance().player.getName().getContents())) {
+                        PartyMemberData data = MMOParties.localParty.data.get(p_player);
+                        lastOffset += RenderMember(data, lastOffset, pN, MMOParties.localParty.local_players.size() > 4);
+                        pN++;
+                    }
                 }
             }
         }
@@ -74,173 +76,110 @@ public class HealthBar {
         Minecraft.getInstance().getTextureManager().bind(AbstractGui.GUI_ICONS_LOCATION);
     }
 
+    // Draw the player's health bar at a define width and height.
+    public static int DrawNuggetBarCompact(float current, float max, UISpec UI, int backgroundOffset) {
+        int left = UI.x;
+        int top = UI.y;
+        int startX = left;
+        int startY = top;
+
+        Minecraft.getInstance().getTextureManager().bind(UI.texture); // Bind the appropriate texture
+
+        Minecraft.getInstance().gui.blit(stack, startX, startY, backgroundOffset, UI.texture_y, 9, 9);
+        Minecraft.getInstance().gui.blit(stack, startX, startY, UI.texture_x, UI.texture_y, 9, 9);
+
+        mc.font.draw(stack, String.format("%s", Math.floor(current)), startX + 12, startY, 0xFFFFFF);
+
+        return 6;
+    }
+
+    interface NuggetBar {
+        int Render(PartyMemberData data, int xOffset, int yOffset, boolean compact);
+    }
 
     // Render a party member in the party
-    int RenderOwnPartyMember(PartyMemberData data, int posX, int lastOffset, int pN, String p_player) {
-        if (data == null)
-            return 0;
-    	
-        float currentHealth = data.health;
-        float maxHealth = data.maxHealth;
-        float currentArmor = data.armor;
-        float currentAbsorption = data.absorption;
-        int iconRows = 0;
+    int RenderMember(PartyMemberData data, int lastOffset, int pN, boolean compact) {
+        if (data == null) return 0;
 
+        int iconRows = 0;
         int defaultOffset = ConfigHolder.CLIENT.uiYOffset.get();
-        int yOffset = (30 * (pN + 1)) + lastOffset;
-        int healthBarOffset = 0;
+        int yOffset = (15 * (pN + 1)) + lastOffset;
+        int additionalOffset = 0;
+        int posX = 4;
 
         Minecraft.getInstance().getTextureManager().bind(HEART_TEXTURE);
+
+        if (compact) yOffset = (int)(yOffset / 1.7) + 4;
         
         /*
          * HP Bar.
          */
-        healthBarOffset += drawHealth(posX, defaultOffset + yOffset, currentHealth, maxHealth);
-        iconRows++;
-        
-        /*
-         * Hunger Bar.
-         */
-        if (ConfigHolder.CLIENT.showHunger.get()) {
-            drawHunger(posX, (defaultOffset + (10 * iconRows)) + yOffset + healthBarOffset, data.hunger, 20);
-            iconRows++;
+        if (compact) {
+            nuggetBars[0].Render(data, posX + 30, ((defaultOffset - 10) + yOffset), true);
+        } else {
+            for (NuggetBar bar : nuggetBars) {
+                additionalOffset += bar.Render(data, posX, (defaultOffset + (12 * iconRows)) + yOffset,  compact);
+                iconRows++;
+            }
         }
-        
-        /*
-         * Absorption Bar.
-         */
-        if (currentAbsorption > 0 && ConfigHolder.CLIENT.showAbsorption.get()) {
-            drawAbsorption(posX, (defaultOffset + (10 * iconRows)) + yOffset + healthBarOffset, currentAbsorption);
-            iconRows++;	
-        }
-        
-        /*
-         * Armor Bar.
-         */
-        if (currentArmor > 0 && ConfigHolder.CLIENT.showArmor.get()) {
-            drawArmor(posX, (defaultOffset + (10 * iconRows)) + yOffset + healthBarOffset, currentArmor);
-            iconRows++;
-        }
-        
+
         Minecraft.getInstance().getTextureManager().bind(TEXTURE_ICON);
         GL11.glColor4f(255, 255, 255, 1f);
         
         if (data.leader) // If the player is the party leader, draw a crown next to their name
         	Minecraft.getInstance().gui.blit(stack, 10, ((defaultOffset - 20) + yOffset), 0, 18, 9, 9);
         
-        mc.font.draw(stack, String.format("%s", p_player), 10, (defaultOffset - 10) + yOffset, 0xFFFFFF);
+        mc.font.draw(stack, String.format("%s", data.name), 10, (defaultOffset - 10) + yOffset, 0xFFFFFF);
 
-        return healthBarOffset;
+        return additionalOffset;
     }
 
-    // Draw the player's health bar at a define width and height.
-    private int drawHealth(int width, int height, float health, float maxHealth) {
-        int left = width / 2;
-        int top = height;
-        int barLength = 0;
+    /**
+     * Draw a bar of nuggets based on a UI spec.
+     * @param current
+     * @param max
+     * @param UI
+     * @param backgroundOffset
+     * @param halfOffset
+     * @return
+     */
+    public static int DrawNuggetBar(float current, float max, UISpec UI, int backgroundOffset, int halfOffset) {
+        UI.x = UI.x / 2;
+        int length = 0;
         int bars = 0;
-        
-        for (int i = 0; i < maxHealth / 2; i++) {
+
+        Minecraft.getInstance().getTextureManager().bind(UI.texture); // Bind the appropriate texture
+
+        // Loop for each additional max nugget.
+        for (int i = 0; i < max / 2; i++) {
             int dropletHalf = i * 2 + 1;
-            int startX = left + barLength * 8 + 9;
-            int startY = top;
+            int nuggetX = UI.x + length * 8 + 9;
+            int offsetY = UI.y;
 
             // Randomly jiggle the health droplets at low health
-            if (health <= 6.0f && updateCounter % (health * 3 + 1) == 0) startY = top + (random.nextInt(3) - 1);
+            if (max > 6.0f && current <= 6.0f && updateCounter % (current * 3 + 1) == 0)
+                offsetY = UI.y + (random.nextInt(3) - 1);
 
-            Minecraft.getInstance().gui.blit(stack, startX, startY+ (4 * bars), 16, 0, 9, 9);
+            // Draw background
+            Minecraft.getInstance().gui.blit(stack, nuggetX, offsetY+ (4 * bars), backgroundOffset, UI.texture_y, 9, 9);
 
-            if ((int) health > dropletHalf) {
-                Minecraft.getInstance().gui.blit(stack, startX, startY + (4 * bars), 52, 0, 9, 9);
+            // Draw half or full depending on health amount.
+            if ((int) current > dropletHalf) {
+                Minecraft.getInstance().gui.blit(stack, nuggetX, offsetY+ (4 * bars), UI.texture_x, UI.texture_y, 9, 9);
             }
-            else if ((int) health == dropletHalf)
-                Minecraft.getInstance().gui.blit(stack, startX, startY  + (4 * bars), 61, 0, 9, 9);
+            else if ((int) current == dropletHalf)
+                Minecraft.getInstance().gui.blit(stack, nuggetX, offsetY+ (4 * bars), UI.texture_x + halfOffset, UI.texture_y, 9, 9);
 
-            barLength ++;
+            length ++; // increment length tracker.
 
-            if (barLength > 9) {
+            // Create a new bar when length reaches 10.
+            if (length > 9) {
                 bars++;
-                barLength = 0;
+                length = 0;
             }
         }
 
-        return (4 * (bars - 1)) + 2;
-    }
-    
-    private void drawHunger(int width, int height, float health, float maxHealth) {
-        int left = width / 2;
-        int top = height;
-        int barLength = 0;
-        
-        for (int i = 0; i < maxHealth / 2; i++) {
-            int dropletHalf = i * 2 + 1;
-            int startX = left + barLength * 8 + 9;
-            int startY = top;
-
-            if (health <= 6.0f && updateCounter % (health * 3 + 1) == 0) startY = top + (random.nextInt(3) - 1);
-            
-            Minecraft.getInstance().gui.blit(stack, startX, startY, 16, 27, 9, 9);
-            
-            if ((int) health > dropletHalf) 
-                Minecraft.getInstance().gui.blit(stack, startX, startY, 52, 27, 9, 9);
-            else if ((int) health == dropletHalf)
-                Minecraft.getInstance().gui.blit(stack, startX, startY, 61, 27, 9, 9);
-
-            barLength ++;
-        }
-    }
-    
-    private void drawArmor(int width, int height, float armor) {
-        int left = width / 2;
-        int top = height;
-        int barLength = 0;
-        
-        for (int i = 0; i < armor / 2; i++) {
-            int dropletHalf = i * 2 + 1;
-            int startX = left + barLength * 8 + 9;
-            int startY = top;
-            
-           Minecraft.getInstance().gui.blit(stack, startX, startY, 16, 9, 9, 9);
-            
-            if ((int) armor > dropletHalf) 
-                Minecraft.getInstance().gui.blit(stack, startX, startY, 34, 9, 9, 9);
-            else if ((int) armor == dropletHalf)
-                Minecraft.getInstance().gui.blit(stack, startX, startY, 25, 9, 9, 9);
-            
-            barLength++;
-            
-            GL11.glColor4f(255, 255, 255, 1f);
-        }
-    }
-    
-    private void drawAbsorption(int width, int height, float armor) {
-        int left = width / 2;
-        int top = height;
-        int bars = 1;
-        int barLength = 0;
-        
-        for (int i = 0; i < armor / 2; i++) {
-            int dropletHalf = i * 2 + 1;
-            int startX = left + barLength * 8 + 9;
-            int startY = top;
-            
-            if (bars == 1)
-            	Minecraft.getInstance().gui.blit(stack, startX, startY, 16, 0, 9, 9);
-            
-            if ((int) armor > dropletHalf) 
-                Minecraft.getInstance().gui.blit(stack, startX, startY, 160, 0, 9, 9);
-            else if ((int) armor == dropletHalf)
-                Minecraft.getInstance().gui.blit(stack, startX, startY, 169, 0, 9, 9);
-            
-            barLength++;
-            
-            if (barLength >= 10) {
-            	barLength = 0;
-            	bars++;
-            }
-            
-            GL11.glColor4f(255, 255, 255, 1f);
-        }
+        return (6 * (bars + 1));
     }
 
 	public static void init() {

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public abstract class PlayerGroup {
 	/**
@@ -46,7 +47,7 @@ public abstract class PlayerGroup {
 	 * Broadcast a message to the entire group.
 	 * @param message
 	 */
-	public abstract void Broadcast(String message);
+	public abstract void Broadcast(TranslationTextComponent message);
 	
 	/**
 	 * Get all of the players alive in the group.
@@ -67,7 +68,9 @@ public abstract class PlayerGroup {
 	public void MakeLeader(PlayerEntity member)
 	{
 		this.leader = member;
-		this.Broadcast(String.format("%s is now the %s leader.", member.getName().getString(), this.GetGroupAlias()));
+		this.Broadcast(new TranslationTextComponent("rpgparties.message.leader.make", member.getName().getString(), this.GetGroupAlias()));
+
+		for ( PlayerEntity player : this.GetOnlinePlayers() ) SendPartyMemberData ( player, true );
 		SendUpdate();
 	}
 }

@@ -19,7 +19,7 @@ public class ProjectMMOConnector {
 
         for ( ServerPlayerEntity member : party.getOnlineMembers(player.getServer()) ) {
             if (MMOParties.GetStatsByName( member.getName().getContents() ).InParty()) {
-                MMOParties.GetStatsByName( member.getName().getContents() ).party.Join ( player ); // Join a party if it exists.
+                MMOParties.GetStatsByName( member.getName().getContents() ).party.Join ( player, true ); // Join a party if it exists.
                 break;
             }
         }

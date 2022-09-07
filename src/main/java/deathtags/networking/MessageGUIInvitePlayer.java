@@ -40,9 +40,6 @@ public class MessageGUIInvitePlayer {
 	{
 		public static void handle(final MessageGUIInvitePlayer pkt, Supplier<NetworkEvent.Context> ctx)
 		{
-			System.out.println("Party invite GUI interaction received");
-			System.out.println(pkt);
-
 			PlayerStats stats = MMOParties.GetStatsByName(ctx.get().getSender().getName().getString());
 
 			switch (pkt.action) {
@@ -75,7 +72,7 @@ public class MessageGUIInvitePlayer {
 					stats.Leave(); // Leave the party
 					break;
 			}
-
+			ctx.get().setPacketHandled(true);
 		}
 	}
 }

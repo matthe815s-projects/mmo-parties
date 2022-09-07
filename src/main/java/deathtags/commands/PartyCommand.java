@@ -18,6 +18,7 @@ import deathtags.stats.PlayerStats;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.fml.network.NetworkDirection;
 
@@ -36,6 +37,7 @@ public class PartyCommand {
 											.suggest("invite")
 											.suggest("accept")
 											.suggest("deny")
+											.suggest("kick")
 											.suggest("leader")
 											.suggest("disband") // Build suggestions
 											.suggest("gui");
@@ -59,6 +61,7 @@ public class PartyCommand {
 
 		switch (argument) {
 			case "invite":
+			case "kick":
 			case "leader":
 				ctx.getSource().getServer().getPlayerList().getPlayers().forEach(player -> {
 					builder.suggest(player.getName().getString());
@@ -81,11 +84,18 @@ public class PartyCommand {
 		switch (sub) {
 			case "tp":
 				if (!ConfigHolder.COMMON.allowPartyTP.get())
-				{ CommandMessageHelper.SendError(player, "This server disallows party teleportation."); return 0; }
+				{ CommandMessageHelper.SendError(player, "rpgparties.message.error.teleport.server"); return 0; }
 				if (!stats.InParty())
-				{ CommandMessageHelper.SendError( player, "You must be in a party to teleport someone." ); return 0; }
+				{ CommandMessageHelper.SendError( player, "rpgparties.message.error.teleport.party" ); return 0; }
 				
 				stats.party.Teleport ( player, target );
+				break;
+
+			case "kick":
+				if (!stats.InParty())
+				{ CommandMessageHelper.SendError( player, "rpgparties.message.error.party" ); return 0; }
+
+				stats.party.Leave(target);
 				break;
 			
 			case "create":
@@ -93,7 +103,7 @@ public class PartyCommand {
 				break;
 			
 			case "invite":
-				if (targetStr == null) { CommandMessageHelper.SendError(player, "You must specify a player with this command"); return 0; }
+				if (targetStr == null) { CommandMessageHelper.SendError(player, "rpgparties.message.error.argument", player.getName().getContents()); return 0; }
 				if (!stats.InParty()) Party.Create ( player ); // Create a party to invite with if not existent.
 				
 				stats.party.Invite ( player, target ); // Send an invite to the target player.
@@ -101,27 +111,25 @@ public class PartyCommand {
 			
 			case "accept":				
 				if (stats.partyInvite == null)
-				{ CommandMessageHelper.SendError( player , "You do not currently have an invite." ); return 0; }
-				
-				stats.partyInvite.Join(player); // Accept an invite to a player.	
+				{ CommandMessageHelper.SendError( player , "rpgparties.message.error.invite" ); return 0; }
+
+				stats.partyInvite.Join(player, true); // Accept an invite to a player.
 				break;
 				
 			case "deny":
 				if (stats.partyInvite == null)
-				{ CommandMessageHelper.SendError( player , "You do not currently have an invite." ); return 0; }
+				{ CommandMessageHelper.SendError( player , "rpgparties.message.error.invite" ); return 0; }
 
 				stats.partyInvite = null; // Deny the invite.
-				CommandMessageHelper.SendInfo(player, "You have denied the invite");
+				CommandMessageHelper.SendInfo(player, "rpgparties.message.party.deny");
 				break;
 			
 			case "leave":
 				if (!stats.InParty())
-				{ CommandMessageHelper.SendError( player, "You are not currently in a party." ); return 0; }
+				{ CommandMessageHelper.SendError( player, "rpgparties.message.error.party" ); return 0; }
 				
 				stats.party.Leave(player); // Perform the leave actions.
 				stats.party = null;
-				
-				CommandMessageHelper.SendInfo( player, "You have left your party." );
 				break;
 				
 			case "leader":
@@ -131,18 +139,17 @@ public class PartyCommand {
 				if (stats.party.leader != player) // Only the leader can promote
 				{ CommandMessageHelper.SendError( player, "Only the leader may promote members." ); return 0; }
 
-				if (targetStr == null) { CommandMessageHelper.SendError(player, "You must specify a player with this command"); return 0; }
+				if (targetStr == null) { CommandMessageHelper.SendError(player, "rpgparties.message.error.argument", player.getName().getContents()); return 0; }
 				
-				stats.party.leader = target; // Assign leadership.
-				stats.party.Broadcast(String.format( "%s has been given leadership of the party. ", target.getName() ) );
+				stats.party.MakeLeader(player);
 				break;
 				
 			case "disband":
 				if (!stats.InParty())
-				{ CommandMessageHelper.SendError( player, "You are not currently in a party." ); return 0; }
+				{ CommandMessageHelper.SendError( player, "rpgparties.message.error.party" ); return 0; }
 			
 				if (stats.party.leader != player) // Only the leader can promote.
-				{ CommandMessageHelper.SendError( player, "Only the leader may disband." ); return 0; }
+				{ CommandMessageHelper.SendError( player, "rpgparties.message.error.disband" ); return 0; }
 			
 				stats.party.Disband();
 				break;
