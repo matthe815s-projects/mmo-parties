@@ -30,10 +30,10 @@ public class HealthBar {
     private static MatrixStack stack = new MatrixStack();
 
     public static NuggetBar[] nuggetBars = new NuggetBar[] {
-        (data, xOffset, yOffset, compact) -> Draw(data.health, data.maxHealth, new UISpec(HEART_TEXTURE, xOffset, yOffset, 52, 0), 16, 9, compact),
-        (data, xOffset, yOffset, compact) -> Draw(data.hunger, 20, new UISpec(HEART_TEXTURE, xOffset, yOffset, 52, 27), 16, 9, compact),
-        (data, xOffset, yOffset, compact) -> Draw(data.armor, data.armor, new UISpec(HEART_TEXTURE, xOffset, yOffset, 34, 9), 16, -9, compact),
-        (data, xOffset, yOffset, compact) -> Draw(data.absorption, data.absorption, new UISpec(HEART_TEXTURE, xOffset, yOffset, 160, 0), 16, 9, compact),
+        (data, xOffset, yOffset, compact) -> Draw(data.health, data.maxHealth, new UISpec(HEART_TEXTURE, xOffset, yOffset, 52, 0), 16, 9, compact, true),
+        (data, xOffset, yOffset, compact) -> Draw(data.hunger, 20, new UISpec(HEART_TEXTURE, xOffset, yOffset, 52, 27), 16, 9, compact, ConfigHolder.CLIENT.showHunger.get()),
+        (data, xOffset, yOffset, compact) -> Draw(data.armor, data.armor, new UISpec(HEART_TEXTURE, xOffset, yOffset, 34, 9), 16, -9, compact, ConfigHolder.CLIENT.showArmor.get()),
+        (data, xOffset, yOffset, compact) -> Draw(data.absorption, data.absorption, new UISpec(HEART_TEXTURE, xOffset, yOffset, 160, 0), 16, 9, compact, ConfigHolder.CLIENT.showAbsorption.get()),
     };
 
     public HealthBar(Minecraft mc) {
@@ -42,7 +42,9 @@ public class HealthBar {
         random = new Random();
     }
 
-    public static int Draw(float current, float max, UISpec UI, int backgroundOffset, int halfOffset, boolean compact) {
+    public static int Draw(float current, float max, UISpec UI, int backgroundOffset, int halfOffset, boolean compact, boolean render) {
+        if (render == false) return -1; // Don't render. Used for config values and what not.
+
         if (!compact) return DrawNuggetBar(current, max, UI, backgroundOffset, halfOffset);
         else return DrawNuggetBarCompact(current, max, UI, backgroundOffset);
     }
@@ -118,8 +120,9 @@ public class HealthBar {
             nuggetBars[0].Render(data, posX + 30, ((defaultOffset - 10) + yOffset), true);
         } else {
             for (NuggetBar bar : nuggetBars) {
-                additionalOffset += bar.Render(data, posX, (defaultOffset + (12 * iconRows)) + yOffset,  compact);
-                iconRows++;
+                int offset = bar.Render(data, posX, (defaultOffset + (12 * iconRows)) + yOffset,  compact);
+                additionalOffset += offset;
+                if (offset != -1) iconRows++;
             }
         }
 
