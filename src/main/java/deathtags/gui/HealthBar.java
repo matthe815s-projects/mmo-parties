@@ -95,46 +95,43 @@ public class HealthBar {
         return 6;
     }
 
-    interface NuggetBar {
+    /**
+     * An interface for rendering nugget bars.
+     */
+    public interface NuggetBar {
         int Render(PartyMemberData data, int xOffset, int yOffset, boolean compact);
     }
 
     // Render a party member in the party
     int RenderMember(PartyMemberData data, int lastOffset, int pN, boolean compact) {
-        if (data == null) return 0;
+        if (data == null) return 0; // There shouldn't be an instance where this is null, but..
 
-        int iconRows = 0;
+        int iconRows = 0, additionalOffset = 0, posX = 4;
         int defaultOffset = ConfigHolder.CLIENT.uiYOffset.get();
         int yOffset = (15 * (pN + 1)) + lastOffset;
-        int additionalOffset = 0;
-        int posX = 4;
 
-        Minecraft.getInstance().getTextureManager().bind(HEART_TEXTURE);
-
-        if (compact) yOffset = (int)(yOffset / 1.7) + 4;
-        
-        /*
-         * HP Bar.
-         */
+        // Rendering compact or in verbose changes the amount of visible data as well as the yOffset.
+        // The only bar visible within compact mode is hearts, and it's in a number form.
         if (compact) {
+            yOffset = (int)(yOffset / 1.7) + 4;
             nuggetBars[0].Render(data, posX + 30, ((defaultOffset - 10) + yOffset), true);
         } else {
             for (NuggetBar bar : nuggetBars) {
-                int offset = bar.Render(data, posX, (defaultOffset + (12 * iconRows)) + yOffset,  compact);
+                int offset = bar.Render(data, posX, (defaultOffset + (12 * iconRows)) + yOffset, false);
                 additionalOffset += offset;
                 if (offset != -1) iconRows++;
             }
         }
 
         Minecraft.getInstance().getTextureManager().bind(TEXTURE_ICON);
-        GL11.glColor4f(255, 255, 255, 1f);
         
         if (data.leader) // If the player is the party leader, draw a crown next to their name
         	Minecraft.getInstance().gui.blit(stack, 10, ((defaultOffset - 20) + yOffset), 0, 18, 9, 9);
-        
-        mc.font.draw(stack, String.format("%s", data.name), 10, (defaultOffset - 10) + yOffset, 0xFFFFFF);
 
-        return additionalOffset;
+        // Render the name.
+        mc.font.draw(stack, data.name, 10, (defaultOffset - 10) + yOffset, 0xFFFFFF);
+
+        return additionalOffset; // Return an offset calculated from number of wrapped bars to push future bars down.
     }
 
     /**
