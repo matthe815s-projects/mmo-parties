@@ -43,7 +43,7 @@ public class HealthBar {
     }
 
     public static int Draw(float current, float max, UISpec UI, int backgroundOffset, int halfOffset, boolean compact, boolean render) {
-        if (!render) return 0; // Don't render. Used for config values and what not.
+        if (render == false) return -1; // Don't render. Used for config values and what not.
 
         if (!compact) return DrawNuggetBar(current, max, UI, backgroundOffset, halfOffset);
         else return DrawNuggetBarCompact(current, max, UI, backgroundOffset);
@@ -120,8 +120,9 @@ public class HealthBar {
             nuggetBars[0].Render(data, posX + 30, ((defaultOffset - 10) + yOffset), true);
         } else {
             for (NuggetBar bar : nuggetBars) {
-                additionalOffset += bar.Render(data, posX, (defaultOffset + (12 * iconRows)) + yOffset,  compact);
-                iconRows++;
+                int offset = bar.Render(data, posX, (defaultOffset + (12 * iconRows)) + yOffset,  compact);
+                additionalOffset += offset;
+                if (offset != -1) iconRows++;
             }
         }
 
