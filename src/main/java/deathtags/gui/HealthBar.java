@@ -65,13 +65,13 @@ public class HealthBar {
             int pN = 0;
 
             for (int i=0;i<8;i++) {
-                for (String p_player : MMOParties.localParty.local_players) {
-                    if (p_player.equals(Minecraft.getInstance().player.getName().getContents())) {
-                        PartyMemberData data = MMOParties.localParty.data.get(p_player);
-                        lastOffset += RenderMember(data, lastOffset, pN, MMOParties.localParty.local_players.size() > 4
-                                || ConfigHolder.CLIENT.useSimpleUI.get() == true);
-                        pN++;
-                    }
+                for (PartyMemberData data : MMOParties.localParty.data.values()) {
+                    if (!data.name.equals(mc.player.getName().getString())) continue; // Only render other players.
+
+                    // Render a new player and track the additional offset for the next player.
+                    lastOffset += RenderMember(data, lastOffset, pN, MMOParties.localParty.local_players.size() > 4
+                            || ConfigHolder.CLIENT.useSimpleUI.get() == true);
+                    pN++;
                 }
             }
         }
