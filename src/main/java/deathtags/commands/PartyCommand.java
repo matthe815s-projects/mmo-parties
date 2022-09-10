@@ -74,7 +74,9 @@ public class PartyCommand {
 	
 	private static int run(CommandContext<CommandSource> context, String sub, String targetStr) throws CommandSyntaxException {
 		ServerPlayerEntity player = context.getSource().getPlayerOrException();
-		ServerPlayerEntity target = context.getSource().getServer().getPlayerList().getPlayerByName(targetStr);
+		ServerPlayerEntity target = null;
+
+		if (targetStr != null) context.getSource().getServer().getPlayerList().getPlayerByName(targetStr);
 
 		if (targetStr != null && target == null) { CommandMessageHelper.SendError( player, String.format("The player %s is not online.", targetStr) ); return 0; }
 		if (player.getCommandSenderWorld().isClientSide) return 0; // Only perform operations on the server side.

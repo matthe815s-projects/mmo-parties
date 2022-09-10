@@ -64,15 +64,13 @@ public class HealthBar {
         if (MMOParties.localParty != null && MMOParties.localParty.local_players.size() >= 1) {
             int pN = 0;
 
-            for (int i=0;i<8;i++) {
-                for (PartyMemberData data : MMOParties.localParty.data.values()) {
-                    if (!data.name.equals(mc.player.getName().getString())) continue; // Only render other players.
+            for (PartyMemberData data : MMOParties.localParty.data.values()) {
+                if (data.name.equals(mc.player.getName().getString())) continue; // Only render other players.
 
-                    // Render a new player and track the additional offset for the next player.
-                    lastOffset += RenderMember(data, lastOffset, pN, MMOParties.localParty.local_players.size() > 4
-                            || ConfigHolder.CLIENT.useSimpleUI.get() == true);
-                    pN++;
-                }
+                // Render a new player and track the additional offset for the next player.
+                lastOffset += RenderMember(data, lastOffset, pN, MMOParties.localParty.local_players.size() > 4
+                        || ConfigHolder.CLIENT.useSimpleUI.get() == true);
+                pN++;
             }
         }
         
