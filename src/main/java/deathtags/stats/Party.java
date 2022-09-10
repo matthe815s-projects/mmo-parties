@@ -73,8 +73,8 @@ public class Party extends PlayerGroup
 		if ( invokerPlayer.party.leader != invoker ) // Only the leader may invite.
 			{ CommandMessageHelper.SendError( invoker , "rpgparties.message.party.privilege" ); return; }
 		
-		if ( targetPlayer.InParty () || targetPlayer.partyInvite != null ) // Players already in a party may not be invited.
-			{ CommandMessageHelper.SendError( invoker, "rpgparties.message.party.player.exists", player.getName().getContents() ); return; }
+		//if ( targetPlayer.InParty () || targetPlayer.partyInvite != null ) // Players already in a party may not be invited.
+		//	{ CommandMessageHelper.SendError( invoker, "rpgparties.message.party.player.exists", player.getName().getContents() ); return; }
 		
 		targetPlayer.partyInvite = this;
 		
