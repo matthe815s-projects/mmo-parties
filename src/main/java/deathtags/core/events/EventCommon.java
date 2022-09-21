@@ -4,6 +4,7 @@ import deathtags.api.PartyHelper;
 import deathtags.api.relation.EnumRelation;
 import deathtags.config.ConfigHolder;
 import deathtags.core.MMOParties;
+import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -16,11 +17,32 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber
 public class EventCommon {
+    public static Party globalParty = null;
+
     @SubscribeEvent
     public void onPlayerJoined(PlayerEvent.PlayerLoggedInEvent event)
     {
         Player player = event.getPlayer();
         if (!MMOParties.PlayerStats.containsKey(player)) MMOParties.PlayerStats.put(player, new PlayerStats( player ));
+
+        event.getPlayer().getServer().getPlayerList().getPlayers().forEach(serverPlayer -> {
+            PlayerStats ply = MMOParties.GetStats(serverPlayer);
+            if (ply.InParty() && !MMOParties.GetStats(player).InParty()) { // Check if in party
+                if (ply.party.IsMemberOffline(player)) { // Check if new player was last in that party
+                    ply.party.Join(player, false);
+                    return;
+                }
+            }
+        });
+
+        // Handle auto-partying
+        if (!ConfigHolder.COMMON.autoAssignParties.get()) return;
+
+        if (globalParty == null) globalParty = Party.CreateGlobalParty( player );
+        else {
+            // Don't double join.
+            if (!globalParty.IsMember(player)) globalParty.Join(event.getPlayer(), true);
+        }
     }
 
     @SubscribeEvent
@@ -28,7 +50,14 @@ public class EventCommon {
     {
         PlayerStats playerStats = MMOParties.GetStatsByName(event.getPlayer().getName().getString());
 
-        playerStats.Leave(); // Leave if in a party.
+        // Only if in party.
+        if (playerStats.InParty()) {
+            playerStats.party.players.remove(event.getPlayer());
+
+            // Change the leader when you leave.
+            if (playerStats.party.players.size() > 0) playerStats.party.MakeLeader(playerStats.party.players.get(0));
+        }
+
         MMOParties.PlayerStats.remove(event.getPlayer()); // Remove the player's temporary data.
     }
 
@@ -44,6 +73,7 @@ public class EventCommon {
         Player player = (Player) event.getEntityLiving();
         Player source = (Player) event.getSource().getDirectEntity();
 
+        // Handle friendly fire canceling.
         if (PartyHelper.Server.GetRelation((ServerPlayer) player, (ServerPlayer) source) == EnumRelation.PARTY) {
             event.setCanceled(true);
             return;
@@ -58,6 +88,8 @@ public class EventCommon {
 
         Player player = event.player;
         PlayerStats stats = MMOParties.GetStatsByName(player.getName().getContents());
+
+        if (stats == null) return;
 
         stats.TickTeleport();
         if (stats.party != null) MMOParties.PlayerStats.get(player).party.SendPartyMemberData(player, false); // Sync the player.

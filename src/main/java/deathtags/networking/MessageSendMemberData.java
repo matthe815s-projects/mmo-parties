@@ -55,15 +55,13 @@ public class MessageSendMemberData {
   public static class Handler {
 
     public static void handle(MessageSendMemberData message, Supplier<NetworkEvent.Context> ctx) {
-    	System.out.println("Recieved party update message");
-    	
-    		PartyMemberData player = new PartyMemberData(message.builder);
-    		System.out.println(player.name);
-    		
-    		if (MMOParties.localParty == null)
-    			MMOParties.localParty = new Party();
-    		
-    		MMOParties.localParty.data.put(player.name, player);
+		PartyMemberData player = new PartyMemberData(message.builder);
+
+		if (MMOParties.localParty == null)
+			MMOParties.localParty = new Party();
+
+		MMOParties.localParty.data.put(player.name, player);
+		ctx.get().setPacketHandled(true);
     	}
     	
   	}

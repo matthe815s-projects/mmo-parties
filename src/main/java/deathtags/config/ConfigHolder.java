@@ -34,6 +34,7 @@ public class ConfigHolder {
         public final ForgeConfigSpec.ConfigValue<Boolean> showArmor;
         public final ForgeConfigSpec.ConfigValue<Boolean> showHunger;
         public final ForgeConfigSpec.ConfigValue<Integer> uiYOffset;
+        public final ForgeConfigSpec.ConfigValue<Boolean> useSimpleUI;
 
         public Client(ForgeConfigSpec.Builder builder)
         {
@@ -46,6 +47,8 @@ public class ConfigHolder {
                     .define("Show Hunger", true);
             this.uiYOffset = builder.comment("The vertical offset at which to display the party list at.")
                     .define("Y Offset", 2);
+            this.useSimpleUI = builder.comment("Whether or not to use the simple UI")
+                    .define("Use Simple UI", false);
         }
     }
 

@@ -26,4 +26,9 @@ public class EventClient {
             Minecraft.getInstance().setScreen(new PartyScreen());
         }
     }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void openScreen() {
+        Minecraft.getInstance().setScreen(new PartyScreen());
+    }
 }

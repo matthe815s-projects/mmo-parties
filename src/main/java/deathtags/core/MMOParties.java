@@ -12,6 +12,8 @@ import deathtags.core.events.EventClient;
 import deathtags.core.events.EventCommon;
 import deathtags.core.events.EventServer;
 import deathtags.gui.HealthBar;
+import deathtags.networking.MessageGUIInvitePlayer;
+import deathtags.networking.MessageOpenUI;
 import deathtags.networking.MessageSendMemberData;
 import deathtags.networking.MessageUpdateParty;
 import deathtags.stats.Party;
@@ -41,7 +43,7 @@ import org.lwjgl.glfw.GLFW;
 public class MMOParties {
 
 	public static final String MODID = "mmoparties";
-	public static Party localParty;
+	public static Party localParty = null;
 	public static Map<Player, PlayerStats> PlayerStats = new HashMap<>();
 	private static final String PROTOCOL_VERSION = "1";
 	
@@ -75,6 +77,7 @@ public class MMOParties {
 
 		network.registerMessage(1, MessageUpdateParty.class, MessageUpdateParty::encode, MessageUpdateParty::decode, MessageUpdateParty.Handler::handle );
 		network.registerMessage(2, MessageSendMemberData.class, MessageSendMemberData::encode, MessageSendMemberData::decode, MessageSendMemberData.Handler::handle);
+		network.registerMessage(3, MessageGUIInvitePlayer.class, MessageGUIInvitePlayer::encode, MessageGUIInvitePlayer::decode, MessageGUIInvitePlayer.Handler::handle);
 
 		// Register event handlers
 		MinecraftForge.EVENT_BUS.register(new EventCommon());
@@ -89,14 +92,16 @@ public class MMOParties {
 	public void clientInit(FMLClientSetupEvent event)
 	{
 		HealthBar.init();
+		network.registerMessage(4, MessageOpenUI.class, MessageOpenUI::encode, MessageOpenUI::decode, MessageOpenUI.Handler::handle);
 
 		OPEN_GUI_KEY = new KeyMapping("key.opengui.desc", KeyConflictContext.UNIVERSAL, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_P, "key.mmoparties.category"); // Open GUI on G.
 		ClientRegistry.registerKeyBinding(OPEN_GUI_KEY);
 	}
 	
 	public void serverInit(RegisterCommandsEvent event)
-	{	
+	{
 		event.getDispatcher().register(PartyCommand.register());
+		network.registerMessage(4, MessageOpenUI.class, MessageOpenUI::encode, MessageOpenUI::decode, MessageOpenUI.Handler::handleServer);
 	}
 
 	/**

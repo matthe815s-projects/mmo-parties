@@ -27,7 +27,7 @@ public class MessageOpenUI {
 		{
 			if (!ctx.get().getDirection().equals(NetworkDirection.PLAY_TO_CLIENT)) return; // Only allow from server.
 			Minecraft.getInstance().setScreen(new PartyScreen());
-
+			ctx.get().setPacketHandled(true);
 		}
 
 		/**

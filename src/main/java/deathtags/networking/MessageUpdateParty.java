@@ -36,15 +36,15 @@ public class MessageUpdateParty {
 	{
 		public static void handle(final MessageUpdateParty pkt, Supplier<NetworkEvent.Context> ctx)
 		{
-			System.out.println("Party update message");
-			System.out.println(pkt);
-
 			List<String> players = new ArrayList<String>(Arrays.asList(pkt.members.split(",")));
 
 			if (MMOParties.localParty == null)
 				MMOParties.localParty = new Party();
 
-			MMOParties.localParty.local_players = players;		
+			MMOParties.localParty.local_players = players;
+
+			if (pkt.members == "") MMOParties.localParty = null;
+			ctx.get().setPacketHandled(true);
 		}
 	}
 }
