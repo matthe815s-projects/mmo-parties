@@ -36,8 +36,8 @@ configFile.withReader {
 }
 
 version = "${config.version}.${config.build}"
-group = "rpgparties" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "rpgparties"
+group = "mmoparties" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "mmoparties"
 
 sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 compileJava {

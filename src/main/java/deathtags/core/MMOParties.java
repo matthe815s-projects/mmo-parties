@@ -5,16 +5,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import deathtags.commands.*;
-import deathtags.events.EventHandler;
 import deathtags.gui.GUIHandler;
 import deathtags.networking.MessageSendMemberData;
 import deathtags.networking.MessageUpdateParty;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -28,13 +29,14 @@ import net.minecraftforge.fml.relauncher.Side;
 public class MMOParties {
 
 	public static final String MODID = "mmoparties";
-	public static final String VERSION = "2.1.2";
+	public static final String VERSION = "2.3.0";
 	public static final String NAME = "RPG Parties";
 	
 	public static SimpleNetworkWrapper network;
 	
 	public static Party localParty;
-	public static Map<EntityPlayerMP, PlayerStats> PlayerStats = new HashMap<>();
+	public static Map<EntityPlayer, PlayerStats> PlayerStats = new HashMap<>();
+	public static KeyBinding OPEN_GUI_KEY;
 	
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) 
@@ -56,11 +58,15 @@ public class MMOParties {
 	    network.registerMessage(MessageSendMemberData.Handler.class, MessageSendMemberData.class, 1, Side.SERVER);
 	}
 
+	public void clientSetup() {
+		OPEN_GUI_KEY = new KeyBinding("key.opengui.desc", KeyConflictContext.UNIVERSAL, 25, "key.mmoparties.category"); // Open GUI on G.
+		ClientRegistry.registerKeyBinding(OPEN_GUI_KEY);
+	}
+
 	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent event) 
 	{
 		System.out.println(MODID + " is post-loading!");
-		MinecraftForge.EVENT_BUS.register(new EventHandler());
 		
 	    if (event.getSide() == Side.CLIENT)
 	        GUIHandler.init();
@@ -81,7 +87,7 @@ public class MMOParties {
 	 */
 	public static PlayerStats GetStatsByName(String name)
 	{
-		for (Entry<EntityPlayerMP, deathtags.stats.PlayerStats> plr : PlayerStats.entrySet()) {
+		for (Entry<EntityPlayer, deathtags.stats.PlayerStats> plr : PlayerStats.entrySet()) {
 			if (plr.getKey().getName() == name)
 				return plr.getValue();
 		}

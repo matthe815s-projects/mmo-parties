@@ -22,6 +22,9 @@ public class ConfigHandler {
 
 		@Comment("Whether or not players in a party will take friendly fire.")
 		public boolean friendlyFireDisabled = true;
+
+		@Comment("Whether or not to autoassign parties at server join.")
+		public boolean autoAssignParties = false;
 	}
 	
 	public static class DebugOptions {
