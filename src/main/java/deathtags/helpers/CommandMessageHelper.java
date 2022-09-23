@@ -1,67 +1,56 @@
 package deathtags.helpers;
 
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
-
-public class CommandMessageHelper {
-
-package deathtags.helpers;
-
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.*;
 import net.minecraft.util.text.event.ClickEvent;
 
-	public class CommandMessageHelper {
+public class CommandMessageHelper {
 
-		/**
-		 * Send a gray information chat to a player.
-		 * @param player A server player.
-		 * @param message The message to send.
-		 */
-		public static void SendInfo ( PlayerEntity player, String message, String... arguments )
-		{
-			player.displayClientMessage(
-					new TranslationTextComponent( message, arguments )
-					, false
-			);
-		}
+	/**
+	 * Send a gray information chat to a player.
+	 * @param player A server player.
+	 * @param message The message to send.
+	 */
+	public static void SendInfo (EntityPlayer player, String message, String... arguments )
+	{
+		player.sendMessage(
+				new TextComponentTranslation( message, arguments )
+		);
+	}
 
-		public static void SendInfoWithButton ( PlayerEntity player, String message, String... arguments )
-		{
-			TranslationTextComponent component = new TranslationTextComponent( message, arguments );
+	public static void SendInfoWithButton ( EntityPlayer player, String message, String... arguments )
+	{
+		TextComponentTranslation component = new TextComponentTranslation( message, arguments );
 
-			IFormattableTextComponent button = new StringTextComponent(" [ACCEPT]").setStyle(
-					Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept")).withColor(Color.parseColor("#FFAA00"))
-			);
+		ITextComponent button = new TextComponentString(" [ACCEPT]").setStyle(
+				new Style().setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept")).setColor(TextFormatting.GREEN)
+		);
 
-			IFormattableTextComponent button2 = new StringTextComponent(" [DENY]").setStyle(
-					Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party deny")).withColor(Color.parseColor("#FF5555"))
-			);
+		ITextComponent button2 = new TextComponentString(" [DENY]").setStyle(
+				new Style().setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party deny")).setColor(TextFormatting.RED)
+		);
 
-			component.append(button);
-			component.append(button2);
+		component.appendSibling(button);
+		component.appendSibling(button2);
 
-			player.displayClientMessage(
-					component
-					, false
-			);
-		}
+		player.sendMessage(
+				component
+		);
+	}
 
-		/**
-		 * Send a gray error chat to a player.
-		 * @param player A server player.
-		 * @param message The message to send.
-		 */
-		public static void SendError ( PlayerEntity player, String message, String... arguments )
-		{
-			player.displayClientMessage(
-					new TranslationTextComponent( message, arguments )
-							.setStyle(
-									Style.EMPTY.withColor(TextFormatting.RED)
-							), false
-			);
-		}
+	/**
+	 * Send a gray error chat to a player.
+	 * @param player A server player.
+	 * @param message The message to send.
+	 */
+	public static void SendError ( EntityPlayer player, String message, String... arguments )
+	{
+		player.sendMessage(
+				new TextComponentTranslation( message, arguments )
+						.setStyle(
+								new Style().setColor(TextFormatting.RED)
+						), false
+		);
+	}
 	
 }
