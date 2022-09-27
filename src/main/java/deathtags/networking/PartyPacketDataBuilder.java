@@ -5,7 +5,7 @@ public class PartyPacketDataBuilder {
 	public int nameLength;
 	public String playerId;
 	public float health = 0;
-	public float maxHealth = 0;
+	public float maxHealth = 20;
 	public float armor = 0;
 	public boolean leader = false;
 	public float absorption = 0;

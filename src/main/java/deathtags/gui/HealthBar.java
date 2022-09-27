@@ -3,6 +3,7 @@ package deathtags.gui;
 import java.util.Random;
 
 import deathtags.config.ConfigHolder;
+import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.opengl.GL11;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -17,6 +18,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
+@Mod.EventBusSubscriber
 public class HealthBar {
 
     public static final ResourceLocation TEXTURE_ICON = new ResourceLocation(MMOParties.MODID,
@@ -65,7 +67,7 @@ public class HealthBar {
             int pN = 0;
 
             for (PartyMemberData data : MMOParties.localParty.data.values()) {
-                if (data.name.equals(mc.player.getName().getString())) continue; // Only render other players.
+                if (!data.name.equals(mc.player.getName().getString())) continue; // Only render other players.
 
                 // Render a new player and track the additional offset for the next player.
                 lastOffset += RenderMember(data, lastOffset, pN, MMOParties.localParty.local_players.size() > 4

@@ -3,15 +3,15 @@ package deathtags.stats;
 import deathtags.networking.PartyPacketDataBuilder;
 
 public class PartyMemberData {
-	public String name;
-	public float health;
-	public float maxHealth;
-	public float armor;
+	public String name = "";
+	public float health = 0;
+	public float maxHealth = 20;
+	public float armor = 0;
 	public boolean leader = false;
-	public float absorption;
-	public float shields;
-	public float maxShields;
-	public float hunger;
+	public float absorption = 0;
+	public float shields = 0;
+	public float maxShields = 0;
+	public float hunger = 0;
 	
 	public PartyMemberData(String health, String maxHealth, String armor, String leader, String absorption, String shields, String maxShields) {
 		this.health = Float.parseFloat(health);
