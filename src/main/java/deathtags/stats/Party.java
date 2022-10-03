@@ -11,14 +11,9 @@ import deathtags.helpers.CommandMessageHelper;
 import deathtags.networking.MessageSendMemberData;
 import deathtags.networking.MessageUpdateParty;
 import deathtags.networking.PartyPacketDataBuilder;
-import epicsquid.superiorshields.capability.shield.IShieldCapability;
-import epicsquid.superiorshields.capability.shield.SuperiorShieldsCapabilityManager;
-import harmonised.pmmo.config.ConfigHelper;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.fml.common.Loader;
 
 public class Party extends PlayerGroup
 {
@@ -53,7 +48,7 @@ public class Party extends PlayerGroup
 
 	/**
 	 * Create a new party without a leader. Can error and do nothing.
-	 * @param leader The player to attempt to make leader.
+	 * @param player The player to attempt to make leader.
 	 */
 	public static Party CreateGlobalParty ( EntityPlayer player ) {
 		PlayerStats stats = MMOParties.GetStatsByName( player.getName() );
@@ -124,7 +119,7 @@ public class Party extends PlayerGroup
 		SendUpdate();
 
 		MMOParties.GetStats(player).party = null; // No party.
-		MMOParties.network.sendTo(new MessageUpdateParty(""), ((EntityPlayerMP)player)); // Clear the player's party.
+		SendMemberUpdate(player);
 
 		// Disband the party of 1 player. Don't disband if auto-parties is enabled.
 		if (players.size() == 1 && !ConfigHandler.Server_Options.autoAssignParties) Disband();
@@ -144,10 +139,16 @@ public class Party extends PlayerGroup
 		for (EntityPlayer member : players) {
 			PlayerStats stats = MMOParties.GetStatsByName ( member.getName() );
 			stats.party = null;
-			MMOParties.network.sendTo(new MessageUpdateParty(""), ((EntityPlayerMP)member));
+			SendMemberUpdate(member);
 		}
 
 		players.clear();
+	}
+
+	public void SendMemberUpdate(EntityPlayer member)
+	{
+		if (!(member instanceof EntityPlayerMP)) return;
+		MMOParties.network.sendTo(new MessageUpdateParty(""), ((EntityPlayerMP)member));
 	}
 
 	/**
@@ -190,7 +191,7 @@ public class Party extends PlayerGroup
 		if (IsDataDifferent(member) || bypassLimit)
 		{
 			if (!this.pings.containsKey( member.getName() ))
-				this.pings.put(member.getName(), new PlayerPing((EntityPlayerMP) member, 0, 0, 0, bypassLimit, 0, 0, 0, 0));
+				this.pings.put(member.getName(), new PlayerPing(member, 0, 0, 0, bypassLimit, 0, 0, 0, 0));
 
 			this.pings.get( member.getName() ).Update(member.getHealth(), member.getMaxHealth(), member.getTotalArmorValue(),
 					this.leader==member, member.getAbsorptionAmount(), 0, 0);
@@ -204,11 +205,11 @@ public class Party extends PlayerGroup
 										.SetPlayer(member.getName())
 										.SetHealth(member.getHealth())
 										.SetMaxHealth(member.getMaxHealth())
-										.SetArmor(member.getArmorValue())
+										.SetArmor(member.getTotalArmorValue())
 										.SetLeader(this.leader==member)
 										.SetAbsorption(member.getAbsorptionAmount())
-										.SetHunger(member.getFoodData().getFoodLevel())
-						), ((ServerEntityPlayer)party_player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+										.SetHunger(member.getFoodStats().getFoodLevel())
+						), ((EntityPlayerMP)party_player));
 			}
 		}
 	}
@@ -216,7 +217,7 @@ public class Party extends PlayerGroup
 	@Override
 	public boolean IsDataDifferent(EntityPlayer player)
 	{
-		if (!this.pings.containsKey( player.getName().getContents() ) || this.pings.get( player.getName().getContents() ).IsDifferent(player))
+		if (!this.pings.containsKey( player.getName() ) || this.pings.get( player.getName() ).IsDifferent(player))
 			return true;
 
 		return false;
@@ -235,7 +236,7 @@ public class Party extends PlayerGroup
 
 	public boolean IsMemberOffline(EntityPlayer player)
 	{
-		return playersOffline.contains(player.getName().getString());
+		return playersOffline.contains(player.getName());
 	}
 
 	@Override
@@ -252,6 +253,6 @@ public class Party extends PlayerGroup
 		if ( ! IsMember ( target ) )
 		{ CommandMessageHelper.SendError(player, "rpgparties.message.error.party"); return; }
 
-		MMOParties.GetStatsByName( player.getName().getContents() ).StartTeleport (target);
+		MMOParties.GetStatsByName( player.getName() ).StartTeleport (target);
 	}
 }

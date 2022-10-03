@@ -9,6 +9,7 @@ import deathtags.core.MMOParties;
 import deathtags.core.events.EventClient;
 import deathtags.helpers.ArrayHelpers;
 import deathtags.helpers.CommandMessageHelper;
+import deathtags.networking.MessageOpenUI;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
 import net.minecraft.client.Minecraft;
@@ -71,8 +72,14 @@ public class PartyCommand extends CommandBase {
 	}
 	
 	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
 		EntityPlayerMP player = (EntityPlayerMP) sender.getCommandSenderEntity();
+
+		if (Minecraft.getMinecraft().isIntegratedServerRunning() && Minecraft.getMinecraft().getIntegratedServer().getCurrentPlayerCount() != 1) {
+			CommandMessageHelper.SendError( player, String.format("You cannot execute this command in a singleplayer world.") );
+			return;
+		}
+
 		EntityPlayerMP target = null;
 		
 		if (args.length == 0) {
@@ -143,7 +150,7 @@ public class PartyCommand extends CommandBase {
 				if (stats.party.leader != player) // Only the leader can promote
 				{ CommandMessageHelper.SendError( player, "Only the leader may promote members." ); return; }
 
-				if (target == null) { CommandMessageHelper.SendError(player, "rpgparties.message.error.argument", player.getName().getContents()); return; }
+				if (target == null) { CommandMessageHelper.SendError(player, "rpgparties.message.error.argument", player.getName()); return; }
 
 				stats.party.MakeLeader(player);
 				break;
@@ -159,7 +166,7 @@ public class PartyCommand extends CommandBase {
 				break;
 
 			case "gui":
-				if (player.world.isRemote) MMOParties.network.sendTo(new MessageOpenUI(), player.connection); // Send open message
+				if (player.world.isRemote) MMOParties.network.sendTo(new MessageOpenUI(), player); // Send open message
 				else if (Minecraft.getMinecraft().isSingleplayer()) EventClient.openScreen();
 				break;
 

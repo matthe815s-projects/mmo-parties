@@ -2,11 +2,11 @@ package deathtags.stats;
 
 import epicsquid.superiorshields.capability.shield.IShieldCapability;
 import epicsquid.superiorshields.capability.shield.SuperiorShieldsCapabilityManager;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.Loader;
 
 public class PlayerPing {
-	public EntityPlayerMP player;
+	public EntityPlayer player;
 	
 	public float health;
 	public float maxHealth;
@@ -17,7 +17,7 @@ public class PlayerPing {
 	public float maxShields;
 	public float hunger;
 	
-	public PlayerPing(EntityPlayerMP player, float health, float maxHealth, float armor, boolean leader, float absorption, float shields, float maxShields, float hunger) 
+	public PlayerPing(EntityPlayer player, float health, float maxHealth, float armor, boolean leader, float absorption, float shields, float maxShields, float hunger)
 	{
 		this.player = player;
 		
@@ -44,7 +44,7 @@ public class PlayerPing {
 		return this;
 	}
 
-	public boolean IsDifferent(EntityPlayerMP player) {
+	public boolean IsDifferent(EntityPlayer player) {
 		if (Loader.isModLoaded("superiorshields")) {
 			IShieldCapability shields = player.getCapability(SuperiorShieldsCapabilityManager.shieldCapability, null);	
 			

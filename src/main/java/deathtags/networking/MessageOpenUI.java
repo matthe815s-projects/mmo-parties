@@ -1,39 +1,39 @@
 package deathtags.networking;
 
 import deathtags.gui.screens.PartyScreen;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
 
 /**
  * A packet to be sent from the server to a client with a request to open the party UI.
  * Cannot be sent to server from client.
  * @since 2.2.0
  */
-public class MessageOpenUI {
+public class MessageOpenUI implements IMessage {
     public MessageOpenUI() {}
-    public static MessageOpenUI decode(PacketBuffer buf) { return new MessageOpenUI(); }
-    public static void encode(MessageOpenUI msg, PacketBuffer buf) {}
 
-    public static class Handler
+    @Override
+    public void fromBytes(ByteBuf byteBuf) {
+
+    }
+
+    @Override
+    public void toBytes(ByteBuf byteBuf) {
+
+    }
+
+    public static class Handler implements IMessageHandler<MessageOpenUI, IMessage>
     {
-        @OnlyIn(Dist.CLIENT)
-        public static void handle(final MessageOpenUI pkt, Supplier<NetworkEvent.Context> ctx)
-        {
-            if (!ctx.get().getDirection().equals(NetworkDirection.PLAY_TO_CLIENT)) return; // Only allow from server.
-            Minecraft.getInstance().setScreen(new PartyScreen());
-            ctx.get().setPacketHandled(true);
+        @Override
+        public IMessage onMessage(MessageOpenUI messageOpenUI, MessageContext messageContext) {
+            if (messageContext.side != Side.CLIENT) return null; // Only allow from server.
+            Minecraft.getMinecraft().displayGuiScreen(new PartyScreen());
+            return null;
         }
-
-        /**
-         * Required for the packet to function, but performs no operation.
-         */
-        public static void handleServer(final MessageOpenUI pkt, Supplier<NetworkEvent.Context> ctx) {}
     }
 }

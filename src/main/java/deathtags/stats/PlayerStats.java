@@ -1,19 +1,18 @@
 package deathtags.stats;
 
 import deathtags.helpers.CommandMessageHelper;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class PlayerStats 
 {
-	public PlayerEntity player;
+	public EntityPlayer player;
 	public Party party = null;
 	public Party partyInvite = null;
 
-	public PlayerEntity target;
+	public EntityPlayer target;
 	public int teleportTicks = 0;
 
-	public PlayerStats ( PlayerEntity player ) {
+	public PlayerStats (EntityPlayer player ) {
 		this.player = player;
 	}
 
@@ -40,7 +39,7 @@ public class PlayerStats
 		party.Leave(player);
 	}
 
-	public void StartTeleport(PlayerEntity target) {
+	public void StartTeleport(EntityPlayer target) {
 		this.target = target;
 		this.teleportTicks = 100;
 
@@ -48,7 +47,7 @@ public class PlayerStats
 	}
 
 	public void CommenceTeleport() {
-		player.setPosAndOldPos( target.xo, target.yo, target.zo );
+		player.setPositionAndUpdate( target.posX, target.posY, target.posZ );
 		target = null;
 	}
 

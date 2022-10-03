@@ -5,22 +5,17 @@ import java.util.Random;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.opengl.GL11;
 
-import deathtags.config.Color;
-import deathtags.config.Config;
 import deathtags.core.ConfigHandler;
 import deathtags.core.MMOParties;
 import deathtags.stats.PartyMemberData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class GUIHandler extends Gui {
+public class HealthBar extends Gui {
 
     public static final ResourceLocation TEXTURE_ICON = new ResourceLocation(MMOParties.MODID,
             "textures/icons.png");
@@ -30,13 +25,12 @@ public class GUIHandler extends Gui {
     private static Minecraft mc;
     private static int updateCounter = 0;
     private static Random random;
-    private static MatrixStack stack = new MatrixStack();
 
     public static NuggetBar[] nuggetBars = new NuggetBar[] {
             (data, xOffset, yOffset, compact) -> Draw(data.health, data.maxHealth, new UISpec(HEART_TEXTURE, xOffset, yOffset, 52, 0), 16, 9, compact, true),
-            (data, xOffset, yOffset, compact) -> Draw(data.hunger, 20, new UISpec(HEART_TEXTURE, xOffset, yOffset, 52, 27), 16, 9, compact, ConfigHolder.CLIENT.showHunger.get()),
-            (data, xOffset, yOffset, compact) -> Draw(data.armor, data.armor, new UISpec(HEART_TEXTURE, xOffset, yOffset, 34, 9), 16, -9, compact, ConfigHolder.CLIENT.showArmor.get()),
-            (data, xOffset, yOffset, compact) -> Draw(data.absorption, data.absorption, new UISpec(HEART_TEXTURE, xOffset, yOffset, 160, 0), 16, 9, compact, ConfigHolder.CLIENT.showAbsorption.get()),
+            (data, xOffset, yOffset, compact) -> Draw(data.hunger, 20, new UISpec(HEART_TEXTURE, xOffset, yOffset, 52, 27), 16, 9, compact, ConfigHandler.Client_Options.showHunger),
+            (data, xOffset, yOffset, compact) -> Draw(data.armor, data.armor, new UISpec(HEART_TEXTURE, xOffset, yOffset, 34, 9), 16, -9, compact, ConfigHandler.Client_Options.showArmor),
+            (data, xOffset, yOffset, compact) -> Draw(data.absorption, data.absorption, new UISpec(HEART_TEXTURE, xOffset, yOffset, 160, 0), 16, 9, compact, ConfigHandler.Client_Options.showAbsorption),
     };
 
     public HealthBar(Minecraft mc) {
@@ -68,16 +62,16 @@ public class GUIHandler extends Gui {
             int pN = 0;
 
             for (PartyMemberData data : MMOParties.localParty.data.values()) {
-                if (data.name.equals(mc.player.getName().getString())) continue; // Only render other players.
+                if (data.name.equals(mc.player.getName())) continue; // Only render other players.
 
                 // Render a new player and track the additional offset for the next player.
                 lastOffset += RenderMember(data, lastOffset, pN, MMOParties.localParty.local_players.size() > 4
-                        || ConfigHolder.CLIENT.useSimpleUI.get() == true);
+                        || ConfigHandler.Client_Options.useSimpleUI == true);
                 pN++;
             }
         }
 
-        Minecraft.getInstance().getTextureManager().bind(AbstractGui.GUI_ICONS_LOCATION);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(Gui.ICONS);
     }
 
     // Draw the player's health bar at a define width and height.
@@ -87,12 +81,12 @@ public class GUIHandler extends Gui {
         int startX = left;
         int startY = top;
 
-        Minecraft.getInstance().getTextureManager().bind(UI.texture); // Bind the appropriate texture
+        Minecraft.getMinecraft().getTextureManager().bindTexture(UI.texture); // Bind the appropriate texture
 
-        Minecraft.getInstance().gui.blit(stack, startX, startY, backgroundOffset, UI.texture_y, 9, 9);
-        Minecraft.getInstance().gui.blit(stack, startX, startY, UI.texture_x, UI.texture_y, 9, 9);
+        Minecraft.getMinecraft().ingameGUI.drawTexturedModalRect(startX, startY, backgroundOffset, UI.texture_y, 9, 9);
+        Minecraft.getMinecraft().ingameGUI.drawTexturedModalRect(startX, startY, UI.texture_x, UI.texture_y, 9, 9);
 
-        mc.font.draw(stack, String.format("%s", Math.floor(current)), startX + 12, startY, 0xFFFFFF);
+        mc.fontRenderer.drawString(String.format("%s", Math.floor(current)), startX + 12, startY, 0xFFFFFF);
 
         return 6;
     }
@@ -109,7 +103,7 @@ public class GUIHandler extends Gui {
         if (data == null) return 0; // There shouldn't be an instance where this is null, but..
 
         int iconRows = 0, additionalOffset = 0, posX = 4;
-        int defaultOffset = ConfigHolder.CLIENT.uiYOffset.get();
+        int defaultOffset = ConfigHandler.Client_Options.uiYOffset;
         int yOffset = (15 * (pN + 1)) + lastOffset;
 
         // Rendering compact or in verbose changes the amount of visible data as well as the yOffset.
@@ -125,13 +119,13 @@ public class GUIHandler extends Gui {
             }
         }
 
-        Minecraft.getInstance().getTextureManager().bind(TEXTURE_ICON);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE_ICON);
 
         if (data.leader) // If the player is the party leader, draw a crown next to their name
-            Minecraft.getInstance().gui.blit(stack, 10, ((defaultOffset - 20) + yOffset), 0, 18, 9, 9);
+            Minecraft.getMinecraft().ingameGUI.drawTexturedModalRect(10, ((defaultOffset - 20) + yOffset), 0, 18, 9, 9);
 
         // Render the name.
-        mc.font.draw(stack, data.name, 10, (defaultOffset - 10) + yOffset, 0xFFFFFF);
+        mc.fontRenderer.drawString(data.name, 10, (defaultOffset - 10) + yOffset, 0xFFFFFF);
 
         return additionalOffset; // Return an offset calculated from number of wrapped bars to push future bars down.
     }
@@ -150,7 +144,7 @@ public class GUIHandler extends Gui {
         int length = 0;
         int bars = 0;
 
-        Minecraft.getInstance().getTextureManager().bind(UI.texture); // Bind the appropriate texture
+        Minecraft.getMinecraft().getTextureManager().bindTexture(UI.texture); // Bind the appropriate texture
 
         // Loop for each additional max nugget.
         for (int i = 0; i < max / 2; i++) {
@@ -163,14 +157,14 @@ public class GUIHandler extends Gui {
                 offsetY = UI.y + (random.nextInt(3) - 1);
 
             // Draw background
-            Minecraft.getInstance().gui.blit(stack, nuggetX, offsetY+ (4 * bars), backgroundOffset, UI.texture_y, 9, 9);
+            Minecraft.getMinecraft().ingameGUI.drawTexturedModalRect(nuggetX, offsetY+ (4 * bars), backgroundOffset, UI.texture_y, 9, 9);
 
             // Draw half or full depending on health amount.
             if ((int) current > dropletHalf) {
-                Minecraft.getInstance().gui.blit(stack, nuggetX, offsetY+ (4 * bars), UI.texture_x, UI.texture_y, 9, 9);
+                Minecraft.getMinecraft().ingameGUI.drawTexturedModalRect(nuggetX, offsetY+ (4 * bars), UI.texture_x, UI.texture_y, 9, 9);
             }
             else if ((int) current == dropletHalf)
-                Minecraft.getInstance().gui.blit(stack, nuggetX, offsetY+ (4 * bars), UI.texture_x + halfOffset, UI.texture_y, 9, 9);
+                Minecraft.getMinecraft().ingameGUI.drawTexturedModalRect(nuggetX, offsetY+ (4 * bars), UI.texture_x + halfOffset, UI.texture_y, 9, 9);
 
             length ++; // increment length tracker.
 
@@ -186,6 +180,6 @@ public class GUIHandler extends Gui {
 
     public static void init() {
         System.out.println("Load GUI");
-        MinecraftForge.EVENT_BUS.register(new HealthBar(Minecraft.getInstance()));
+        MinecraftForge.EVENT_BUS.register(new HealthBar(Minecraft.getMinecraft()));
     }
 }

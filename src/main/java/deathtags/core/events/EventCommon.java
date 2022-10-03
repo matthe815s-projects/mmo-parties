@@ -6,6 +6,7 @@ import deathtags.core.ConfigHandler;
 import deathtags.core.MMOParties;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
+import jdk.nashorn.internal.runtime.regexp.joni.Config;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -48,7 +49,7 @@ public class EventCommon {
     @SubscribeEvent
     public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event)
     {
-        PlayerStats playerStats = MMOParties.GetStatsByName(event.player.getName().getString());
+        PlayerStats playerStats = MMOParties.GetStatsByName(event.player.getName());
 
         // Only if in party.
         if (playerStats.InParty()) {
@@ -64,17 +65,17 @@ public class EventCommon {
     @SubscribeEvent(priority= EventPriority.HIGHEST)
     public void OnPlayerHurt(LivingHurtEvent event)
     {
-        if (!ConfigHolder.COMMON.friendlyFireDisabled.get()) return; // Friendly fire is allowed so this doesn't matter.
-        if (event.getEntity().getCommandSenderWorld().isClientSide) return; // Perform on the server only.
+        if (!ConfigHandler.Server_Options.friendlyFireDisabled) return; // Friendly fire is allowed so this doesn't matter.
+        if (!event.getEntity().world.isRemote) return; // Perform on the server only.
 
         if (! (event.getEntityLiving() instanceof EntityPlayer)
-                || ! (event.getSource().getDirectEntity() instanceof EntityPlayer) ) return; // Only perform on players.
+                || ! (event.getSource().getTrueSource() instanceof EntityPlayer) ) return; // Only perform on players.
 
         EntityPlayer player = (EntityPlayer) event.getEntityLiving();
-        EntityPlayer source = (EntityPlayer) event.getSource().getDirectEntity();
+        EntityPlayer source = (EntityPlayer) event.getSource().getTrueSource();
 
         // Handle friendly fire canceling.
-        if (PartyHelper.Server.GetRelation((ServerEntityPlayer) player, (ServerEntityPlayer) source) == EnumRelation.PARTY) {
+        if (PartyHelper.Server.GetRelation((EntityPlayerMP) player, (EntityPlayerMP) source) == EnumRelation.PARTY) {
             event.setCanceled(true);
             return;
         }
@@ -83,19 +84,13 @@ public class EventCommon {
     @SubscribeEvent
     public void OnPlayerMove(TickEvent.PlayerTickEvent event)
     {
-        if (event.player.getCommandSenderWorld().isClientSide) // Don't care if it's a client event.
+        if (!event.player.world.isRemote) // Don't care if it's a client event.
             return;
 
         EntityPlayer player = event.player;
-        PlayerStats stats = MMOParties.GetStatsByName(player.getName().getContents());
+        PlayerStats stats = MMOParties.GetStatsByName(player.getName());
 
         if (stats == null) return;
-
-        // Project MMO compatability
-        if (ProjectMMOConnector.IsLoaded() // If the project MMO mod is installed, and you're in a party, automatically party you together.
-                && PmmoSavedData.get().getParty(event.player.getUUID()) != null && ! stats.InParty() ) {
-            ProjectMMOConnector.JoinParty((ServerEntityPlayer) event.player);
-        }
 
         stats.TickTeleport();
         if (stats.party != null) MMOParties.PlayerStats.get(player).party.SendPartyMemberData(player, false); // Sync the player.

@@ -5,14 +5,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import deathtags.commands.*;
-import deathtags.gui.GUIHandler;
+import deathtags.core.events.EventClient;
+import deathtags.core.events.EventCommon;
+import deathtags.gui.HealthBar;
 import deathtags.networking.MessageSendMemberData;
 import deathtags.networking.MessageUpdateParty;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -56,6 +57,14 @@ public class MMOParties {
 	    
 	    network.registerMessage(MessageUpdateParty.Handler.class, MessageUpdateParty.class, 0, Side.SERVER);
 	    network.registerMessage(MessageSendMemberData.Handler.class, MessageSendMemberData.class, 1, Side.SERVER);
+
+		if (event.getSide() == Side.CLIENT) {
+			MinecraftForge.EVENT_BUS.register(new EventClient());
+			clientSetup();
+		}
+
+		MinecraftForge.EVENT_BUS.register(new EventCommon());
+
 	}
 
 	public void clientSetup() {
@@ -69,7 +78,7 @@ public class MMOParties {
 		System.out.println(MODID + " is post-loading!");
 		
 	    if (event.getSide() == Side.CLIENT)
-	        GUIHandler.init();
+	        HealthBar.init();
 	}
 	
 	@Mod.EventHandler

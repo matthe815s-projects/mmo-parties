@@ -49,7 +49,7 @@ public class CommandMessageHelper {
 				new TextComponentTranslation( message, arguments )
 						.setStyle(
 								new Style().setColor(TextFormatting.RED)
-						), false
+						)
 		);
 	}
 	

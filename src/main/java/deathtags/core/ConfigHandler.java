@@ -14,6 +14,8 @@ public class ConfigHandler {
 		public boolean showAbsorption = true;
 		public boolean showArmor = true;
 		public boolean showHunger = false;
+		public boolean useSimpleUI = false;
+		public int uiYOffset = 3;
 	}
 	
 	public static class ServerOptions {
