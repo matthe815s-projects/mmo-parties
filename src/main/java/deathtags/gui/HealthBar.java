@@ -115,7 +115,7 @@ public class HealthBar {
         // The only bar visible within compact mode is hearts, and it's in a number form.
         if (compact) {
             yOffset = (int)(yOffset / 1.7) + 4;
-            nuggetBars[0].Render(data, posX + 30, ((defaultOffset - 10) + yOffset), true);
+            nuggetBars[0].Render(data, posX + 30 + data.name.length(), ((defaultOffset - 10) + yOffset), true);
         } else {
             for (NuggetBar bar : nuggetBars) {
                 int offset = bar.Render(data, posX, (defaultOffset + (12 * iconRows)) + yOffset, false);

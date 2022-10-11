@@ -11,6 +11,8 @@ public class ConfigHolder {
         public final ForgeConfigSpec.ConfigValue<Boolean> allowPartyTP;
         public final ForgeConfigSpec.ConfigValue<Boolean> autoAssignParties;
         public final ForgeConfigSpec.ConfigValue<Boolean> allowInviteAll;
+        public final ForgeConfigSpec.ConfigValue<Boolean> debugMode;
+        public final ForgeConfigSpec.ConfigValue<String>  anchorPoint;
 
         public Common(ForgeConfigSpec.Builder builder)
         {
@@ -24,6 +26,10 @@ public class ConfigHolder {
                             .define("Auto-assign Parties", false);
             this.allowInviteAll = builder.comment("Whether or not to allow invite all")
                             .define("Allow Invite All", true);
+            this.debugMode = builder.comment("Whether or not debug mode is enabled")
+                            .define("Enable Debug Mode", false);
+            this.anchorPoint = builder.comment("The point to anchor the UI to.")
+                            .define("UI Anchor", "top-left");
             builder.pop();
         }
     }

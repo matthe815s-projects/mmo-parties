@@ -4,11 +4,9 @@ import deathtags.api.PartyHelper;
 import deathtags.api.relation.EnumRelation;
 import deathtags.config.ConfigHolder;
 import deathtags.connectors.CraftNetConnector;
-import deathtags.connectors.ProjectMMOConnector;
 import deathtags.core.MMOParties;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
-import harmonised.pmmo.pmmo_saved_data.PmmoSavedData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -103,12 +101,6 @@ public class EventCommon {
         PlayerStats stats = MMOParties.GetStatsByName(player.getName().getContents());
 
         if (stats == null) return;
-
-        // Project MMO compatability
-        if (ProjectMMOConnector.IsLoaded() // If the project MMO mod is installed, and you're in a party, automatically party you together.
-                && PmmoSavedData.get().getParty(event.player.getUUID()) != null && ! stats.InParty() ) {
-            ProjectMMOConnector.JoinParty((ServerPlayerEntity) event.player);
-        }
 
         stats.TickTeleport();
         if (stats.party != null) MMOParties.PlayerStats.get(player).party.SendPartyMemberData(player, false); // Sync the player.
