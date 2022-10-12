@@ -57,6 +57,9 @@ jobs:
     # If this step fails, then you should remove it and run the build manually (see below)
     - name: Autobuild
       uses: gradle/gradle-build-action@v2.3.2
+      with:
+        gradle-version: 3.0
+        cache-disabled: true
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
