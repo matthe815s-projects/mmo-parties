@@ -11,16 +11,16 @@ public class CommandMessageHelper {
 	 * @param player A server player.
 	 * @param message The message to send.
 	 */
-	public static void SendInfo (EntityPlayer player, String message, String... arguments )
+	public static void SendInfo (EntityPlayer player, String message, String... args )
 	{
 		player.sendMessage(
-				new TextComponentTranslation( message, arguments )
+				new TextComponentTranslation( message, args )
 		);
 	}
 
-	public static void SendInfoWithButton ( EntityPlayer player, String message, String... arguments )
+	public static void SendInfoWithButton ( EntityPlayer player, String message, String... args )
 	{
-		TextComponentTranslation component = new TextComponentTranslation( message, arguments );
+		TextComponentTranslation component = new TextComponentTranslation( message, args );
 
 		ITextComponent button = new TextComponentString(" [ACCEPT]").setStyle(
 				new Style().setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept")).setColor(TextFormatting.GREEN)
@@ -43,10 +43,10 @@ public class CommandMessageHelper {
 	 * @param player A server player.
 	 * @param message The message to send.
 	 */
-	public static void SendError ( EntityPlayer player, String message, String... arguments )
+	public static void SendError ( EntityPlayer player, String message, String... args )
 	{
 		player.sendMessage(
-				new TextComponentTranslation( message, arguments )
+				new TextComponentTranslation( message, args )
 						.setStyle(
 								new Style().setColor(TextFormatting.RED)
 						)

@@ -22,10 +22,16 @@ public class PartyScreen extends GuiScreen {
         else menu = EnumPartyGUIAction.KICK;
     }
 
+    public PartyScreen(EnumPartyGUIAction action) {
+        super();
+
+        menu = action;
+    }
+
     @Override
     protected void actionPerformed(GuiButton button) {
-        if (buttons.get(button.id) != null) {
-            buttons.get(button.id).OnPress(); // Press the button
+        if (buttons.get(button.id-1) != null) {
+            buttons.get(button.id-1).OnPress(); // Press the button
         }
     }
 
@@ -37,6 +43,16 @@ public class PartyScreen extends GuiScreen {
         if (menu == EnumPartyGUIAction.INVITE) buttonY = (26 * (this.buttonList.size())) + 20; // Exception for the invite menu.
 
         return new GuiButton(buttonNumber, (this.width - 200) / 2, buttonY, 200, 20, (new TextComponentTranslation(text)).getFormattedText());
+    }
+
+    private GuiButton CreateSubButton(String text, int xOffset, int buttonNumber, IPressable pressable) {
+        int buttonY = (24 * buttonNumber) + 20;
+        Button button = new Button(buttons.size(), ((this.width + 200) / 2) + xOffset, buttonY, 20, 20, (new TextComponentTranslation(text)).getFormattedText(), pressable);
+        buttons.add(button);
+
+        if (menu == EnumPartyGUIAction.INVITE) buttonY = (26 * (this.buttonList.size())) + 20; // Exception for the invite menu.
+
+        return button;
     }
 
     private String[] GetApplicablePlayers()
@@ -64,17 +80,25 @@ public class PartyScreen extends GuiScreen {
 
         // Invite more players
         this.addButton(CreateButton("rpgparties.gui.invite", buttonNumber++, () -> {
-            System.out.println("Invite clicked");
+            Minecraft.getMinecraft().displayGuiScreen(new PartyScreen(EnumPartyGUIAction.INVITE));
         }));
 
         MMOParties.localParty.local_players.forEach(player -> {
             int height = 26 * (2 + MMOParties.localParty.local_players.indexOf(player));
 
-            GuiButton widget = this.addButton(CreateButton(player, 2 + MMOParties.localParty.local_players.indexOf(player), null));
+            GuiButton widget = this.addButton(CreateButton(player, 2 + MMOParties.localParty.local_players.indexOf(player), () -> {}));
+
+            if (MMOParties.localParty.data.get(Minecraft.getMinecraft().player.getName()).leader && MMOParties.localParty.data.get(player).leader) {
+                this.addButton(CreateSubButton("K",20, 2 + MMOParties.localParty.local_players.indexOf(player), () -> {
+                    System.out.println("Test");
+                }));
+
+                this.addButton(CreateSubButton("L",40, 2 + MMOParties.localParty.local_players.indexOf(player), () -> {
+                    System.out.println("Test");
+                }));
+            }
+
             widget.enabled = false; // Make the button look darker
-
-            if (!MMOParties.localParty.data.get(Minecraft.getMinecraft().player.getName()).leader || player == Minecraft.getMinecraft().player.getName()) return; // Hide these options if not the leader or yourself
-
         });
         if (!MMOParties.localParty.data.get(Minecraft.getMinecraft().player.getName()).leader) return; // Hide these options if not the leader.
     }
@@ -89,7 +113,9 @@ public class PartyScreen extends GuiScreen {
             case INVITE: // invite player
                 // Add usable buttons for all players in a server.
                 for (String player : GetApplicablePlayers()) {
-                    this.addButton(CreateButton(player, this.buttons.size(), null)); // Send UI event to the server.
+                    this.addButton(CreateButton(player, 1 + this.buttons.size(), () -> {
+                        MMOParties.network.sendToServer(new MessageGUIInvitePlayer(player, EnumPartyGUIAction.INVITE));
+                    })); // Send UI event to the server.
                 }
 
                 break;
