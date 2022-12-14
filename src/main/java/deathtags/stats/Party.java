@@ -57,7 +57,6 @@ public class Party extends PlayerGroup
 		stats.party = new Party (player); // Set the leaders' party.
 		stats.party.leader = null;
 
-		CommandMessageHelper.SendInfo( player ,  "rpgparties.message.party.create" );
 		return stats.party;
 	}
 
@@ -122,9 +121,10 @@ public class Party extends PlayerGroup
 		SendMemberUpdate(player);
 
 		// Disband the party of 1 player. Don't disband if auto-parties is enabled.
-		if (players.size() == 1 && !ConfigHandler.Server_Options.autoAssignParties) Disband();
+		if (players.size() <= 1 && !ConfigHandler.Server_Options.autoAssignParties) Disband();
 
-		CommandMessageHelper.SendInfo(player, "rpgparties.message.party.leave");
+		if (this.players.size() >= 1) CommandMessageHelper.SendInfo(player, "rpgparties.message.party.leave");
+		else CommandMessageHelper.SendInfo(player, "rpgparties.message.party.disbanded");
 	}
 
 	/**

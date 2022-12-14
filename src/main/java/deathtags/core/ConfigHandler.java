@@ -35,5 +35,8 @@ public class ConfigHandler {
 		public boolean showMiscMessages = false;
 		
 		public boolean showUpdateMessages = false;
+
+		@Comment("Whether or not to use debug mode.")
+		public boolean debuggingEnabled = false;
 	}
 }

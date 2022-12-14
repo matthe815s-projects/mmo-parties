@@ -7,6 +7,7 @@ import java.util.List;
 import deathtags.core.ConfigHandler;
 import deathtags.core.MMOParties;
 import deathtags.core.events.EventClient;
+import deathtags.gui.HealthBar;
 import deathtags.helpers.ArrayHelpers;
 import deathtags.helpers.CommandMessageHelper;
 import deathtags.networking.MessageOpenUI;
@@ -51,7 +52,11 @@ public class PartyCommand extends CommandBase {
 	@Override
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos targetPos) {
 		List<String> completions = new ArrayList<String>();
-		
+
+		// Add the debug mode command.
+		if (ConfigHandler.Debug_Options.debuggingEnabled)
+			completions.add("debug");
+
 		if (args.length < 2) {
 			if (args.length == 0)
 				for (int i=0;i<corrections.length;i++) {
@@ -75,7 +80,8 @@ public class PartyCommand extends CommandBase {
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
 		EntityPlayerMP player = (EntityPlayerMP) sender.getCommandSenderEntity();
 
-		if (Minecraft.getMinecraft().isIntegratedServerRunning() && Minecraft.getMinecraft().getIntegratedServer().getCurrentPlayerCount() != 1) {
+		if (ConfigHandler.Debug_Options.debuggingEnabled != true
+				&& Minecraft.getMinecraft().isIntegratedServerRunning() && Minecraft.getMinecraft().getIntegratedServer().getCurrentPlayerCount() != 1) {
 			CommandMessageHelper.SendError( player, String.format("You cannot execute this command in a singleplayer world.") );
 			return;
 		}
@@ -168,6 +174,12 @@ public class PartyCommand extends CommandBase {
 			case "gui":
 				if (player.world.isRemote) MMOParties.network.sendTo(new MessageOpenUI(), player); // Send open message
 				else if (Minecraft.getMinecraft().isSingleplayer()) EventClient.openScreen();
+				break;
+
+			case "debug":
+				if (!ConfigHandler.Debug_Options.debuggingEnabled) return;
+					HealthBar.DISPLAY_SELF = true;
+					CommandMessageHelper.SendInfo( player, MMOParties.DEBUGGING_ENABLED ? "Debug Mode has been enabled" : "Debug Mode has been disabled." );
 				break;
 
 			default:

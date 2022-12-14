@@ -90,11 +90,11 @@ public class PartyScreen extends GuiScreen {
 
             if (MMOParties.localParty.data.get(Minecraft.getMinecraft().player.getName()).leader && MMOParties.localParty.data.get(player).leader) {
                 this.addButton(CreateSubButton("K",20, 2 + MMOParties.localParty.local_players.indexOf(player), () -> {
-                    System.out.println("Test");
+                    MMOParties.network.sendToServer(new MessageGUIInvitePlayer(player, EnumPartyGUIAction.KICK));
                 }));
 
                 this.addButton(CreateSubButton("L",40, 2 + MMOParties.localParty.local_players.indexOf(player), () -> {
-                    System.out.println("Test");
+                    MMOParties.network.sendToServer(new MessageGUIInvitePlayer(player, EnumPartyGUIAction.LEADER));
                 }));
             }
 

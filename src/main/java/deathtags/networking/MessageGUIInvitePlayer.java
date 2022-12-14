@@ -42,7 +42,7 @@ public class MessageGUIInvitePlayer implements IMessage {
     {
         @Override
         public IMessage onMessage(MessageGUIInvitePlayer pkt, MessageContext messageContext) {
-            PlayerStats stats = MMOParties.GetStatsByName(messageContext.getClientHandler().getGameProfile().getName());
+            PlayerStats stats = MMOParties.GetStatsByName(messageContext.getServerHandler().player.getName());
 
             switch (pkt.action) {
                 case INVITE:

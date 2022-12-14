@@ -39,6 +39,8 @@ public class MMOParties {
 	public static Party localParty;
 	public static Map<EntityPlayer, PlayerStats> PlayerStats = new HashMap<>();
 	public static KeyBinding OPEN_GUI_KEY;
+
+	public static boolean DEBUGGING_ENABLED = false;
 	
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) 
