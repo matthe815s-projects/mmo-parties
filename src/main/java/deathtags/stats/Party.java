@@ -65,14 +65,17 @@ public class Party extends PlayerGroup
 	 * @param player Target player.
 	 */
 	public void Invite ( EntityPlayer invoker, EntityPlayer player ) {
+		if (invoker == player)
+		{ CommandMessageHelper.SendError( invoker, "rpgparties.message.error.invite.self"); return; };
+
 		PlayerStats targetPlayer = MMOParties.GetStats( player );
 		PlayerStats invokerPlayer = MMOParties.GetStats( invoker );
 
 		if ( invokerPlayer.party.leader != invoker ) // Only the leader may invite.
 		{ CommandMessageHelper.SendError( invoker , "rpgparties.message.party.privilege" ); return; }
 
-		//if ( targetPlayer.InParty () || targetPlayer.partyInvite != null ) // Players already in a party may not be invited.
-		//	{ CommandMessageHelper.SendError( invoker, "rpgparties.message.party.player.exists", player.getName().getContents() ); return; }
+		if ( targetPlayer.InParty () || targetPlayer.partyInvite != null ) // Players already in a party may not be invited.
+			{ CommandMessageHelper.SendError( invoker, "rpgparties.message.party.player.exists", player.getName() ); return; }
 
 		targetPlayer.partyInvite = this;
 
@@ -191,10 +194,10 @@ public class Party extends PlayerGroup
 		if (IsDataDifferent(member) || bypassLimit)
 		{
 			if (!this.pings.containsKey( member.getName() ))
-				this.pings.put(member.getName(), new PlayerPing(member, 0, 0, 0, bypassLimit, 0, 0, 0, 0));
+				this.pings.put(member.getName(), new PlayerPing(member, 0, 0, 0, this.leader==member, 0, 0, 0, 0));
 
 			this.pings.get( member.getName() ).Update(member.getHealth(), member.getMaxHealth(), member.getTotalArmorValue(),
-					this.leader==member, member.getAbsorptionAmount(), 0, 0);
+					this.leader.getName()==member.getName(), member.getAbsorptionAmount(), 0, 0);
 
 			for (EntityPlayer party_player : players) {
 				if (!(party_player instanceof EntityPlayerMP)) return;
@@ -206,7 +209,7 @@ public class Party extends PlayerGroup
 										.SetHealth(member.getHealth())
 										.SetMaxHealth(member.getMaxHealth())
 										.SetArmor(member.getTotalArmorValue())
-										.SetLeader(this.leader==member)
+										.SetLeader(this.leader.getName()==member.getName())
 										.SetAbsorption(member.getAbsorptionAmount())
 										.SetHunger(member.getFoodStats().getFoodLevel())
 						), ((EntityPlayerMP)party_player));

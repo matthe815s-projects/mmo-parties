@@ -11,7 +11,7 @@ public class PlayerPing {
 	public float health;
 	public float maxHealth;
 	public float armor;
-	public boolean leader = false;
+	public boolean leader;
 	public float absorption;
 	public float shields;
 	public float maxShields;
