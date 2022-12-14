@@ -53,15 +53,17 @@ public class PartyCommand extends CommandBase {
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos targetPos) {
 		List<String> completions = new ArrayList<String>();
 
-		// Add the debug mode command.
-		if (ConfigHandler.Debug_Options.debuggingEnabled)
-			completions.add("debug");
 
 		if (args.length < 2) {
-			if (args.length == 0)
-				for (int i=0;i<corrections.length;i++) {
+			if (args.length == 0) {
+				// Add the debug mode command.
+				if (ConfigHandler.Debug_Options.debuggingEnabled)
+					completions.add("debug");
+
+				for (int i = 0; i < corrections.length; i++) {
 					completions.add(corrections[i]);
 				}
+			}
 			else
 				completions = ArrayHelpers.FindClosestToValue(args[0], corrections);
 		}
