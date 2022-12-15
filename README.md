@@ -6,20 +6,20 @@
 
 ## Contribution Guide
 Here's a quick start guide on file locations for contributing to the mod!</br>
---- ---
+
 Localization Resources must be named after the lang-code which you can find on the Minecraft wiki.</br>
 
 <b>Localization File Location:</b> `src/main/resources/assets/mmoparties/lang/*.json`</br>
 <b>Pre 1.16:</b> `src/main/resources/assets/mmoparties/lang/*.yml`
 
 To submit localizations, make a pull request with the prefix of `localization:`
---- ---
+
 ## Bug Reports
 In the case that you find a bug or exploit, please submit an issue with the prefix `bug:`</br>
 Include as much information as possible related to the issue including context leading up to the event.
 
 Bugs that cannot be replicated cannot be fixed.
---- ---
+
 ## Links
 - [Curseforge][curseforge]
 - [More Mods][website]
