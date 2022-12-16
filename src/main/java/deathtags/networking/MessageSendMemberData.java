@@ -63,12 +63,9 @@ public class MessageSendMemberData implements IMessage {
 
     @Override
     public IMessage onMessage(MessageSendMemberData message, MessageContext ctx) {
-    	System.out.println("Recieved party update message");
-    	
     	if (ctx.side == Side.CLIENT) {
     		PartyMemberData player = new PartyMemberData(message.builder);
-    		System.out.println(player.name);
-    		
+
     		if (MMOParties.localParty == null)
     			MMOParties.localParty = new Party();
     		

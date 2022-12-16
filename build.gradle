@@ -1,3 +1,4 @@
+
 buildscript {
     repositories {
         jcenter()
@@ -19,19 +20,19 @@ configFile.withReader {
     if (versionPropsFile.canRead()) {
         def Properties versionProps = new Properties()
         versionProps.load(new FileInputStream(versionPropsFile))
-        
+
         def code = versionProps['build'].toInteger() + 1;
-        
+
         versionProps['build']=code.toString();
         versionBuild = code;
         versionProps.store(versionPropsFile.newWriter(), null);
     } else {
         throw new FileNotFoundException("Could not read build.properties!")
     }
-    
+
     def prop = new Properties()
     prop.load(it)
-        
+
     project.ext.config = new ConfigSlurper().parse prop
 }
 
@@ -47,7 +48,7 @@ compileJava {
 minecraft {
     version = "1.12.2-14.23.5.2847"
     runDir = "run"
-    
+
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
     // stable_#            stables are built at the discretion of the MCP team.
@@ -58,7 +59,7 @@ minecraft {
 }
 
 dependencies {
-	provided "superiorshields:superiorshields:1.12.2-1.0.2"
+    provided "superiorshields:superiorshields:1.12.2-1.0.2"
 }
 
 processResources {
@@ -69,11 +70,11 @@ processResources {
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-                
+
         // replace version and mcversion
         expand 'version':project.version, 'mcversion':project.minecraft.version
     }
-        
+
     // copy everything else except the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'

@@ -8,6 +8,7 @@ import deathtags.commands.*;
 import deathtags.core.events.EventClient;
 import deathtags.core.events.EventCommon;
 import deathtags.gui.HealthBar;
+import deathtags.networking.MessageGUIInvitePlayer;
 import deathtags.networking.MessageSendMemberData;
 import deathtags.networking.MessageUpdateParty;
 import deathtags.stats.Party;
@@ -38,6 +39,8 @@ public class MMOParties {
 	public static Party localParty;
 	public static Map<EntityPlayer, PlayerStats> PlayerStats = new HashMap<>();
 	public static KeyBinding OPEN_GUI_KEY;
+
+	public static boolean DEBUGGING_ENABLED = false;
 	
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) 
@@ -54,9 +57,11 @@ public class MMOParties {
 		
 	    network.registerMessage(MessageUpdateParty.Handler.class, MessageUpdateParty.class, 0, Side.CLIENT);
 	    network.registerMessage(MessageSendMemberData.Handler.class, MessageSendMemberData.class, 1, Side.CLIENT);
+		network.registerMessage(MessageGUIInvitePlayer.Handler.class, MessageGUIInvitePlayer.class, 2, Side.CLIENT);
 	    
 	    network.registerMessage(MessageUpdateParty.Handler.class, MessageUpdateParty.class, 0, Side.SERVER);
 	    network.registerMessage(MessageSendMemberData.Handler.class, MessageSendMemberData.class, 1, Side.SERVER);
+		network.registerMessage(MessageGUIInvitePlayer.Handler.class, MessageGUIInvitePlayer.class, 2, Side.SERVER);
 
 		if (event.getSide() == Side.CLIENT) {
 			MinecraftForge.EVENT_BUS.register(new EventClient());

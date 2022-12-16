@@ -11,7 +11,7 @@ public class PlayerPing {
 	public float health;
 	public float maxHealth;
 	public float armor;
-	public boolean leader = false;
+	public boolean leader;
 	public float absorption;
 	public float shields;
 	public float maxShields;
@@ -50,11 +50,11 @@ public class PlayerPing {
 			
 			if (player.getHealth() != this.health || player.getMaxHealth() != this.maxHealth 
 				|| player.getTotalArmorValue() != this.armor || player.getAbsorptionAmount() != this.absorption 
-				|| shields.getCurrentHp() != this.shields || shields.getMaxHp() != this.maxShields)
+				|| shields.getCurrentHp() != this.shields || shields.getMaxHp() != this.maxShields || player.getFoodStats().getFoodLevel() != this.hunger)
 			return true;
 		} else 
 			if (player.getHealth() != this.health || player.getMaxHealth() != this.maxHealth 
-				|| player.getTotalArmorValue() != this.armor || player.getAbsorptionAmount() != this.absorption)
+				|| player.getTotalArmorValue() != this.armor || player.getAbsorptionAmount() != this.absorption || player.getFoodStats().getFoodLevel() != this.hunger)
 			return true;
 		
 		return false;

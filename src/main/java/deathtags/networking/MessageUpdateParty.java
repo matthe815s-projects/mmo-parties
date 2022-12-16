@@ -41,15 +41,14 @@ public class MessageUpdateParty implements IMessage {
 
     @Override
     public IMessage onMessage(MessageUpdateParty message, MessageContext ctx) {
-    	System.out.println("Party update message");
-    	
     	if (ctx.side == Side.CLIENT) {
     		List<String> players = new ArrayList<String>(Arrays.asList(message.members.split(",")));
     		
     		if (MMOParties.localParty == null)
     			MMOParties.localParty = new Party();
-    		
+
     		MMOParties.localParty.local_players = players;
+            if (message.members == "") MMOParties.localParty = null;
     	}
     	
     	return null;

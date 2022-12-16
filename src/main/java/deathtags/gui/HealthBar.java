@@ -26,6 +26,8 @@ public class HealthBar extends Gui {
     private static int updateCounter = 0;
     private static Random random;
 
+    public static boolean DISPLAY_SELF = false;
+
     public static NuggetBar[] nuggetBars = new NuggetBar[] {
             (data, xOffset, yOffset, compact) -> Draw(data.health, data.maxHealth, new UISpec(HEART_TEXTURE, xOffset, yOffset, 52, 0), 16, 9, compact, true),
             (data, xOffset, yOffset, compact) -> Draw(data.hunger, 20, new UISpec(HEART_TEXTURE, xOffset, yOffset, 52, 27), 16, 9, compact, ConfigHandler.Client_Options.showHunger),
@@ -51,7 +53,7 @@ public class HealthBar extends Gui {
         if (event.getType() != ElementType.TEXT)
             return;
 
-        int lastOffset = 0;
+        int lastOffset = 10;
 
         GL11.glScalef(1, 1, 1);
 
@@ -62,7 +64,7 @@ public class HealthBar extends Gui {
             int pN = 0;
 
             for (PartyMemberData data : MMOParties.localParty.data.values()) {
-                if (data.name.equals(mc.player.getName())) continue; // Only render other players.
+                if (data.name.equals(mc.player.getName()) && !DISPLAY_SELF) continue; // Only render other players.
 
                 // Render a new player and track the additional offset for the next player.
                 lastOffset += RenderMember(data, lastOffset, pN, MMOParties.localParty.local_players.size() > 4

@@ -15,8 +15,7 @@ public class EventClient {
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
-    public void disconnectFromServer(FMLNetworkEvent.ClientDisconnectionFromServerEvent event)
-    {
+    public void disconnectFromServer(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
         MMOParties.localParty = null;
     }
 
