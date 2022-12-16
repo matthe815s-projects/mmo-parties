@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,8 +67,10 @@ public class PartyScreen extends GuiScreen {
                 playerList.add(player.getDisplayName().getUnformattedText());
             });
         } else {
+            if (Minecraft.getMinecraft().getConnection() == null) return new String[0];
+
             Minecraft.getMinecraft().getConnection().getPlayerInfoMap().forEach(player -> {
-                playerList.add(player.getDisplayName().getUnformattedText());
+                playerList.add(player.getGameProfile().getName());
             });
         }
 

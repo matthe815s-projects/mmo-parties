@@ -81,13 +81,6 @@ public class PartyCommand extends CommandBase {
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
 		EntityPlayerMP player = (EntityPlayerMP) sender.getCommandSenderEntity();
-
-		if (ConfigHandler.Debug_Options.debuggingEnabled != true
-				&& Minecraft.getMinecraft().isIntegratedServerRunning() && Minecraft.getMinecraft().getIntegratedServer().getCurrentPlayerCount() != 1) {
-			CommandMessageHelper.SendError( player, String.format("You cannot execute this command in a singleplayer world.") );
-			return;
-		}
-
 		EntityPlayerMP target = null;
 		
 		if (args.length == 0) {
