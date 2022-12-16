@@ -41,8 +41,6 @@ public class MessageUpdateParty implements IMessage {
 
     @Override
     public IMessage onMessage(MessageUpdateParty message, MessageContext ctx) {
-    	System.out.println(message.members);
-    	
     	if (ctx.side == Side.CLIENT) {
     		List<String> players = new ArrayList<String>(Arrays.asList(message.members.split(",")));
     		

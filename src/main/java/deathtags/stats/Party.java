@@ -65,7 +65,7 @@ public class Party extends PlayerGroup
 	 * @param player Target player.
 	 */
 	public void Invite ( EntityPlayer invoker, EntityPlayer player ) {
-		if (invoker == player)
+		if (invoker == player && !ConfigHandler.Debug_Options.debuggingEnabled)
 		{ CommandMessageHelper.SendError( invoker, "rpgparties.message.error.invite.self"); return; };
 
 		PlayerStats targetPlayer = MMOParties.GetStats( player );
@@ -74,7 +74,7 @@ public class Party extends PlayerGroup
 		if ( invokerPlayer.party.leader != invoker ) // Only the leader may invite.
 		{ CommandMessageHelper.SendError( invoker , "rpgparties.message.party.privilege" ); return; }
 
-		if ( targetPlayer.InParty () || targetPlayer.partyInvite != null ) // Players already in a party may not be invited.
+		if ( (targetPlayer.InParty () || targetPlayer.partyInvite != null) && !ConfigHandler.Debug_Options.debuggingEnabled ) // Players already in a party may not be invited.
 			{ CommandMessageHelper.SendError( invoker, "rpgparties.message.party.player.exists", player.getName() ); return; }
 
 		targetPlayer.partyInvite = this;
