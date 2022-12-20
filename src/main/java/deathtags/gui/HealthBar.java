@@ -51,7 +51,7 @@ public class HealthBar {
 
     public static UISpec GetAnchorOffset()
     {
-        switch (ConfigHolder.COMMON.anchorPoint.get()) {
+        switch (ConfigHolder.CLIENT.anchorPoint.get()) {
             case "top-left":
                 return new UISpec(8, 0);
 
@@ -99,7 +99,8 @@ public class HealthBar {
             int pN = 0;
 
             for (PartyMemberData data : MMOParties.localParty.data.values()) {
-                //if (data.name.equals(mc.player.getName().getString()) == !ConfigHolder.COMMON.debugMode.get()) continue; // Only render other players.
+                // Hide yourself if the option is enabled.
+                if (ConfigHolder.CLIENT.hideSelf.get() && data.name.equals(mc.player.getName().getString())) continue;
 
                 // Render a new player and track the additional offset for the next player.
                 lastOffset += RenderMember(data, lastOffset, pN, MMOParties.localParty.local_players.size() > 4
@@ -183,16 +184,14 @@ public class HealthBar {
      */
     public static int DrawNuggetBar(float current, float max, UISpec UI, int backgroundOffset, int halfOffset) {
         UI.x = UI.x / 2;
-        int length = 0;
-        int bars = 0;
+        int length = 0, bars = 0;
 
         Minecraft.getInstance().getTextureManager().bind(UI.texture); // Bind the appropriate texture
 
         // Loop for each additional max nugget.
         for (int i = 0; i < max / 2; i++) {
             int dropletHalf = i * 2 + 1;
-            int nuggetX = UI.x + (length * 8);
-            int offsetY = UI.y;
+            int nuggetX = UI.x + (length * 8), offsetY = UI.y;
 
             int xOffset = 4 * bars;
             if (renderOpposite) xOffset = -xOffset;
