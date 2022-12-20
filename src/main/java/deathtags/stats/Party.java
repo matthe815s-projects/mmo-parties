@@ -178,13 +178,7 @@ public class Party extends PlayerGroup
 	public void SendPartyMemberData(PlayerEntity member, boolean bypassLimit)
 	{
 		if (IsDataDifferent(member) || bypassLimit)
-		{	
-			if (!this.pings.containsKey( member.getName().getContents() ))
-				this.pings.put(member.getName().getContents(), new PlayerPing(member, 0, 0, 0, bypassLimit, 0, 0, 0, 0));
-			
-			this.pings.get( member.getName().getContents() ).Update(member.getHealth(), member.getMaxHealth(), member.getArmorValue(), 
-					this.leader==member, member.getAbsorptionAmount(), 0, 0);	
-			
+		{
 			for (PlayerEntity party_player : players) {
 				if (!(party_player instanceof ServerPlayerEntity)) return;
 
@@ -207,7 +201,7 @@ public class Party extends PlayerGroup
 	@Override
 	public boolean IsDataDifferent(PlayerEntity player)
 	{
-		if (!this.pings.containsKey( player.getName().getContents() ) || this.pings.get( player.getName().getContents() ).IsDifferent(player))
+		if (!this.data.containsKey(player) || this.data.get(player).IsDifferent(player))
 			return true;
 		
 		return false;
