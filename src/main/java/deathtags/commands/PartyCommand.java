@@ -13,6 +13,9 @@ import deathtags.core.MMOParties;
 import deathtags.core.events.EventClient;
 import deathtags.helpers.CommandMessageHelper;
 import deathtags.networking.MessageOpenUI;
+import deathtags.networking.MessageSendMemberData;
+import deathtags.networking.MessageUpdateParty;
+import deathtags.networking.PartyPacketDataBuilder;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
 import net.minecraft.client.Minecraft;
@@ -145,7 +148,7 @@ public class PartyCommand {
 				
 				stats.party.MakeLeader(player);
 				break;
-				
+
 			case "disband":
 				if (!stats.InParty())
 				{ CommandMessageHelper.SendError( player, "rpgparties.message.error.party" ); return 0; }
@@ -161,6 +164,9 @@ public class PartyCommand {
 				else if (Minecraft.getInstance().hasSingleplayerServer()) EventClient.openScreen();
  				break;
 
+			case "add":
+				MMOParties.network.sendTo(new MessageUpdateParty("dev,devtestman2,dev3"), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+				break;
 			default:
 				break;
 		}

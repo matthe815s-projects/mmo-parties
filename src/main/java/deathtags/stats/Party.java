@@ -49,16 +49,11 @@ public class Party extends PlayerGroup
 
 	/**
 	 * Create a new party without a leader. Can error and do nothing.
-	 * @param leader The player to attempt to make leader.
 	 */
 	public static Party CreateGlobalParty ( PlayerEntity player ) {
 		PlayerStats stats = MMOParties.GetStatsByName( player.getName().getContents() );
-
-		if (stats.InParty()) { CommandMessageHelper.SendError( player, "rpgparties.message.party.exists" ); return stats.party; }
 		stats.party = new Party (player); // Set the leaders' party.
 		stats.party.leader = null;
-
-		CommandMessageHelper.SendInfo( player ,  "rpgparties.message.party.create" );
 		return stats.party;
 	}
 	
@@ -73,8 +68,8 @@ public class Party extends PlayerGroup
 		if ( invokerPlayer.party.leader != invoker ) // Only the leader may invite.
 			{ CommandMessageHelper.SendError( invoker , "rpgparties.message.party.privilege" ); return; }
 		
-		//if ( targetPlayer.InParty () || targetPlayer.partyInvite != null ) // Players already in a party may not be invited.
-		//	{ CommandMessageHelper.SendError( invoker, "rpgparties.message.party.player.exists", player.getName().getContents() ); return; }
+		if ( targetPlayer.InParty () || targetPlayer.partyInvite != null ) // Players already in a party may not be invited.
+			{ CommandMessageHelper.SendError( invoker, "rpgparties.message.party.player.exists", player.getName().getContents() ); return; }
 		
 		targetPlayer.partyInvite = this;
 		
@@ -172,10 +167,9 @@ public class Party extends PlayerGroup
 			playerNames[i] = party_player.getName().getContents();
 			i++;
 		}
-		
+
 		for (PlayerEntity party_player : players) {
 			if (!(party_player instanceof ServerPlayerEntity)) return;
-
 			MMOParties.network.sendTo(new MessageUpdateParty(String.join(",", playerNames)), ((ServerPlayerEntity)party_player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
 		}
 	}
@@ -193,17 +187,18 @@ public class Party extends PlayerGroup
 			
 			for (PlayerEntity party_player : players) {
 				if (!(party_player instanceof ServerPlayerEntity)) return;
-						
-				MMOParties.network.sendTo(						
-					new MessageSendMemberData(
-						new PartyPacketDataBuilder ()
-						.SetPlayer(member.getName().getContents())
+
+				PartyPacketDataBuilder builder = new PartyPacketDataBuilder ()
+						.SetPlayer(member)
 						.SetHealth(member.getHealth())
 						.SetMaxHealth(member.getMaxHealth())
 						.SetArmor(member.getArmorValue())
 						.SetLeader(this.leader==member)
 						.SetAbsorption(member.getAbsorptionAmount())
-						.SetHunger(member.getFoodData().getFoodLevel())
+						.SetHunger(member.getFoodData().getFoodLevel());
+
+				MMOParties.network.sendTo(
+					new MessageSendMemberData(builder
 				), ((ServerPlayerEntity)party_player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
 			}
 		}

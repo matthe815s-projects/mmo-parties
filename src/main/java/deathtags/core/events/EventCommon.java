@@ -3,7 +3,6 @@ package deathtags.core.events;
 import deathtags.api.PartyHelper;
 import deathtags.api.relation.EnumRelation;
 import deathtags.config.ConfigHolder;
-import deathtags.connectors.CraftNetConnector;
 import deathtags.core.MMOParties;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
@@ -85,17 +84,17 @@ public class EventCommon {
     @SubscribeEvent
     public void OnPlayerMove(TickEvent.PlayerTickEvent event)
     {
-        if (event.player.getCommandSenderWorld().isClientSide) { // Don't care if it's a client event.
-            if (!CraftNetConnector.IsLoaded()) return;
-
-            //Process client tick for server-side update
-            if (MMOParties.localParty != null) {
-                if (MMOParties.localParty.IsDataDifferent(Minecraft.getInstance().player)) {
-                    CraftNetConnector.SendUpdate();
-                }
-            }
-            return;
-        }
+//        if (event.player.getCommandSenderWorld().isClientSide) { // Don't care if it's a client event.
+//            if (!CraftNetConnector.IsLoaded()) return;
+//
+//            //Process client tick for server-side update
+//            if (MMOParties.localParty != null) {
+//                if (MMOParties.localParty.IsDataDifferent(Minecraft.getInstance().player)) {
+//                    CraftNetConnector.SendUpdate();
+//                }
+//            }
+//            return;
+//        }
 
         PlayerEntity player = event.player;
         PlayerStats stats = MMOParties.GetStatsByName(player.getName().getContents());

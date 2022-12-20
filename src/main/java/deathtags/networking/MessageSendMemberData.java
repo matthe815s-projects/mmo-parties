@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import com.google.common.base.Charsets;
 
+import com.mojang.brigadier.Message;
 import deathtags.core.MMOParties;
 import deathtags.stats.Party;
 import deathtags.stats.PartyMemberData;
@@ -25,8 +26,8 @@ public class MessageSendMemberData {
 
   public static MessageSendMemberData decode(PacketBuffer buf) 
   {
-	  return new MessageSendMemberData( new PartyPacketDataBuilder()
-			  .SetPlayer(buf.readCharSequence(buf.readInt(), Charsets.UTF_8).toString())
+	  MessageSendMemberData data = new MessageSendMemberData( new PartyPacketDataBuilder()
+			  .SetName(buf.readCharSequence(buf.readInt(), Charsets.UTF_8).toString())
 			  .SetHealth(buf.readFloat())
 			  .SetMaxHealth(buf.readFloat())
 			  .SetArmor(buf.readFloat())
@@ -35,7 +36,12 @@ public class MessageSendMemberData {
 			  .SetShields(buf.readFloat())
 			  .SetMaxShields(buf.readFloat())
 			  .SetHunger(buf.readFloat()));
-			 
+
+	  PartyPacketDataBuilder.builderData.forEach(builderData -> {
+		  builderData.OnRead(buf);
+	  });
+
+	  return data;
   }
 
   public static void encode(MessageSendMemberData msg, PacketBuffer buf) 
@@ -50,6 +56,10 @@ public class MessageSendMemberData {
 	  buf.writeFloat(msg.builder.shields);
 	  buf.writeFloat(msg.builder.maxShields);
 	  buf.writeFloat(msg.builder.hunger);
+
+	  PartyPacketDataBuilder.builderData.forEach(builderData -> {
+		builderData.OnWrite(buf, msg.builder.player);
+	  });
   }
 
   public static class Handler {

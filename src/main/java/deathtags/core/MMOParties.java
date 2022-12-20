@@ -1,7 +1,6 @@
 package deathtags.core;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import deathtags.api.PartyHelper;
@@ -11,10 +10,8 @@ import deathtags.core.events.EventClient;
 import deathtags.core.events.EventCommon;
 import deathtags.core.events.EventServer;
 import deathtags.gui.HealthBar;
-import deathtags.networking.MessageGUIInvitePlayer;
-import deathtags.networking.MessageOpenUI;
-import deathtags.networking.MessageSendMemberData;
-import deathtags.networking.MessageUpdateParty;
+import deathtags.gui.builders.*;
+import deathtags.networking.*;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
 import net.minecraft.client.settings.KeyBinding;
@@ -59,6 +56,13 @@ public class MMOParties {
 		// Construct configuration
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigHolder.COMMON_SPEC);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigHolder.CLIENT_SPEC);
+
+		// Register the nugget bars and packet data
+		RegisterCompatibility(new BuilderLeader(), new BuilderLeader.Renderer());
+		RegisterCompatibility(new BuilderName(), new BuilderName.Renderer());
+		RegisterCompatibility(new BuilderHealth(), new BuilderHealth.NuggetBar());
+		RegisterCompatibility(new BuilderHunger(), new BuilderHunger.NuggetBar());
+		RegisterCompatibility(new BuilderArmor(), new BuilderArmor.NuggetBar());
 
 		// Construct game events.
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::preInit);
@@ -129,4 +133,21 @@ public class MMOParties {
 		return GetStatsByName(player.getName().getString());
 	}
 
+	/**
+	 * Register a new mod compatibility and nugget bar.
+	 * @param bar
+	 */
+	public static void RegisterCompatibility(BuilderData builder, HealthBar.NuggetBar bar)
+	{
+		// Make a bigger array and clone it.
+		List<HealthBar.NuggetBar> bars = new ArrayList<>();
+
+		for (int i=0; i<HealthBar.nuggetBars.length; i++) {
+			bars.add(HealthBar.nuggetBars[i]);
+		}
+
+		bars.add(bar);
+		HealthBar.nuggetBars = bars.toArray(new HealthBar.NuggetBar[0]); // Convert the list to an array.
+ 		PartyPacketDataBuilder.builderData.add(builder);
+	}
 }
