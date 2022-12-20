@@ -61,6 +61,7 @@ public class MMOParties {
 		RegisterCompatibility(new BuilderLeader(), new BuilderLeader.Renderer());
 		RegisterCompatibility(new BuilderName(), new BuilderName.Renderer());
 		RegisterCompatibility(new BuilderHealth(), new BuilderHealth.NuggetBar());
+		RegisterCompatibility(new BuilderAbsorption(), new BuilderAbsorption.NuggetBar());
 		RegisterCompatibility(new BuilderHunger(), new BuilderHunger.NuggetBar());
 		RegisterCompatibility(new BuilderArmor(), new BuilderArmor.NuggetBar());
 
