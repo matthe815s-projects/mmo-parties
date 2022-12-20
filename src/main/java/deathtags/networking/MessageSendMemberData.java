@@ -27,15 +27,7 @@ public class MessageSendMemberData {
   public static MessageSendMemberData decode(PacketBuffer buf)
   {
 	  MessageSendMemberData data = new MessageSendMemberData( new PartyPacketDataBuilder()
-			  .SetName(buf.readCharSequence(buf.readInt(), Charsets.UTF_8).toString())
-			  .SetHealth(buf.readFloat())
-			  .SetMaxHealth(buf.readFloat())
-			  .SetArmor(buf.readFloat())
-			  .SetLeader(buf.readBoolean())
-			  .SetAbsorption(buf.readFloat())
-			  .SetShields(buf.readFloat())
-			  .SetMaxShields(buf.readFloat())
-			  .SetHunger(buf.readFloat()));
+			  .SetName(buf.readCharSequence(buf.readInt(), Charsets.UTF_8).toString()));
 
 	  // Instantiate builders
 	  for (int i = 0; i < PartyPacketDataBuilder.builderData.size(); i++) {
@@ -58,14 +50,7 @@ public class MessageSendMemberData {
   {
 	  buf.writeInt(msg.builder.nameLength);
 	  buf.writeCharSequence(msg.builder.playerId, Charsets.UTF_8);
-	  buf.writeFloat(msg.builder.health);
-	  buf.writeFloat(msg.builder.maxHealth);
-	  buf.writeFloat(msg.builder.armor);
-	  buf.writeBoolean(msg.builder.leader);
-	  buf.writeFloat(msg.builder.absorption);
-	  buf.writeFloat(msg.builder.shields);
-	  buf.writeFloat(msg.builder.maxShields);
-	  buf.writeFloat(msg.builder.hunger);
+
 
 	  PartyPacketDataBuilder.builderData.forEach(builderData -> {
 		builderData.OnWrite(buf, msg.builder.player);
@@ -73,16 +58,14 @@ public class MessageSendMemberData {
   }
 
   public static class Handler {
-
     public static void handle(MessageSendMemberData message, Supplier<NetworkEvent.Context> ctx) {
-    		PartyMemberData player = new PartyMemberData(message.builder);
+		PartyMemberData player = new PartyMemberData(message.builder);
     		
-    		if (MMOParties.localParty == null)
-    			MMOParties.localParty = new Party();
+		if (MMOParties.localParty == null) // Create a new party if one doesn't exist already.
+			MMOParties.localParty = new Party();
     		
-    		MMOParties.localParty.data.put(player.name, player);
-			ctx.get().setPacketHandled(true);
+		MMOParties.localParty.data.put(player.name, player);
+		ctx.get().setPacketHandled(true);
 	}
-
-  	}
+  }
 }
