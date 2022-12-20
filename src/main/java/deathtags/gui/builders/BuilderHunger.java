@@ -21,8 +21,8 @@ public class BuilderHunger implements BuilderData {
     }
 
     @Override
-    public void IsDifferent() {
-
+    public boolean IsDifferent(PlayerEntity player) {
+        return hunger != player.getFoodData().getFoodLevel();
     }
 
     public static class NuggetBar implements HealthBar.NuggetBar {

@@ -21,8 +21,8 @@ public class BuilderArmor implements BuilderData {
     }
 
     @Override
-    public void IsDifferent() {
-
+    public boolean IsDifferent(PlayerEntity player) {
+        return armor != player.getArmorValue();
     }
 
     public static class NuggetBar implements HealthBar.NuggetBar {

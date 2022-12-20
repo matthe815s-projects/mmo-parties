@@ -21,8 +21,8 @@ public class BuilderLeader implements BuilderData {
     }
 
     @Override
-    public void IsDifferent() {
-
+    public boolean IsDifferent(PlayerEntity player) {
+        return isLeader != (MMOParties.GetStats(player).party.leader == player);
     }
 
     public static class Renderer implements HealthBar.NuggetBar {

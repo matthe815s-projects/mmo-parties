@@ -21,8 +21,8 @@ public class BuilderName implements BuilderData {
     }
 
     @Override
-    public void IsDifferent() {
-
+    public boolean IsDifferent(PlayerEntity player) {
+        return false;
     }
 
     public static class Renderer implements HealthBar.NuggetBar {

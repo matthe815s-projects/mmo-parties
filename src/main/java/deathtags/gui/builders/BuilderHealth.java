@@ -23,8 +23,8 @@ public class BuilderHealth implements BuilderData {
     }
 
     @Override
-    public void IsDifferent() {
-
+    public boolean IsDifferent(PlayerEntity player) {
+        return health != player.getHealth() || maxHealth != player.getMaxHealth();
     }
 
     public static class NuggetBar implements HealthBar.NuggetBar {

@@ -15,9 +15,7 @@ public class MessageSendMemberData {
 
   private PartyPacketDataBuilder builder;
   
-  public MessageSendMemberData() {
-
-  }
+  public MessageSendMemberData() {}
 
   public MessageSendMemberData(PartyPacketDataBuilder data) 
   {
