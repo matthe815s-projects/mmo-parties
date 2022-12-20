@@ -83,6 +83,11 @@ public class HealthBar {
 
     @SubscribeEvent
     public void onRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
+        if ((event.getType() == ElementType.HEALTH || event.getType() == ElementType.ARMOR) && ConfigHolder.CLIENT.hideGUI.get()) {
+            event.setCanceled(true);
+            return;
+        }
+
         if (event.getType() != ElementType.TEXT)
             return;
 

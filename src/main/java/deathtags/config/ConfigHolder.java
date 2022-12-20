@@ -41,6 +41,7 @@ public class ConfigHolder {
         public final ForgeConfigSpec.ConfigValue<String>  anchorPoint;
         public final ForgeConfigSpec.ConfigValue<Boolean> hideSelf;
         public final ForgeConfigSpec.ConfigValue<Boolean> numbersAsPercentage;
+        public final ForgeConfigSpec.ConfigValue<Boolean> hideGUI;
 
         public Client(ForgeConfigSpec.Builder builder)
         {
@@ -59,6 +60,8 @@ public class ConfigHolder {
                     .define("UI Anchor", "top-left");
             this.hideSelf = builder.comment("Whether or not to hide yourself in the party list")
                     .define("Hide Self", true);
+            this.hideGUI = builder.comment("Whether or not to hide your own GUI.")
+                    .define("Hide GUI", false);
             this.numbersAsPercentage = builder.comment("Whether or not to render all HUD numbers as percentages instead.")
                     .define("Numbers As Percentages", false);
         }
