@@ -20,6 +20,11 @@ public class BuilderArmor implements BuilderData {
         armor = buffer.readFloat();
     }
 
+    @Override
+    public void IsDifferent() {
+
+    }
+
     public static class NuggetBar implements HealthBar.NuggetBar {
 
         @Override

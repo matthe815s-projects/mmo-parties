@@ -99,7 +99,7 @@ public class HealthBar {
             int pN = 0;
 
             for (PartyMemberData data : MMOParties.localParty.data.values()) {
-                if (data.name.equals(mc.player.getName().getString()) == !ConfigHolder.COMMON.debugMode.get()) continue; // Only render other players.
+                //if (data.name.equals(mc.player.getName().getString()) == !ConfigHolder.COMMON.debugMode.get()) continue; // Only render other players.
 
                 // Render a new player and track the additional offset for the next player.
                 lastOffset += RenderMember(data, lastOffset, pN, MMOParties.localParty.local_players.size() > 4
@@ -151,18 +151,20 @@ public class HealthBar {
         // The only bar visible within compact mode is hearts, and it's in a number form.
         if (compact) {
             yOffset = (int)(yOffset / 1.7) + 4;
-            nuggetBars[1].Render(PartyPacketDataBuilder.builderData.get(1), posX, ((defaultOffset.y - 10) + yOffset), true);
-            nuggetBars[2].Render(PartyPacketDataBuilder.builderData.get(2), posX + 30 + (4 * data.name.length()), ((defaultOffset.y - 10) + yOffset), true);
+            nuggetBars[1].Render(data.additionalData[1], posX, ((defaultOffset.y - 10) + yOffset), true);
+            nuggetBars[2].Render(data.additionalData[2], posX + 30 + (4 * data.name.length()), ((defaultOffset.y - 10) + yOffset), true);
             return additionalOffset;
         }
 
         // Render each line of the list of UI elements
         // Each one is dynamically assigned at preInit by linked mods.
         for (int i=0; i < nuggetBars.length; i++) {
+            if (data.additionalData[i] == null) continue;
+
             int rowOffset = (12 * iconRows);
             if (renderAscending) rowOffset = -rowOffset; // Reverse rendering.
 
-            int offset = nuggetBars[i].Render(PartyPacketDataBuilder.builderData.get(i), posX, (defaultOffset.y + rowOffset) + yOffset, false);
+            int offset = nuggetBars[i].Render(data.additionalData[i], posX, (defaultOffset.y + rowOffset) + yOffset, false);
             additionalOffset += offset;
             if (offset != -1) iconRows++;
         }

@@ -20,8 +20,12 @@ public class BuilderHunger implements BuilderData {
         hunger = buffer.readFloat();
     }
 
-    public static class NuggetBar implements HealthBar.NuggetBar {
+    @Override
+    public void IsDifferent() {
 
+    }
+
+    public static class NuggetBar implements HealthBar.NuggetBar {
         @Override
         public int Render(BuilderData data, int xOffset, int yOffset, boolean compact) {
             BuilderHunger builder = (BuilderHunger) data;

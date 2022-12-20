@@ -24,7 +24,7 @@ public class MessageSendMemberData {
 	  this.builder = data;
   }
 
-  public static MessageSendMemberData decode(PacketBuffer buf) 
+  public static MessageSendMemberData decode(PacketBuffer buf)
   {
 	  MessageSendMemberData data = new MessageSendMemberData( new PartyPacketDataBuilder()
 			  .SetName(buf.readCharSequence(buf.readInt(), Charsets.UTF_8).toString())
@@ -37,9 +37,19 @@ public class MessageSendMemberData {
 			  .SetMaxShields(buf.readFloat())
 			  .SetHunger(buf.readFloat()));
 
-	  PartyPacketDataBuilder.builderData.forEach(builderData -> {
-		  builderData.OnRead(buf);
-	  });
+	  // Instantiate builders
+	  for (int i = 0; i < PartyPacketDataBuilder.builderData.size(); i++) {
+		  Class<? extends BuilderData> aClass = (PartyPacketDataBuilder.builderData.get(i)).getClass();
+		  try {
+			  BuilderData builder = aClass.newInstance();
+			  builder.OnRead(buf);
+			  data.builder.AddData(i, builder);
+		  } catch (InstantiationException e) {
+			  throw new RuntimeException(e);
+		  } catch (IllegalAccessException e) {
+			  throw new RuntimeException(e);
+		  }
+	  }
 
 	  return data;
   }

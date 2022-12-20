@@ -1,5 +1,7 @@
 package deathtags.stats;
 
+import deathtags.core.MMOParties;
+import deathtags.networking.BuilderData;
 import deathtags.networking.PartyPacketDataBuilder;
 
 public class PartyMemberData {
@@ -12,7 +14,8 @@ public class PartyMemberData {
 	public float shields = 0;
 	public float maxShields = 0;
 	public float hunger = 0;
-	
+	public BuilderData[] additionalData = new BuilderData[0];
+
 	public PartyMemberData(String health, String maxHealth, String armor, String leader, String absorption, String shields, String maxShields) {
 		this.health = Float.parseFloat(health);
 		this.maxHealth = Float.parseFloat(maxHealth);
@@ -24,6 +27,7 @@ public class PartyMemberData {
 	}
 
 	public PartyMemberData(PartyPacketDataBuilder builder) {
+		this.additionalData = builder.data;
 		this.name = builder.playerId;
 		this.health = builder.health;
 		this.maxHealth = builder.maxHealth;

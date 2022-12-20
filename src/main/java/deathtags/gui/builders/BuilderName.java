@@ -20,6 +20,11 @@ public class BuilderName implements BuilderData {
         name = (String)buffer.readCharSequence(buffer.readInt(), Charsets.UTF_8);
     }
 
+    @Override
+    public void IsDifferent() {
+
+    }
+
     public static class Renderer implements HealthBar.NuggetBar {
         @Override
         public int Render(BuilderData data, int xOffset, int yOffset, boolean compact) {

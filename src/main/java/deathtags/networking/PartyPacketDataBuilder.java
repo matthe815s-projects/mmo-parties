@@ -19,8 +19,13 @@ public class PartyPacketDataBuilder {
 	public float shields = 0;
 	public float maxShields = 0;
 	public float hunger = 0;
+	public BuilderData[] data;
 
 	public static List<BuilderData> builderData = new ArrayList<>();
+
+	public PartyPacketDataBuilder() {
+		this.data = new BuilderData[builderData.size()];
+	}
 
 	public PartyPacketDataBuilder SetPlayer (PlayerEntity player) {
 		this.nameLength = player.getName().getContents().length();
@@ -74,12 +79,9 @@ public class PartyPacketDataBuilder {
 		return this;
 	}
 
-	public void WriteBuilder(ParsableData[] data) {
-		///TODO; Implement the builder.
-	}
-
-	public static void RegisterBuilder(BuilderData data) {
-		builderData.add(data);
+	public PartyPacketDataBuilder AddData (int index, BuilderData data) {
+		this.data[index] = data;
+		return this;
 	}
 
 }

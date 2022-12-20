@@ -14,4 +14,5 @@ public interface BuilderData {
      */
     void OnWrite(PacketBuffer buffer, PlayerEntity player);
     void OnRead(PacketBuffer buffer);
+    void IsDifferent();
 }

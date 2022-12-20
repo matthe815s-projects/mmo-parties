@@ -20,6 +20,11 @@ public class BuilderLeader implements BuilderData {
         isLeader = buffer.readBoolean();
     }
 
+    @Override
+    public void IsDifferent() {
+
+    }
+
     public static class Renderer implements HealthBar.NuggetBar {
         @Override
         public int Render(BuilderData data, int xOffset, int yOffset, boolean compact) {
