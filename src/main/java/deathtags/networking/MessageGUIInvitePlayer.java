@@ -71,6 +71,12 @@ public class MessageGUIInvitePlayer {
 					if (!stats.InParty()) return;
 					stats.Leave(); // Leave the party
 					break;
+				case ACCEPT:
+					if (stats.partyInvite == null) return;
+					stats.partyInvite.Join(stats.player, true);
+				case DENY:
+					if (stats.partyInvite == null) return;
+					stats.partyInvite = null; // Deny it.
 			}
 			ctx.get().setPacketHandled(true);
 		}

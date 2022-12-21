@@ -27,5 +27,7 @@
   "rpgparties.gui.leave": "Leave",
   "rpgparties.gui.disband": "Disband",
   "rpgparties.gui.inviteall": "Invite All",
-  "rpgparties.gui.invite": "Invite"
+  "rpgparties.gui.invite": "Invite",
+  "rpgparties.gui.accept": "Accept",
+  "rpgparties.gui.deny": "Deny"
 }

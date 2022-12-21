@@ -8,6 +8,7 @@ import java.util.Map;
 import deathtags.config.ConfigHolder;
 import deathtags.core.MMOParties;
 import deathtags.helpers.CommandMessageHelper;
+import deathtags.networking.MessagePartyInvite;
 import deathtags.networking.MessageSendMemberData;
 import deathtags.networking.MessageUpdateParty;
 import deathtags.networking.PartyPacketDataBuilder;
@@ -68,10 +69,11 @@ public class Party extends PlayerGroup
 		if ( invokerPlayer.party.leader != invoker ) // Only the leader may invite.
 			{ CommandMessageHelper.SendError( invoker , "rpgparties.message.party.privilege" ); return; }
 		
-		if ( targetPlayer.InParty () || targetPlayer.partyInvite != null ) // Players already in a party may not be invited.
+		if ( ( targetPlayer.InParty () || targetPlayer.partyInvite != null ) && !ConfigHolder.COMMON.debugMode.get() ) // Players already in a party may not be invited.
 			{ CommandMessageHelper.SendError( invoker, "rpgparties.message.party.player.exists", player.getName().getContents() ); return; }
 		
 		targetPlayer.partyInvite = this;
+		MMOParties.network.sendTo(new MessagePartyInvite(invoker.getName().getString()), ((ServerPlayerEntity)player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
 		
 		CommandMessageHelper.SendInfo( invoker, "rpgparties.message.party.invited" , player.getName().getContents() );
 		CommandMessageHelper.SendInfoWithButton(player, "rpgparties.message.party.invite.from", invoker.getName().getContents());

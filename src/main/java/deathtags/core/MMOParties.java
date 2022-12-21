@@ -39,9 +39,14 @@ import org.lwjgl.glfw.GLFW;
 public class MMOParties {
 
 	public static final String MODID = "mmoparties";
+
 	public static Party localParty;
+	public static String partyInviter;
+
 	public static Map<PlayerEntity, PlayerStats> PlayerStats = new HashMap<>();
-	private static final String PROTOCOL_VERSION = "1";
+
+	private static final String PROTOCOL_VERSION = "2";
+
 	public static KeyBinding OPEN_GUI_KEY;
 	
 	public static final SimpleChannel network = NetworkRegistry.ChannelBuilder
@@ -60,6 +65,7 @@ public class MMOParties {
 		// Register the nugget bars and packet data
 		RegisterCompatibility(new BuilderLeader(), new BuilderLeader.Renderer());
 		RegisterCompatibility(new BuilderName(), new BuilderName.Renderer());
+		RegisterCompatibility(new BuilderStatuses(), new BuilderStatuses.Renderer());
 		RegisterCompatibility(new BuilderHealth(), new BuilderHealth.NuggetBar());
 		RegisterCompatibility(new BuilderAbsorption(), new BuilderAbsorption.NuggetBar());
 		RegisterCompatibility(new BuilderHunger(), new BuilderHunger.NuggetBar());
@@ -82,6 +88,7 @@ public class MMOParties {
 		network.registerMessage(1, MessageUpdateParty.class, MessageUpdateParty::encode, MessageUpdateParty::decode, MessageUpdateParty.Handler::handle );
 		network.registerMessage(2, MessageSendMemberData.class, MessageSendMemberData::encode, MessageSendMemberData::decode, MessageSendMemberData.Handler::handle);
 		network.registerMessage(3, MessageGUIInvitePlayer.class, MessageGUIInvitePlayer::encode, MessageGUIInvitePlayer::decode, MessageGUIInvitePlayer.Handler::handle);
+		network.registerMessage(4, MessagePartyInvite.class, MessagePartyInvite::encode, MessagePartyInvite::decode, MessagePartyInvite.Handler::handle);
 
 		// Register event handlers
 		MinecraftForge.EVENT_BUS.register(new EventCommon());
@@ -91,13 +98,13 @@ public class MMOParties {
 
 	public void serverInitEvent(FMLServerStartingEvent event) {
 		PartyHelper.Server.server = event.getServer(); // Set server instance
-		network.registerMessage(4, MessageOpenUI.class, MessageOpenUI::encode, MessageOpenUI::decode, MessageOpenUI.Handler::handleServer);
+		network.registerMessage(5, MessageOpenUI.class, MessageOpenUI::encode, MessageOpenUI::decode, MessageOpenUI.Handler::handleServer);
 	}
 
 	public void clientInit(FMLClientSetupEvent event)
 	{
 		HealthBar.init();
-		network.registerMessage(4, MessageOpenUI.class, MessageOpenUI::encode, MessageOpenUI::decode, MessageOpenUI.Handler::handle);
+		network.registerMessage(5, MessageOpenUI.class, MessageOpenUI::encode, MessageOpenUI::decode, MessageOpenUI.Handler::handle);
 
 		OPEN_GUI_KEY = new KeyBinding("key.opengui.desc", KeyConflictContext.UNIVERSAL, InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_P, "key.mmoparties.category"); // Open GUI on G.
 		ClientRegistry.registerKeyBinding(OPEN_GUI_KEY);
