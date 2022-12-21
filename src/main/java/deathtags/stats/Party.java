@@ -64,6 +64,11 @@ public class Party extends PlayerGroup
 	 */
 	public void Invite ( PlayerEntity invoker, PlayerEntity player ) {
 		PlayerStats targetPlayer = MMOParties.GetStats( player );
+
+		// Prevent you from inviting yourself.
+		if ( invoker == player && !ConfigHolder.COMMON.debugMode.get() )
+			{ CommandMessageHelper.SendInfo( invoker, "rpgparties.message.invite.self" ); return; }
+
 		PlayerStats invokerPlayer = MMOParties.GetStats( invoker );
 		
 		if ( invokerPlayer.party.leader != invoker ) // Only the leader may invite.
@@ -76,7 +81,10 @@ public class Party extends PlayerGroup
 		MMOParties.network.sendTo(new MessagePartyInvite(invoker.getName().getString()), ((ServerPlayerEntity)player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
 		
 		CommandMessageHelper.SendInfo( invoker, "rpgparties.message.party.invited" , player.getName().getContents() );
-		CommandMessageHelper.SendInfoWithButton(player, "rpgparties.message.party.invite.from", invoker.getName().getContents());
+
+		// Send the "received" and accept notification to the player.
+		CommandMessageHelper.SendInfoWithButton( player, "rpgparties.message.party.invite.from", invoker.getName().getContents() );
+		CommandMessageHelper.SendInfo( player, "rpgparties.message.party.menu" );
 	}
 	
 	/**
@@ -85,7 +93,7 @@ public class Party extends PlayerGroup
 	 */
 	public void Join ( PlayerEntity player, boolean displayMessage )
 	{
-		if (this.players.size() >= 4)
+		if (this.players.size() >= 10)
 		 { CommandMessageHelper.SendError(player, "rpgparties.message.party.full"); return; }
 			
 		this.players.add(player);
