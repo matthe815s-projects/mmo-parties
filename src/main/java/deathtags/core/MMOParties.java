@@ -8,7 +8,6 @@ import deathtags.commands.PartyCommand;
 import deathtags.config.ConfigHolder;
 import deathtags.core.events.EventClient;
 import deathtags.core.events.EventCommon;
-import deathtags.core.events.EventServer;
 import deathtags.gui.HealthBar;
 import deathtags.gui.builders.*;
 import deathtags.networking.*;
@@ -35,6 +34,11 @@ import net.minecraftforge.server.permission.DefaultPermissionLevel;
 import net.minecraftforge.server.permission.PermissionAPI;
 import org.lwjgl.glfw.GLFW;
 
+/**
+ * The entry point for the MMO parties mod.
+ * Contains some top-level cache management functionality.
+ * @author Matthe815
+ */
 @Mod(value = MMOParties.MODID)
 public class MMOParties {
 
@@ -62,7 +66,9 @@ public class MMOParties {
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigHolder.COMMON_SPEC);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigHolder.CLIENT_SPEC);
 
-		// Register the nugget bars and packet data
+		// Registers all standard UI elements for the base mod barring any compatibility mods.
+		// Includes: Leader crown, name, status effects, health, absorption, hunger, and armor.
+		// Rendering occurs in the order of registration.
 		RegisterCompatibility(new BuilderLeader(), new BuilderLeader.Renderer());
 		RegisterCompatibility(new BuilderName(), new BuilderName.Renderer());
 		RegisterCompatibility(new BuilderStatuses(), new BuilderStatuses.Renderer());
@@ -72,59 +78,80 @@ public class MMOParties {
 		RegisterCompatibility(new BuilderArmor(), new BuilderArmor.NuggetBar());
 
 		// Construct game events.
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::preInit);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientInit);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::OnSetup);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::OnClientInitialize);
 
-		MinecraftForge.EVENT_BUS.addListener(this::serverInit);
-		MinecraftForge.EVENT_BUS.addListener(this::serverInitEvent);
+		MinecraftForge.EVENT_BUS.addListener(this::OnCommandRegister);
+		MinecraftForge.EVENT_BUS.addListener(this::OnServerInitialize);
 
 		MinecraftForge.EVENT_BUS.register(this);
 	}
-	
-	public void preInit(FMLCommonSetupEvent event) 
-	{
-		System.out.println(MODID + " is pre-loading!");
 
+	/**
+	 * Runs when the mod is constructed and setups up the networking and bus events.
+	 * @param event
+	 */
+	public void OnSetup(FMLCommonSetupEvent event)
+	{
+		// Sets up all of the network packet handlers.
+		SetupNetworking();
+
+		// Register event handlerse
+		MinecraftForge.EVENT_BUS.register(new EventCommon());
+		MinecraftForge.EVENT_BUS.register(new EventClient());
+	}
+
+	/**
+	 * Handles setting up all common networking packet types; there are special types for Server and Client setup.
+	 */
+	public void SetupNetworking()
+	{
 		network.registerMessage(1, MessageUpdateParty.class, MessageUpdateParty::encode, MessageUpdateParty::decode, MessageUpdateParty.Handler::handle );
 		network.registerMessage(2, MessageSendMemberData.class, MessageSendMemberData::encode, MessageSendMemberData::decode, MessageSendMemberData.Handler::handle);
 		network.registerMessage(3, MessageGUIInvitePlayer.class, MessageGUIInvitePlayer::encode, MessageGUIInvitePlayer::decode, MessageGUIInvitePlayer.Handler::handle);
 		network.registerMessage(4, MessagePartyInvite.class, MessagePartyInvite::encode, MessagePartyInvite::decode, MessagePartyInvite.Handler::handle);
-
-		// Register event handlers
-		MinecraftForge.EVENT_BUS.register(new EventCommon());
-		MinecraftForge.EVENT_BUS.register(new EventClient());
-		MinecraftForge.EVENT_BUS.register(new EventServer());
 	}
 
-	public void serverInitEvent(FMLServerStartingEvent event) {
+	public void OnServerInitialize(FMLServerStartingEvent event) {
 		PartyHelper.Server.server = event.getServer(); // Set server instance
 		network.registerMessage(5, MessageOpenUI.class, MessageOpenUI::encode, MessageOpenUI::decode, MessageOpenUI.Handler::handleServer);
 	}
 
-	public void clientInit(FMLClientSetupEvent event)
+	/**
+	 * Fired when a client is being setup during mod initialization.
+	 * Does not run on the server.
+	 * @param event
+	 */
+	public void OnClientInitialize(FMLClientSetupEvent event)
 	{
-		HealthBar.init();
-		network.registerMessage(5, MessageOpenUI.class, MessageOpenUI::encode, MessageOpenUI::decode, MessageOpenUI.Handler::handle);
+		HealthBar.init(); // Initializes the Party renderer.
+		network.registerMessage(5, MessageOpenUI.class, MessageOpenUI::encode, MessageOpenUI::decode, MessageOpenUI.Handler::handle); // A special handler for single-player instances.
 
+		// Creates and registers the key-binding on a universal scale.
 		OPEN_GUI_KEY = new KeyBinding("key.opengui.desc", KeyConflictContext.UNIVERSAL, InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_P, "key.mmoparties.category"); // Open GUI on G.
 		ClientRegistry.registerKeyBinding(OPEN_GUI_KEY);
 	}
-	
-	public void serverInit(RegisterCommandsEvent event)
+
+	/**
+	 * Handles registering the mod commands as well as permissions.
+	 */
+	public void OnCommandRegister(RegisterCommandsEvent event)
 	{	
 		event.getDispatcher().register(PartyCommand.register());
 		PermissionAPI.registerNode("rpgparties.*", DefaultPermissionLevel.ALL, "The base permission");
 	}
 
 	/**
-	 * Get the stat value of a player by their name.
-	 * @param name
-	 * @return
+	 * Get the player datastore from their username.
+	 * This datastore is temporary and removed upon disconnecting.
+	 * @param username
+	 * @return Player Datastore
+	 * @apiNote Can use MMOParties#GetStats as well.
 	 */
-	public static PlayerStats GetStatsByName(String name)
+	public static PlayerStats GetStatsByName(String username)
 	{
 		for (Entry<PlayerEntity, deathtags.stats.PlayerStats> plr : PlayerStats.entrySet()) {
-			if ( plr.getKey().getName().getContents().equals(name) )
+			if ( plr.getKey().getName().getContents().equals(username) )
 				return plr.getValue();
 		}
 
@@ -132,9 +159,10 @@ public class MMOParties {
 	}
 
 	/**
-	 * Get the stat value of a player.
+	 * Get the player database from their PlayerEntity
+	 * This datastore is temporary and removed upon disconnecting.
 	 * @param player
-	 * @return
+	 * @return Player Datastore
 	 */
 	public static PlayerStats GetStats(PlayerEntity player)
 	{
