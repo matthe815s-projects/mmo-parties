@@ -2,6 +2,7 @@ package deathtags.networking;
 
 import com.google.common.base.Charsets;
 import deathtags.core.MMOParties;
+import deathtags.core.events.EventClient;
 import deathtags.gui.screens.InvitedScreen;
 import deathtags.gui.screens.PartyScreen;
 import deathtags.stats.Party;
@@ -44,7 +45,7 @@ public class MessagePartyInvite {
 		public static void handle(final MessagePartyInvite pkt, Supplier<NetworkEvent.Context> ctx)
 		{
 			MMOParties.partyInviter = pkt.inviter;
-			Minecraft.getInstance().setScreen(new InvitedScreen());
+			EventClient.OpenInvitationScreen();
 			ctx.get().setPacketHandled(true);
 		}
 	}

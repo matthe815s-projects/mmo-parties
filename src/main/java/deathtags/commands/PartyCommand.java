@@ -1,6 +1,5 @@
 package deathtags.commands;
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -13,15 +12,12 @@ import deathtags.core.MMOParties;
 import deathtags.core.events.EventClient;
 import deathtags.helpers.CommandMessageHelper;
 import deathtags.networking.MessageOpenUI;
-import deathtags.networking.MessageSendMemberData;
 import deathtags.networking.MessageUpdateParty;
-import deathtags.networking.PartyPacketDataBuilder;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.fml.network.NetworkDirection;
 
@@ -162,7 +158,7 @@ public class PartyCommand {
 
 			case "gui":
 				if (!player.getCommandSenderWorld().isClientSide) MMOParties.network.sendTo(new MessageOpenUI(), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT); // Send open message
-				else if (Minecraft.getInstance().hasSingleplayerServer()) EventClient.openScreen();
+				else if (Minecraft.getInstance().hasSingleplayerServer()) EventClient.OpenPartyScreen();
  				break;
 
 			case "pvp":
