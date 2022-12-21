@@ -1,8 +1,6 @@
 package deathtags.gui.builders;
 
-import com.google.common.base.Charsets;
-import deathtags.config.ConfigHolder;
-import deathtags.gui.HealthBar;
+import deathtags.gui.PartyList;
 import deathtags.gui.UISpec;
 import deathtags.networking.BuilderData;
 import net.minecraft.entity.player.PlayerEntity;
@@ -38,17 +36,17 @@ public class BuilderStatuses implements BuilderData {
         return effects.length != player.getActiveEffects().size();
     }
 
-    public static class Renderer implements HealthBar.NuggetBar {
+    public static class Renderer implements PartyList.NuggetBar {
 
         @Override
         public int Render(BuilderData data, int xOffset, int yOffset, boolean compact) {
             BuilderStatuses statuses = (BuilderStatuses) data;
 
             for (int i=0;i<statuses.effects.length;i++) {
-                HealthBar.DrawResource(new UISpec(HealthBar.TEXTURE_ICON, xOffset + (10 * i), yOffset, 0, 0, 9, 9));
+                PartyList.DrawResource(new UISpec(PartyList.TEXTURE_ICON, xOffset + (10 * i), yOffset, 0, 0, 9, 9));
                 ResourceLocation location = new ResourceLocation(statuses.effects[i].getRegistryName().getNamespace(), "textures/mob_effect/" + statuses.effects[i].getRegistryName().getPath() + ".png");
                 System.out.println(location.toString());
-                HealthBar.DrawResource(
+                PartyList.DrawResource(
                         new UISpec(location,
                                 xOffset, yOffset, 0, 0, 9, 9));
             }

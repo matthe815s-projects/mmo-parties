@@ -1,7 +1,7 @@
 package deathtags.gui.builders;
 
 import deathtags.config.ConfigHolder;
-import deathtags.gui.HealthBar;
+import deathtags.gui.PartyList;
 import deathtags.gui.UISpec;
 import deathtags.networking.BuilderData;
 import net.minecraft.entity.player.PlayerEntity;
@@ -25,11 +25,11 @@ public class BuilderHunger implements BuilderData {
         return hunger != player.getFoodData().getFoodLevel();
     }
 
-    public static class NuggetBar implements HealthBar.NuggetBar {
+    public static class NuggetBar implements PartyList.NuggetBar {
         @Override
         public int Render(BuilderData data, int xOffset, int yOffset, boolean compact) {
             BuilderHunger builder = (BuilderHunger) data;
-            return HealthBar.Draw(builder.hunger, 20, new UISpec(HealthBar.HEART_TEXTURE, xOffset, yOffset, 52, 27, 9, 9), 16, 9, compact, ConfigHolder.CLIENT.showHunger.get());
+            return PartyList.Draw(builder.hunger, 20, new UISpec(PartyList.HEART_TEXTURE, xOffset, yOffset, 52, 27, 9, 9), 16, 9, compact, ConfigHolder.CLIENT.showHunger.get());
         }
     }
 }

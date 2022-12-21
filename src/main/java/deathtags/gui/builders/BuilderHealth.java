@@ -1,6 +1,6 @@
 package deathtags.gui.builders;
 
-import deathtags.gui.HealthBar;
+import deathtags.gui.PartyList;
 import deathtags.gui.UISpec;
 import deathtags.networking.BuilderData;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,12 +27,12 @@ public class BuilderHealth implements BuilderData {
         return health != player.getHealth() || maxHealth != player.getMaxHealth();
     }
 
-    public static class NuggetBar implements HealthBar.NuggetBar {
+    public static class NuggetBar implements PartyList.NuggetBar {
 
         @Override
         public int Render(BuilderData data, int xOffset, int yOffset, boolean compact) {
             BuilderHealth builder = (BuilderHealth) data;
-            return HealthBar.Draw(builder.health, builder.maxHealth, new UISpec(HealthBar.HEART_TEXTURE, xOffset, yOffset, 52, 0, 9, 9), 16, 9, compact, true);
+            return PartyList.Draw(builder.health, builder.maxHealth, new UISpec(PartyList.HEART_TEXTURE, xOffset, yOffset, 52, 0, 9, 9), 16, 9, compact, true);
         }
     }
 }

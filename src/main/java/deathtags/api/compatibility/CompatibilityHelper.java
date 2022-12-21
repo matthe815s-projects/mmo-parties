@@ -1,7 +1,7 @@
 package deathtags.api.compatibility;
 
 import deathtags.core.MMOParties;
-import deathtags.gui.HealthBar;
+import deathtags.gui.PartyList;
 import deathtags.networking.BuilderData;
 
 /**
@@ -14,7 +14,7 @@ public class CompatibilityHelper {
      * @param builder
      * @param bar
      */
-    public static void Register(BuilderData builder, HealthBar.NuggetBar bar)
+    public static void Register(BuilderData builder, PartyList.NuggetBar bar)
     {
         MMOParties.RegisterCompatibility(builder, bar);
     }

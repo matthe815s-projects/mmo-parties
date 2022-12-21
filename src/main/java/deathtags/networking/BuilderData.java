@@ -1,8 +1,5 @@
 package deathtags.networking;
 
-import deathtags.gui.HealthBar;
-import deathtags.gui.UISpec;
-import deathtags.stats.PartyMemberData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 

@@ -1,7 +1,7 @@
 package deathtags.gui.builders;
 
 import com.google.common.base.Charsets;
-import deathtags.gui.HealthBar;
+import deathtags.gui.PartyList;
 import deathtags.gui.UISpec;
 import deathtags.networking.BuilderData;
 import net.minecraft.entity.player.PlayerEntity;
@@ -25,11 +25,11 @@ public class BuilderName implements BuilderData {
         return false;
     }
 
-    public static class Renderer implements HealthBar.NuggetBar {
+    public static class Renderer implements PartyList.NuggetBar {
         @Override
         public int Render(BuilderData data, int xOffset, int yOffset, boolean compact) {
             BuilderName builder = (BuilderName) data;
-            return HealthBar.DrawText(builder.name, new UISpec(xOffset, yOffset));
+            return PartyList.DrawText(builder.name, new UISpec(xOffset, yOffset));
         }
     }
 }

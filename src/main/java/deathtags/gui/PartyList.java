@@ -4,7 +4,6 @@ import java.util.Random;
 
 import deathtags.config.ConfigHolder;
 import deathtags.networking.BuilderData;
-import deathtags.networking.PartyPacketDataBuilder;
 import net.minecraftforge.client.gui.ForgeIngameGui;
 import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.opengl.GL11;
@@ -21,8 +20,13 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
+/**
+ * The UI handler that controls the creation and rendering of all party elements
+ * Each bar to be rendered is created on mod initialization.
+ * @see deathtags.api.compatibility.CompatibilityHelper
+ */
 @Mod.EventBusSubscriber
-public class HealthBar {
+public class PartyList {
 
     public static final ResourceLocation TEXTURE_ICON = new ResourceLocation(MMOParties.MODID,
         "textures/icons.png");
@@ -37,18 +41,17 @@ public class HealthBar {
     private static boolean renderAscending = false;
     private static boolean renderOpposite = false;
 
-    public static NuggetBar[] nuggetBars = new NuggetBar[] {
-//        (data, xOffset, yOffset, compact) -> Draw(data.health, data.maxHealth, new UISpec(HEART_TEXTURE, xOffset, yOffset, 52, 0), 16, 9, compact, true),
-//        (data, xOffset, yOffset, compact) -> Draw(data.hunger, 20, new UISpec(HEART_TEXTURE, xOffset, yOffset, 52, 27), 16, 9, compact, ConfigHolder.CLIENT.showHunger.get()),
-//        (data, xOffset, yOffset, compact) -> Draw(data.armor, data.armor, new UISpec(HEART_TEXTURE, xOffset, yOffset, 34, 9), 16, -9, compact, ConfigHolder.CLIENT.showArmor.get()),
-//        (data, xOffset, yOffset, compact) -> Draw(data.absorption, data.absorption, new UISpec(HEART_TEXTURE, xOffset, yOffset, 160, 0), 16, 9, compact, ConfigHolder.CLIENT.showAbsorption.get()),
-    };
+    public static NuggetBar[] nuggetBars = new NuggetBar[] {};
 
-    public HealthBar() {
+    public PartyList() {
         super();
         random = new Random();
     }
 
+    /**
+     * Get an X-Y offset based off of the config's UI Anchor value.
+     * @return X and Y
+     */
     public static UISpec GetAnchorOffset()
     {
         switch (ConfigHolder.CLIENT.anchorPoint.get()) {
@@ -74,11 +77,22 @@ public class HealthBar {
         return new UISpec(0,0);
     }
 
+    /**
+     * Draw a nugget-bar with consideration to the compact settings and render restrictions
+     * @param current
+     * @param max
+     * @param UI
+     * @param backgroundOffset
+     * @param halfOffset
+     * @param compact
+     * @param render
+     * @return
+     */
     public static int Draw(float current, float max, UISpec UI, int backgroundOffset, int halfOffset, boolean compact, boolean render) {
         if (render == false) return -1; // Don't render. Used for config values and what not.
 
         if (!compact) return DrawNuggetBar(current, max, UI, backgroundOffset, halfOffset);
-        else return DrawNuggetBarCompact(current, max, UI, backgroundOffset);
+        else return DrawNuggetBarCompact(current, UI, backgroundOffset);
     }
 
     @SubscribeEvent
@@ -117,8 +131,16 @@ public class HealthBar {
         Minecraft.getInstance().getTextureManager().bind(AbstractGui.GUI_ICONS_LOCATION);
     }
 
-    // Draw the player's health bar at a define width and height.
-    public static int DrawNuggetBarCompact(float current, float max, UISpec UI, int backgroundOffset) {
+    /**
+     * Draw a sectioned "nugget bar" in a compacted setting (icon + number) at a specified position.
+     * Positioning of the element is automatically handled and supplied in the UI argument.
+     * @param current
+     * @param max
+     * @param UI
+     * @param backgroundOffset
+     * @return
+     */
+    public static int DrawNuggetBarCompact(float current, UISpec UI, int backgroundOffset) {
         int left = UI.x;
         int top = UI.y;
         int startX = left;
@@ -136,12 +158,21 @@ public class HealthBar {
 
     /**
      * An interface for rendering nugget bars.
+     * The Render method returns an offset for the next bar.
+     * @since 2.3.0
      */
     public interface NuggetBar {
         int Render(BuilderData data, int xOffset, int yOffset, boolean compact);
     }
 
-    // Render a party member in the party
+    /**
+     * Handles rendering an individual party member.
+     * @param data
+     * @param lastOffset
+     * @param pN
+     * @param compact
+     * @return
+     */
     int RenderMember(PartyMemberData data, int lastOffset, int pN, boolean compact) {
         if (data == null) return 0; // There shouldn't be an instance where this is null, but..
 
@@ -180,6 +211,7 @@ public class HealthBar {
 
     /**
      * Draw a bar of nuggets based on a UI spec.
+     * Position information is supplied automatically in the UI argument.
      * @param current
      * @param max
      * @param UI
@@ -243,6 +275,6 @@ public class HealthBar {
 
 	public static void init() {
 		System.out.println("Load GUI");
-		MinecraftForge.EVENT_BUS.register(new HealthBar());
+		MinecraftForge.EVENT_BUS.register(new PartyList());
 	}
 }

@@ -8,7 +8,7 @@ import deathtags.commands.PartyCommand;
 import deathtags.config.ConfigHolder;
 import deathtags.core.events.EventClient;
 import deathtags.core.events.EventCommon;
-import deathtags.gui.HealthBar;
+import deathtags.gui.PartyList;
 import deathtags.gui.builders.*;
 import deathtags.networking.*;
 import deathtags.stats.Party;
@@ -124,7 +124,7 @@ public class MMOParties {
 	 */
 	public void OnClientInitialize(FMLClientSetupEvent event)
 	{
-		HealthBar.init(); // Initializes the Party renderer.
+		PartyList.init(); // Initializes the Party renderer.
 		network.registerMessage(5, MessageOpenUI.class, MessageOpenUI::encode, MessageOpenUI::decode, MessageOpenUI.Handler::handle); // A special handler for single-player instances.
 
 		// Creates and registers the key-binding on a universal scale.
@@ -173,17 +173,17 @@ public class MMOParties {
 	 * Register a new mod compatibility and nugget bar.
 	 * @param bar
 	 */
-	public static void RegisterCompatibility(BuilderData builder, HealthBar.NuggetBar bar)
+	public static void RegisterCompatibility(BuilderData builder, PartyList.NuggetBar bar)
 	{
 		// Make a bigger array and clone it.
-		List<HealthBar.NuggetBar> bars = new ArrayList<>();
+		List<PartyList.NuggetBar> bars = new ArrayList<>();
 
-		for (int i=0; i<HealthBar.nuggetBars.length; i++) {
-			bars.add(HealthBar.nuggetBars[i]);
+		for (int i = 0; i< PartyList.nuggetBars.length; i++) {
+			bars.add(PartyList.nuggetBars[i]);
 		}
 
 		bars.add(bar);
-		HealthBar.nuggetBars = bars.toArray(new HealthBar.NuggetBar[0]); // Convert the list to an array.
+		PartyList.nuggetBars = bars.toArray(new PartyList.NuggetBar[0]); // Convert the list to an array.
  		PartyPacketDataBuilder.builderData.add(builder);
 	}
 }

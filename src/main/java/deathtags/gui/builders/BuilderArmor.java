@@ -1,7 +1,7 @@
 package deathtags.gui.builders;
 
 import deathtags.config.ConfigHolder;
-import deathtags.gui.HealthBar;
+import deathtags.gui.PartyList;
 import deathtags.gui.UISpec;
 import deathtags.networking.BuilderData;
 import net.minecraft.entity.player.PlayerEntity;
@@ -25,12 +25,12 @@ public class BuilderArmor implements BuilderData {
         return armor != player.getArmorValue();
     }
 
-    public static class NuggetBar implements HealthBar.NuggetBar {
+    public static class NuggetBar implements PartyList.NuggetBar {
 
         @Override
         public int Render(BuilderData data, int xOffset, int yOffset, boolean compact) {
             BuilderArmor builder = (BuilderArmor) data;
-            return HealthBar.Draw(builder.armor, builder.armor, new UISpec(HealthBar.HEART_TEXTURE, xOffset, yOffset, 34, 9, 9, 9), 16, -9, compact,
+            return PartyList.Draw(builder.armor, builder.armor, new UISpec(PartyList.HEART_TEXTURE, xOffset, yOffset, 34, 9, 9, 9), 16, -9, compact,
                     ConfigHolder.CLIENT.showArmor.get() && builder.armor > 0);
         }
     }
