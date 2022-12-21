@@ -43,7 +43,8 @@ public class PartyCommand {
 											.suggest("kick")
 											.suggest("leader")
 											.suggest("disband") // Build suggestions
-											.suggest("gui");
+											.suggest("gui")
+											.suggest("pvp");
 
 									if (ConfigHolder.COMMON.allowPartyTP.get()) // If you're allowed to party teleport, display the option
 										suggestionsBuilder.suggest("tp");
@@ -163,6 +164,11 @@ public class PartyCommand {
 				if (!player.getCommandSenderWorld().isClientSide) MMOParties.network.sendTo(new MessageOpenUI(), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT); // Send open message
 				else if (Minecraft.getInstance().hasSingleplayerServer()) EventClient.openScreen();
  				break;
+
+			case "pvp":
+				stats.pvpEnabled = !stats.pvpEnabled;
+				CommandMessageHelper.SendInfo( player,  stats.pvpEnabled ? "rpgparties.message.pvp.enabled" : "rpgparties.message.pvp.disabled" );
+				break;
 
 			case "add":
 				MMOParties.network.sendTo(new MessageUpdateParty("dev,devtestman2,dev3"), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
