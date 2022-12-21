@@ -18,6 +18,7 @@ import deathtags.stats.PlayerStats;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.fml.network.NetworkDirection;
 
@@ -57,14 +58,25 @@ public class PartyCommand {
 	private static CompletableFuture<Suggestions> getSuggestions (CommandContext<CommandSource> ctx, SuggestionsBuilder builder) {
 		String argument = StringArgumentType.getString(ctx, "sub").trim();
 
-		System.out.println(argument);
-
+		// When using invite, kick, or leader, it should suggest players to use for these commands.
+		// In the case of kick and leader, it'll only suggest players within your party.
 		switch (argument) {
 			case "invite":
-			case "kick":
-			case "leader":
 				ctx.getSource().getServer().getPlayerList().getPlayers().forEach(player -> {
 					builder.suggest(player.getName().getString());
+				});
+				break;
+			case "kick":
+			case "leader":
+				PlayerEntity player = null;
+				try {
+					player = ctx.getSource().getPlayerOrException();
+				} catch (CommandSyntaxException e) {
+					throw new RuntimeException(e);
+				}
+
+				MMOParties.GetStats(player).party.players.forEach(playerEntity -> {
+					builder.suggest(playerEntity.getName().getString());
 				});
 				break;
 		}
@@ -74,7 +86,7 @@ public class PartyCommand {
 	
 	private static int run(CommandContext<CommandSource> context, String sub, String targetStr) throws CommandSyntaxException {
 		ServerPlayerEntity player = context.getSource().getPlayerOrException();
-		ServerPlayerEntity target = null;
+		ServerPlayerEntity target = null; // This is null until the next statement. It can remain null.
 
 		if (targetStr != null) context.getSource().getServer().getPlayerList().getPlayerByName(targetStr);
 
