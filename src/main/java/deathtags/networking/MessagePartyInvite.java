@@ -45,7 +45,6 @@ public class MessagePartyInvite {
 		public static void handle(final MessagePartyInvite pkt, Supplier<NetworkEvent.Context> ctx)
 		{
 			MMOParties.partyInviter = pkt.inviter;
-			EventClient.OpenInvitationScreen();
 			ctx.get().setPacketHandled(true);
 		}
 	}

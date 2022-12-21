@@ -38,7 +38,13 @@ public class EventClient {
     @OnlyIn(Dist.CLIENT)
     public void OnKeyInput(InputEvent.KeyInputEvent event) {
         // Open the party menu when the GUI key is pressed.
-        if (MMOParties.OPEN_GUI_KEY.isDown()) Minecraft.getInstance().setScreen(new PartyScreen());
+        if (MMOParties.OPEN_GUI_KEY.isDown()) {
+            // Open the party invitation menu if you have an invite.
+            if (MMOParties.partyInviter != null)
+                EventClient.OpenInvitationScreen();
+            else
+                Minecraft.getInstance().setScreen(new PartyScreen());
+        }
     }
 
     /**
