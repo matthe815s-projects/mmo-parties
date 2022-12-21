@@ -71,7 +71,6 @@ public class MMOParties {
 		// Rendering occurs in the order of registration.
 		RegisterCompatibility(new BuilderLeader(), new BuilderLeader.Renderer());
 		RegisterCompatibility(new BuilderName(), new BuilderName.Renderer());
-		RegisterCompatibility(new BuilderStatuses(), new BuilderStatuses.Renderer());
 		RegisterCompatibility(new BuilderHealth(), new BuilderHealth.NuggetBar());
 		RegisterCompatibility(new BuilderAbsorption(), new BuilderAbsorption.NuggetBar());
 		RegisterCompatibility(new BuilderHunger(), new BuilderHunger.NuggetBar());
