@@ -99,11 +99,7 @@ public class PartyCommand {
 
 				stats.party.Leave(target);
 				break;
-			
-			case "create":
-				Party.Create( player ); // Create a new party for the player.
-				break;
-			
+
 			case "invite":
 				if (targetStr == null) { CommandMessageHelper.SendError(player, "rpgparties.message.error.argument", player.getName().getContents()); return 0; }
 				if (!stats.InParty()) Party.Create ( player ); // Create a party to invite with if not existent.
