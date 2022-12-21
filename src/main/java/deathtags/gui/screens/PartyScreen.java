@@ -16,13 +16,20 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.ArrayList;
 
+/**
+ * A Screen object that handles rendering the control screen for parties.
+ * The visible screen is based on the MENU property and is set automatically on open.
+ * @since 2.0.0
+ */
 public class PartyScreen extends Screen {
+    // Determines which mean to render.
     private EnumPartyGUIAction menu;
 
     public PartyScreen() {
         super(new TranslationTextComponent(MMOParties.localParty == null ? "rpgparties.gui.title.invite" : "rpgparties.gui.title"));
 
-        if (MMOParties.localParty == null) menu = EnumPartyGUIAction.INVITE; // If not in party, display the invite menu.
+        // If not in party, display the invite menu.
+        if (MMOParties.localParty == null) menu = EnumPartyGUIAction.INVITE;
         else menu = EnumPartyGUIAction.KICK;
     }
 
@@ -31,6 +38,14 @@ public class PartyScreen extends Screen {
         this.menu = EnumPartyGUIAction.values()[menu];
     }
 
+    /**
+     * Create a button and automatically set the centered offset based on the supplied text
+     * and button number.
+     * @param text
+     * @param buttonNumber
+     * @param pressable
+     * @return
+     */
     private Button CreateButton(String text, int buttonNumber, Button.IPressable pressable) {
         int buttonY = 26 * (buttonNumber);
 
@@ -67,7 +82,8 @@ public class PartyScreen extends Screen {
             Widget widget = this.addButton(CreateButton(player, 2 + MMOParties.localParty.local_players.indexOf(player), p_onPress_1_ -> {}));
             widget.active = false; // Make the button look darker
 
-            if (!MMOParties.localParty.data.get(Minecraft.getInstance().player.getName().getString()).leader || player == Minecraft.getInstance().player.getName().getString()) return; // Hide these options if not the leader or yourself
+            // Hide these options if not the leader or yourself
+            if (!MMOParties.localParty.data.get(Minecraft.getInstance().player.getName().getString()).leader || player == Minecraft.getInstance().player.getName().getString()) return;
 
             this.addButton(new ImageButton((this.width + 200 + 20) / 2, height, 20, 20, 0, 46, 20, new ResourceLocation("mmoparties", "textures/icons.png"), button -> {
                 this.onClose();
@@ -99,9 +115,7 @@ public class PartyScreen extends Screen {
 
             case INVITE: // invite player
                 Widget widget = this.addButton(new Button((this.width) - 70, 8, 60, 20, new TranslationTextComponent("rpgparties.gui.inviteall"), button -> {
-                    for (String player : GetApplicablePlayers()) {
-                        MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.INVITE)); // Send UI event to the server.
-                    }
+                    MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.INVITE)); // Send UI event to the server.
                 })); // invite all button
 
                 widget.active = ConfigHolder.COMMON.allowInviteAll.get(); // Disable if not allowed.
