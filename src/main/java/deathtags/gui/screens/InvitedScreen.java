@@ -17,8 +17,6 @@ import net.minecraft.util.text.TranslationTextComponent;
 import java.util.ArrayList;
 
 public class InvitedScreen extends Screen {
-    private EnumPartyGUIAction menu;
-
     public InvitedScreen() {
         super(new TranslationTextComponent("Invited"));
 
@@ -26,8 +24,6 @@ public class InvitedScreen extends Screen {
 
     private Button CreateButton(String text, int buttonNumber, Button.IPressable pressable) {
         int buttonY = 26 * (buttonNumber);
-
-        if (menu == EnumPartyGUIAction.INVITE) buttonY = 26 * (this.buttons.size()); // Exception for the invite menu.
 
         return new Button((this.width - 200) / 2, buttonY, 200, 20, new TranslationTextComponent(text), button -> {
             this.onClose();
