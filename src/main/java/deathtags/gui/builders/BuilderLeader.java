@@ -12,6 +12,9 @@ public class BuilderLeader implements BuilderData {
     boolean isLeader;
     @Override
     public void OnWrite(PacketBuffer buffer, PlayerEntity player) {
+        // Handle an edge case that can cause crashing (writing a packet while closing the server)
+        if (!(MMOParties.GetStats(player) != null & MMOParties.GetStats(player).InParty())) return;
+
         buffer.writeBoolean(MMOParties.GetStats(player).party.leader == player);
     }
 
