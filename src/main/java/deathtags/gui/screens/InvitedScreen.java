@@ -1,20 +1,12 @@
 package deathtags.gui.screens;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import deathtags.config.ConfigHolder;
 import deathtags.core.MMOParties;
 import deathtags.networking.EnumPartyGUIAction;
-import deathtags.networking.MessageGUIInvitePlayer;
-import net.minecraft.client.Minecraft;
+import deathtags.networking.MessageHandleMenuAction;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.gui.widget.button.ImageButton;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-
-import java.util.ArrayList;
 
 public class InvitedScreen extends Screen {
     public InvitedScreen() {
@@ -34,11 +26,11 @@ public class InvitedScreen extends Screen {
     @Override
     protected void init() {
         this.addButton(this.CreateButton("rpgparties.gui.accept", 2, p_onPress_1_ -> {
-            MMOParties.network.sendToServer(new MessageGUIInvitePlayer("", EnumPartyGUIAction.ACCEPT));
+            MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.ACCEPT));
         }));
 
         this.addButton(this.CreateButton("rpgparties.gui.deny", 3, p_onPress_1_ -> {
-            MMOParties.network.sendToServer(new MessageGUIInvitePlayer("", EnumPartyGUIAction.DENY));
+            MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.DENY));
         }));
     }
 

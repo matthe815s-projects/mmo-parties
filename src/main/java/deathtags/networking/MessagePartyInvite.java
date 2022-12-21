@@ -17,7 +17,9 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * Handles receiving an invite
+ * Handles receiving an invite.
+ * Allows the user to view it when they open their party menu.
+ * @since 2.4.0
  */
 public class MessagePartyInvite {
 

@@ -28,6 +28,7 @@ public class MessageSendMemberData {
 			  .SetName(buf.readCharSequence(buf.readInt(), Charsets.UTF_8).toString()));
 
 	  // Instantiate builders
+	  // Creates a new instance of the builder for each party member.
 	  for (int i = 0; i < PartyPacketDataBuilder.builderData.size(); i++) {
 		  Class<? extends BuilderData> aClass = (PartyPacketDataBuilder.builderData.get(i)).getClass();
 		  try {

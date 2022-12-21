@@ -108,7 +108,7 @@ public class MMOParties {
 	{
 		network.registerMessage(1, MessageUpdateParty.class, MessageUpdateParty::encode, MessageUpdateParty::decode, MessageUpdateParty.Handler::handle );
 		network.registerMessage(2, MessageSendMemberData.class, MessageSendMemberData::encode, MessageSendMemberData::decode, MessageSendMemberData.Handler::handle);
-		network.registerMessage(3, MessageGUIInvitePlayer.class, MessageGUIInvitePlayer::encode, MessageGUIInvitePlayer::decode, MessageGUIInvitePlayer.Handler::handle);
+		network.registerMessage(3, MessageHandleMenuAction.class, MessageHandleMenuAction::encode, MessageHandleMenuAction::decode, MessageHandleMenuAction.Handler::handle);
 		network.registerMessage(4, MessagePartyInvite.class, MessagePartyInvite::encode, MessagePartyInvite::decode, MessagePartyInvite.Handler::handle);
 	}
 

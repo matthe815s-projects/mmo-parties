@@ -4,16 +4,14 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import deathtags.config.ConfigHolder;
 import deathtags.core.MMOParties;
 import deathtags.networking.EnumPartyGUIAction;
-import deathtags.networking.MessageGUIInvitePlayer;
+import deathtags.networking.MessageHandleMenuAction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.gui.widget.button.ImageButton;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.ArrayList;
@@ -73,20 +71,20 @@ public class PartyScreen extends Screen {
 
             this.addButton(new ImageButton((this.width + 200 + 20) / 2, height, 20, 20, 0, 46, 20, new ResourceLocation("mmoparties", "textures/icons.png"), button -> {
                 this.onClose();
-                MMOParties.network.sendToServer(new MessageGUIInvitePlayer(player, EnumPartyGUIAction.LEADER));
+                MMOParties.network.sendToServer(new MessageHandleMenuAction(player, EnumPartyGUIAction.LEADER));
             }));
 
             this.addButton(new ImageButton((this.width + 200 + 60) / 2, height, 20, 20, 20, 46, 20, new ResourceLocation("mmoparties", "textures/icons.png"), button -> {
                 this.onClose();
-                MMOParties.network.sendToServer(new MessageGUIInvitePlayer(player, EnumPartyGUIAction.KICK));
+                MMOParties.network.sendToServer(new MessageHandleMenuAction(player, EnumPartyGUIAction.KICK));
             }));
         });
 
-        this.addButton(CreateButton("rpgparties.gui.leave", 3 + MMOParties.localParty.local_players.size(), p_onPress_1_ -> MMOParties.network.sendToServer(new MessageGUIInvitePlayer("", EnumPartyGUIAction.LEAVE))));
+        this.addButton(CreateButton("rpgparties.gui.leave", 3 + MMOParties.localParty.local_players.size(), p_onPress_1_ -> MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.LEAVE))));
 
         if (!MMOParties.localParty.data.get(Minecraft.getInstance().player.getName().getString()).leader) return; // Hide these options if not the leader.
 
-        this.addButton(CreateButton("rpgparties.gui.disband", 4 + MMOParties.localParty.local_players.size(), p_onPress_1_ -> MMOParties.network.sendToServer(new MessageGUIInvitePlayer("", EnumPartyGUIAction.DISBAND))));
+        this.addButton(CreateButton("rpgparties.gui.disband", 4 + MMOParties.localParty.local_players.size(), p_onPress_1_ -> MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.DISBAND))));
     }
 
     @Override
@@ -102,7 +100,7 @@ public class PartyScreen extends Screen {
             case INVITE: // invite player
                 Widget widget = this.addButton(new Button((this.width) - 70, 8, 60, 20, new TranslationTextComponent("rpgparties.gui.inviteall"), button -> {
                     for (String player : GetApplicablePlayers()) {
-                        MMOParties.network.sendToServer(new MessageGUIInvitePlayer("", EnumPartyGUIAction.INVITE)); // Send UI event to the server.
+                        MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.INVITE)); // Send UI event to the server.
                     }
                 })); // invite all button
 
@@ -112,7 +110,7 @@ public class PartyScreen extends Screen {
                 int i = 1;
 
                 for (String player : GetApplicablePlayers()) {
-                    this.addButton(CreateButton(player, i++, p_onPress_1_ -> MMOParties.network.sendToServer(new MessageGUIInvitePlayer(player, EnumPartyGUIAction.INVITE)))); // Send UI event to the server.
+                    this.addButton(CreateButton(player, i++, p_onPress_1_ -> MMOParties.network.sendToServer(new MessageHandleMenuAction(player, EnumPartyGUIAction.INVITE)))); // Send UI event to the server.
                 }
 
                 break;
