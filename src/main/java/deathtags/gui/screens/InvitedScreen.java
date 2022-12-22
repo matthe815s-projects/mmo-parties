@@ -33,10 +33,12 @@ public class InvitedScreen extends Screen {
     protected void init() {
         this.addButton(this.CreateButton("rpgparties.gui.accept", 2, p_onPress_1_ -> {
             MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.ACCEPT));
+            MMOParties.partyInviter = null;
         }));
 
         this.addButton(this.CreateButton("rpgparties.gui.deny", 3, p_onPress_1_ -> {
             MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.DENY));
+            MMOParties.partyInviter = null;
         }));
     }
 
