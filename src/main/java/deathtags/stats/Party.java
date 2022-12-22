@@ -81,10 +81,6 @@ public class Party extends PlayerGroup
 		MMOParties.network.sendTo(new MessagePartyInvite(invoker.getName().getString()), ((ServerPlayerEntity)player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
 		
 		CommandMessageHelper.SendInfo( invoker, "rpgparties.message.party.invited" , player.getName().getContents() );
-
-		// Send the "received" and accept notification to the player.
-		CommandMessageHelper.SendInfoWithButton( player, "rpgparties.message.party.invite.from", invoker.getName().getContents() );
-		CommandMessageHelper.SendInfo( player, "rpgparties.message.party.menu" );
 	}
 	
 	/**

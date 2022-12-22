@@ -14,7 +14,6 @@
   "rpgparties.message.party.left": "%s has left the party..",
   "rpgparties.message.party.leave": "You have left the party.",
   "rpgparties.message.party.deny": "You have denied the invite",
-  "rpgparties.message.party.menu": "Or open the party menu to interact.",
   "rpgparties.party.player.returned": "%s has returned to the party.",
   "rpgparties.message.party.player.left": "% has left the party...",
   "rpgparties.message.party.disbanded": "The party has been disbanded",
