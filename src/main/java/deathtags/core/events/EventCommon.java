@@ -51,7 +51,7 @@ public class EventCommon {
             if (!svStats.InParty() || !svStats.party.IsMemberOffline(player)) continue;
             // Join the player to this party since it's the one.
             svStats.party.Join(player, false);
-            svStats.party.Broadcast(new TranslationTextComponent("rpgparties.party.player.returned", player.getName().getString()));
+            svStats.party.Broadcast(new TranslationTextComponent("rpgparties.message.party.player.returned", player.getName().getString()));
         }
     }
 
