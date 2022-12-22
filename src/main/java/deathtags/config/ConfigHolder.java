@@ -41,6 +41,7 @@ public class ConfigHolder {
         public final ForgeConfigSpec.ConfigValue<String>  anchorPoint;
         public final ForgeConfigSpec.ConfigValue<Boolean> hideSelf;
         public final ForgeConfigSpec.ConfigValue<Boolean> numbersAsPercentage;
+        public final ForgeConfigSpec.ConfigValue<String> extraNumberType;
         public final ForgeConfigSpec.ConfigValue<Boolean> hideGUI;
 
         public Client(ForgeConfigSpec.Builder builder)
@@ -62,8 +63,12 @@ public class ConfigHolder {
                     .define("Hide Self", true);
             this.hideGUI = builder.comment("Whether or not to hide your own GUI.")
                     .define("Hide GUI", false);
-            this.numbersAsPercentage = builder.comment("Whether or not to render all HUD numbers as percentages instead.")
+
+            this.numbersAsPercentage = builder.comment("Whether or not to render all HUD elements as percentages instead.")
                     .define("Numbers As Percentages", false);
+            this.extraNumberType = builder.comment("How to handle health beyond the maximum. Will do nothing if Numbers As Percentage is disabled.",
+                    "Valid values: none, percentage, additional, compare")
+                    .define("Extra Number Type", "additional");
         }
     }
 

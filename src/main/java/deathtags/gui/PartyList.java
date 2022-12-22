@@ -223,13 +223,26 @@ public class PartyList {
         UI.x = UI.x / 2;
         int length = 0, bars = 0;
 
+        float maxLength = ConfigHolder.CLIENT.numbersAsPercentage.get() ? 20 : max;
+
+        // Normalize hearts into a value of 20 if the config is enabled.
+        if (ConfigHolder.CLIENT.numbersAsPercentage.get()) {
+            int extraHearts = (int)((current - 20) / 2);
+
+            // If the renderer displays as additional hearts, it shouldn't percentage the current.
+            if (ConfigHolder.CLIENT.extraNumberType.get() != "additional")
+            current = (current / max) * 20;
+
+            // Render any health that goes beyond the cap.
+            RenderExtraHealth(UI, max, (extraHearts + 20) * 2);
+        }
+
         Minecraft.getInstance().getTextureManager().bind(UI.texture); // Bind the appropriate texture
 
         // Loop for each additional max nugget.
-        for (int i = 0; i < max / 2; i++) {
+        for (int i = 0; i < maxLength / 2; i++) {
             int dropletHalf = i * 2 + 1;
             int nuggetX = UI.x + (length * 8), offsetY = UI.y;
-
             int xOffset = 4 * bars;
             if (renderOpposite) xOffset = -xOffset;
 
@@ -237,15 +250,7 @@ public class PartyList {
             if (max > 6.0f && current <= 6.0f && updateCounter % (current * 3 + 1) == 0)
                 offsetY = UI.y + (random.nextInt(3) - 1);
 
-            // Draw background
-            Minecraft.getInstance().gui.blit(stack, nuggetX, offsetY+xOffset, backgroundOffset, UI.texture_y, 9, 9);
-
-            // Draw half or full depending on health amount.
-            if ((int) current > dropletHalf) {
-                Minecraft.getInstance().gui.blit(stack, nuggetX, offsetY+xOffset, UI.texture_x, UI.texture_y, 9, 9);
-            }
-            else if ((int) current == dropletHalf)
-                Minecraft.getInstance().gui.blit(stack, nuggetX, offsetY+xOffset, UI.texture_x + halfOffset, UI.texture_y, 9, 9);
+            DrawNugget(UI, current, dropletHalf, nuggetX, xOffset+offsetY, halfOffset, backgroundOffset);
 
             length ++; // increment length tracker.
 
@@ -257,6 +262,47 @@ public class PartyList {
         }
 
         return (6 * (bars + 1));
+    }
+
+    /**
+     * Render the health beyond maximum.
+     */
+    static void RenderExtraHealth(UISpec UI, float max, int extraHearts)
+    {
+        // Render remainder health to the side
+        int remainderX = UI.x + (10 * 8) + 4;
+
+        switch (ConfigHolder.CLIENT.extraNumberType.get()) {
+            case "percentage": // This will show the x% after bars.
+                Minecraft.getInstance().font.drawShadow(stack, String.format("%s",Math.floor(extraHearts / max * 100)) + "%", remainderX, UI.y, 0xFFFFFF);
+                break;
+            case "relative": // This will show the x/x after the bars.
+                Minecraft.getInstance().font.drawShadow(stack, String.format("%s/%s",extraHearts, max), remainderX, UI.y, 0xFFFFFF);
+                break;
+            case "additional": // This will show +X after health.
+                if (extraHearts <= 20) return;
+                Minecraft.getInstance().font.drawShadow(stack, String.format("+%s", (extraHearts - 20) / 2), remainderX, UI.y, 0xFFFFFF);
+                break;
+            case "none": // This will not render anything beyond max and instead scale the health bar.
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Draw an individual nugget onto the screen.
+     */
+    static void DrawNugget(UISpec UI, float current, int dropletHalf, int x, int y, int halfOffset, int backgroundOffset)
+    {
+        // Draw background
+        Minecraft.getInstance().gui.blit(stack, x, y, backgroundOffset, UI.texture_y, 9, 9);
+
+        // Draw half or full depending on health amount.
+        if ((int) current > dropletHalf) {
+            Minecraft.getInstance().gui.blit(stack, x, y, UI.texture_x, UI.texture_y, 9, 9);
+        }
+        else if ((int) current == dropletHalf)
+            Minecraft.getInstance().gui.blit(stack, x, y, UI.texture_x + halfOffset, UI.texture_y, 9, 9);
     }
 
     public static int DrawText(String text, UISpec location)
