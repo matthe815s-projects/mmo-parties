@@ -47,6 +47,7 @@ public class MessagePartyInvite {
 		public static void handle(final MessagePartyInvite pkt, Supplier<NetworkEvent.Context> ctx)
 		{
 			MMOParties.partyInviter = pkt.inviter;
+			Minecraft.getInstance().getToasts().addToast(new InvitedScreen.InvitedToast());
 			ctx.get().setPacketHandled(true);
 		}
 	}
