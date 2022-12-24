@@ -17,6 +17,7 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -28,6 +29,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.server.permission.DefaultPermissionLevel;
@@ -174,6 +176,10 @@ public class MMOParties {
 	 */
 	public static void RegisterCompatibility(BuilderData builder, PartyList.NuggetBar bar)
 	{
+		PartyPacketDataBuilder.builderData.add(builder);
+
+		if (FMLEnvironment.dist == Dist.DEDICATED_SERVER) return;
+
 		// Make a bigger array and clone it.
 		List<PartyList.NuggetBar> bars = new ArrayList<>();
 
@@ -183,6 +189,5 @@ public class MMOParties {
 
 		bars.add(bar);
 		PartyList.nuggetBars = bars.toArray(new PartyList.NuggetBar[0]); // Convert the list to an array.
- 		PartyPacketDataBuilder.builderData.add(builder);
 	}
 }

@@ -277,7 +277,7 @@ public class PartyList {
                 Minecraft.getInstance().font.drawShadow(stack, String.format("%s",Math.floor(extraHearts / max * 100)) + "%", remainderX, UI.y, 0xFFFFFF);
                 break;
             case "compare": // This will show the x/x after the bars.
-                Minecraft.getInstance().font.drawShadow(stack, String.format("%s/%s",extraHearts, max), remainderX, UI.y, 0xFFFFFF);
+                Minecraft.getInstance().font.drawShadow(stack, String.format("%s/%s",extraHearts - 20, max), remainderX, UI.y, 0xFFFFFF);
                 break;
             case "additional": // This will show +X after health.
                 if (extraHearts <= 20) return;

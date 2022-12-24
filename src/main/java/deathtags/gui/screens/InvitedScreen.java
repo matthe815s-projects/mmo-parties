@@ -6,6 +6,7 @@ import deathtags.core.MMOParties;
 import deathtags.networking.EnumPartyGUIAction;
 import deathtags.networking.MessageHandleMenuAction;
 import net.minecraft.advancements.DisplayInfo;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.toasts.IToast;
 import net.minecraft.client.gui.toasts.ToastGui;
@@ -18,6 +19,10 @@ public class InvitedScreen extends Screen {
     public InvitedScreen() {
         super(new TranslationTextComponent("Invited"));
 
+    }
+
+    public static void ShowToast() {
+        Minecraft.getInstance().getToasts().addToast(new InvitedScreen.InvitedToast());
     }
 
     private Button CreateButton(String text, int buttonNumber, Button.IPressable pressable) {

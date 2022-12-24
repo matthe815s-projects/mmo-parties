@@ -11,11 +11,6 @@ public abstract class PlayerGroup {
 	 * The group leader.
 	 */
 	public PlayerEntity leader = null;
-	
-	/**
-	 * A cache of the last sent packet.
-	 */
-	public Map<String, PlayerPing> pings = new HashMap<String, PlayerPing>();
 
 	/**
 	 * Send a member-list update to the entire group.

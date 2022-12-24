@@ -1,19 +1,13 @@
 package deathtags.networking;
 
 import com.google.common.base.Charsets;
+import com.mojang.brigadier.Message;
 import deathtags.core.MMOParties;
-import deathtags.core.events.EventClient;
+
 import deathtags.gui.screens.InvitedScreen;
-import deathtags.gui.screens.PartyScreen;
-import deathtags.stats.Party;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -47,7 +41,7 @@ public class MessagePartyInvite {
 		public static void handle(final MessagePartyInvite pkt, Supplier<NetworkEvent.Context> ctx)
 		{
 			MMOParties.partyInviter = pkt.inviter;
-			Minecraft.getInstance().getToasts().addToast(new InvitedScreen.InvitedToast());
+			InvitedScreen.ShowToast();
 			ctx.get().setPacketHandled(true);
 		}
 	}
