@@ -6,6 +6,7 @@ import deathtags.config.ConfigHolder;
 import deathtags.core.MMOParties;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -89,12 +90,18 @@ public class EventCommon {
         if (!ConfigHolder.COMMON.friendlyFireDisabled.get()) return; // Friendly fire is allowed so this doesn't matter.
         if (event.getEntity().getCommandSenderWorld().isClientSide) return; // Perform on the server only.
 
-        if (! (event.getEntityLiving() instanceof PlayerEntity) // Friendly fire preventative measure only apply to players.
+        if (! (event.getEntityLiving() instanceof PlayerEntity || event.getEntityLiving() instanceof WolfEntity) // Friendly fire preventative measure only apply to players.
                 || ! (event.getSource().getDirectEntity() instanceof PlayerEntity) ) return;
 
-        PlayerEntity player = (PlayerEntity) event.getEntityLiving(), source = (PlayerEntity) event.getSource().getDirectEntity();
+        PlayerEntity player, source = (PlayerEntity) event.getSource().getDirectEntity();
 
-        if (MMOParties.GetStats(source).pvpEnabled) return; // If the source has PVP enabled, then skip the rest of the code.
+        // Determine the owner if the pet if it's a pet.
+        if (event.getEntityLiving() instanceof WolfEntity)
+            player = (PlayerEntity) ((WolfEntity) event.getEntityLiving()).getOwner();
+        else
+            player = (PlayerEntity) event.getEntityLiving();
+
+        if (player == null || MMOParties.GetStats(source).pvpEnabled) return; // If the source has PVP enabled, then skip the rest of the code.
 
         // Handle friendly fire canceling.
         if ((PartyHelper.Server.GetRelation((ServerPlayerEntity) player, (ServerPlayerEntity) source) == EnumRelation.PARTY)) {
