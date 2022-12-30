@@ -36,7 +36,7 @@ public class PartyList {
     private static Minecraft mc;
     private static int updateCounter = 0;
     private static Random random;
-    private static MatrixStack stack = new MatrixStack();
+    private static MatrixStack stack;
 
     private static boolean renderAscending = false;
     private static boolean renderOpposite = false;
@@ -321,6 +321,7 @@ public class PartyList {
 
 	public static void init() {
 		System.out.println("Load GUI");
+        stack = new MatrixStack();
 		MinecraftForge.EVENT_BUS.register(new PartyList());
 	}
 }
