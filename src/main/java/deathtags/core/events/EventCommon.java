@@ -4,6 +4,8 @@ import deathtags.api.PartyHelper;
 import deathtags.api.relation.EnumRelation;
 import deathtags.config.ConfigHolder;
 import deathtags.core.MMOParties;
+import deathtags.networking.MessageSendMemberData;
+import deathtags.networking.PartyPacketDataBuilder;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
 import net.minecraft.entity.passive.WolfEntity;
@@ -16,6 +18,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.network.NetworkDirection;
 
 @Mod.EventBusSubscriber
 public class EventCommon {
@@ -53,6 +56,7 @@ public class EventCommon {
             // Join the player to this party since it's the one.
             svStats.party.Join(player, false);
             svStats.party.Broadcast(new TranslationTextComponent("rpgparties.message.party.player.returned", player.getName().getString()));
+            break; // Stop here.
         }
     }
 
@@ -76,8 +80,12 @@ public class EventCommon {
         if (!playerStats.InParty()) return;
 
         playerStats.party.players.remove(event.getPlayer());
+
+        playerStats.party.SendUpdate();
+        playerStats.party.SendPartyMemberData(event.getPlayer(), true, true);
+
         // Change the leader when you leave.
-        if (playerStats.party.players.size() > 0) playerStats.party.MakeLeader(playerStats.party.players.get(0));
+        if (event.getPlayer() == playerStats.party.leader && playerStats.party.players.size() > 0) playerStats.party.MakeLeader(playerStats.party.players.get(0));
     }
 
     /**
@@ -122,6 +130,6 @@ public class EventCommon {
 
         stats.TickTeleport(); // Tick a teleport step.
 
-        if (stats.party != null) stats.party.SendPartyMemberData(event.player, false); // Sync the player.
+        if (stats.party != null) stats.party.SendPartyMemberData(event.player, false, false); // Sync the player.
     }
 }

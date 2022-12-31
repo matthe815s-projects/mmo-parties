@@ -102,7 +102,7 @@ public class Party extends PlayerGroup
 		
 		if (displayMessage) Broadcast( new TranslationTextComponent( "rpgparties.message.party.joined", player.getName().getContents() ) );
 		
-		for ( PlayerEntity member : players ) SendPartyMemberData( member, true ); // Update all of the party members.
+		for ( PlayerEntity member : players ) SendPartyMemberData( member, true, false ); // Update all of the party members.
 		
 		SendUpdate(); // Send a player stat update.
 	}
@@ -113,8 +113,7 @@ public class Party extends PlayerGroup
 		
 		Broadcast( new TranslationTextComponent( "rpgparties.message.party.player.left", player.getName().getContents() ) );
 
-		for ( PlayerEntity member : players ) SendPartyMemberData ( member, true );
-		SendPartyMemberData(player, true); // Send one last update.
+		SendPartyMemberData(player,true, true); // Send one last update.
 		
 		if (player == this.leader && players.size() > 0) this.leader = players.get(0); // If the player was the leader, then assign a new leader.
 
@@ -122,7 +121,7 @@ public class Party extends PlayerGroup
 
 		MMOParties.GetStats(player).party = null; // No party.
 		MMOParties.network.sendTo(new MessageUpdateParty(""), ((ServerPlayerEntity)player).connection.connection, NetworkDirection.PLAY_TO_CLIENT); // Clear the player's party.
-		
+
 		// Disband the party of 1 player. Don't disband if auto-parties is enabled.
 		if (players.size() == 1 && !ConfigHolder.COMMON.autoAssignParties.get()) Disband();
 
@@ -181,7 +180,7 @@ public class Party extends PlayerGroup
 	}
 	
 	@Override
-	public void SendPartyMemberData(PlayerEntity member, boolean bypassLimit)
+	public void SendPartyMemberData(PlayerEntity member, boolean bypassLimit, boolean remove)
 	{
 		if (IsDataDifferent(member) || bypassLimit)
 		{
@@ -199,7 +198,7 @@ public class Party extends PlayerGroup
 
 				MMOParties.network.sendTo(
 					new MessageSendMemberData(builder
-				), ((ServerPlayerEntity)party_player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+				, remove), ((ServerPlayerEntity)party_player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
 			}
 		}
 	}
