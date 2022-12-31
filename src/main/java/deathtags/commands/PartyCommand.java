@@ -86,6 +86,7 @@ public class PartyCommand {
 	
 	private static int run(CommandContext<CommandSourceStack> context, String sub, String targetStr) throws CommandSyntaxException {
 		ServerPlayer player = context.getSource().getPlayerOrException();
+		System.out.println(player);
 		ServerPlayer target = null; // This is null until the next statement. It can remain null.
 
 		if (targetStr != null) (context.getSource().getPlayerOrException()).getServer().getPlayerList().getPlayerByName(targetStr);
@@ -94,6 +95,7 @@ public class PartyCommand {
 		if (player.getCommandSenderWorld().isClientSide) return 0; // Only perform operations on the server side.
 			
 		PlayerStats stats = MMOParties.GetStats( player );
+		System.out.println(stats);
 		
 		switch (sub) {
 			case "tp":

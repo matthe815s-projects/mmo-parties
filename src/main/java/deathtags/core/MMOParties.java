@@ -153,7 +153,7 @@ public class MMOParties {
 	public static PlayerStats GetStatsByName(String username)
 	{
 		for (Entry<Player, deathtags.stats.PlayerStats> plr : PlayerStats.entrySet()) {
-			if ( plr.getKey().getName().getContents().equals(username) )
+			if ( plr.getKey().getName().getString().equals(username) )
 				return plr.getValue();
 		}
 

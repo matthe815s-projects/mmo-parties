@@ -47,8 +47,7 @@ public class EventCommon {
     public void RejoinLastParty(Player player)
     {
         for (ServerPlayer serverPlayer : player.getServer().getPlayerList().getPlayers()) {
-            PlayerStats svStats = MMOParties.GetStats(serverPlayer); // Get the stats for this server player.
-            if (svStats == null) return;
+            PlayerStats svStats = MMOParties.GetStatsByName(serverPlayer.getName().getString()); // Get the stats for this server player.
 
             // Continue if this is not the party we're looking for.
             if (!svStats.InParty() || !svStats.party.IsMemberOffline(player)) continue;
