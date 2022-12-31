@@ -27,8 +27,8 @@ public class PartyPacketDataBuilder {
 	}
 
 	public PartyPacketDataBuilder SetPlayer (Player player) {
-		this.nameLength = player.getName().getContents().length();
-		this.playerId = player.getName().getContents();
+		this.nameLength = player.getName().getString().length();
+		this.playerId = player.getName().getString();
 		this.player = player;
 		return this;
 	}

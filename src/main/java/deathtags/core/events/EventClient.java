@@ -18,7 +18,7 @@ public class EventClient {
      */
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public void OnServerDisconnect(ClientPlayerNetworkEvent.LoggedOutEvent event)
+    public void OnServerDisconnect(ClientPlayerNetworkEvent.LoggingOut event)
     {
         MMOParties.localParty = null;
     }
@@ -28,7 +28,7 @@ public class EventClient {
      */
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public void OnKeyInput(InputEvent.KeyInputEvent event) {
+    public void OnKeyInput(InputEvent.Key event) {
         // Open the party menu when the GUI key is pressed.
         if (MMOParties.OPEN_GUI_KEY.isDown()) {
             // Open the party invitation menu if you have an invite.

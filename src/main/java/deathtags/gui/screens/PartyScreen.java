@@ -10,7 +10,8 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
@@ -25,14 +26,14 @@ public class PartyScreen extends Screen {
     private EnumPartyGUIAction menu;
 
     public PartyScreen() {
-        super(new TranslatableComponent(MMOParties.localParty == null ? "rpgparties.gui.title.invite" : "rpgparties.gui.title"));
+        super(Component.translatable(MMOParties.localParty == null ? "rpgparties.gui.title.invite" : "rpgparties.gui.title"));
 
         // If not in party, display the invite menu.
         if (MMOParties.localParty == null) menu = EnumPartyGUIAction.INVITE;
         else menu = EnumPartyGUIAction.KICK;
     }
 
-    public PartyScreen(TranslatableComponent title, int menu) {
+    public PartyScreen(MutableComponent title, int menu) {
         super(title);
         this.menu = EnumPartyGUIAction.values()[menu];
     }
@@ -50,7 +51,7 @@ public class PartyScreen extends Screen {
 
         if (menu == EnumPartyGUIAction.INVITE) buttonY = 26 * (this.children().size()); // Exception for the invite menu.
 
-        return new Button((this.width - 200) / 2, buttonY, 200, 20, new TranslatableComponent(text), button -> {
+        return new Button((this.width - 200) / 2, buttonY, 200, 20, Component.translatable(text), button -> {
             this.onClose();
             pressable.onPress(button);
         });
@@ -73,7 +74,7 @@ public class PartyScreen extends Screen {
         int buttonNumber = 1;
 
         // Invite more players
-        this.addWidget(CreateButton("rpgparties.gui.invite", buttonNumber++, p_onPress_1_ -> Minecraft.getInstance().setScreen(new PartyScreen(new TranslatableComponent("rpgparties.gui.title.invite"), 1))));
+        this.addWidget(CreateButton("rpgparties.gui.invite", buttonNumber++, p_onPress_1_ -> Minecraft.getInstance().setScreen(new PartyScreen(Component.translatable("rpgparties.gui.title.invite"), 1))));
 
         MMOParties.localParty.local_players.forEach(player -> {
             int height = 26 * (2 + MMOParties.localParty.local_players.indexOf(player));
@@ -113,7 +114,7 @@ public class PartyScreen extends Screen {
                 break;
 
             case INVITE: // invite player
-                Widget widget = this.addWidget(new Button((this.width) - 70, 8, 60, 20, new TranslatableComponent("rpgparties.gui.inviteall"), button -> {
+                Widget widget = this.addWidget(new Button((this.width) - 70, 8, 60, 20, Component.translatable("rpgparties.gui.inviteall"), button -> {
                     MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.INVITE)); // Send UI event to the server.
                 })); // invite all button
 

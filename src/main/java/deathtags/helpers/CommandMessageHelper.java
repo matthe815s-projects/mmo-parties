@@ -13,20 +13,20 @@ public class CommandMessageHelper {
 	public static void SendInfo (Player player, String message, String... arguments )
 	{
 		player.displayClientMessage( 
-			new TranslatableComponent( message, arguments )
+			Component.translatable( message, arguments )
 			, false
 		);
 	}
 
 	public static void SendInfoWithButton ( Player player, String message, String... arguments )
 	{
-		TranslatableComponent component = new TranslatableComponent( message, arguments );
+		MutableComponent component = Component.translatable( message, arguments );
 
-		MutableComponent button = new TextComponent(" [ACCEPT]").setStyle(
+		MutableComponent button = Component.literal(" [ACCEPT]").setStyle(
 				Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept")).withColor(TextColor.parseColor("#FFAA00"))
 		);
 
-		MutableComponent button2 = new TextComponent(" [DENY]").setStyle(
+		MutableComponent button2 = Component.literal(" [DENY]").setStyle(
 				Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party deny")).withColor(TextColor.parseColor("#FF5555"))
 		);
 
@@ -47,7 +47,7 @@ public class CommandMessageHelper {
 	public static void SendError ( Player player, String message, String... arguments )
 	{
 		player.displayClientMessage( 
-			new TranslatableComponent( message, arguments )
+			Component.translatable( message, arguments )
 			.setStyle( 
 					Style.EMPTY.withColor(TextColor.parseColor("#FF0000"))
 			), false

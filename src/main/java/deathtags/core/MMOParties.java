@@ -18,7 +18,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.ClientRegistry;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -79,6 +79,7 @@ public class MMOParties {
 		// Construct game events.
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::OnSetup);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::OnClientInitialize);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::KeyBinds);
 
 		MinecraftForge.EVENT_BUS.addListener(this::OnCommandRegister);
 		MinecraftForge.EVENT_BUS.addListener(this::OnServerInitialize);
@@ -116,6 +117,10 @@ public class MMOParties {
 		network.registerMessage(5, MessageOpenUI.class, MessageOpenUI::encode, MessageOpenUI::decode, MessageOpenUI.Handler::handleServer);
 	}
 
+	public void KeyBinds(RegisterKeyMappingsEvent event) {
+		event.register(OPEN_GUI_KEY);
+	}
+
 	/**
 	 * Fired when a client is being setup during mod initialization.
 	 * Does not run on the server.
@@ -128,7 +133,6 @@ public class MMOParties {
 
 		// Creates and registers the key-binding on a universal scale.
 		OPEN_GUI_KEY = new KeyMapping("key.opengui.desc", KeyConflictContext.UNIVERSAL, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_P, "key.mmoparties.category"); // Open GUI on G.
-		ClientRegistry.registerKeyBinding(OPEN_GUI_KEY);
 	}
 
 	/**

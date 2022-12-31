@@ -1,6 +1,7 @@
 package deathtags.stats;
 
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Player;
 
 public abstract class PlayerGroup {
@@ -39,8 +40,8 @@ public abstract class PlayerGroup {
 	 * Broadcast a message to the entire group.
 	 * @param message
 	 */
-	public abstract void Broadcast(TranslatableComponent message);
-	
+	public abstract void Broadcast (MutableComponent message);
+
 	/**
 	 * Get all of the players alive in the group.
 	 * @return
@@ -60,7 +61,7 @@ public abstract class PlayerGroup {
 	public void MakeLeader(Player member)
 	{
 		this.leader = member;
-		this.Broadcast(new TranslatableComponent("rpgparties.message.leader.make", member.getName().getString(), this.GetGroupAlias()));
+		this.Broadcast(Component.translatable("rpgparties.message.leader.make", member.getName().getString(), this.GetGroupAlias()));
 
 		for ( Player player : this.GetOnlinePlayers() ) SendPartyMemberData ( player, true, false );
 		SendUpdate();

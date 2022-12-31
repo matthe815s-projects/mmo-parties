@@ -7,16 +7,16 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import deathtags.config.ConfigHolder;
 import deathtags.networking.BuilderData;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.screens.Overlay;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.gui.ForgeIngameGui;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.NamedGuiOverlay;
 import net.minecraftforge.fml.common.Mod;
-import org.lwjgl.opengl.GL11;
 
 import deathtags.core.MMOParties;
 import deathtags.stats.PartyMemberData;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -96,10 +96,7 @@ public class PartyList {
     }
 
     @SubscribeEvent
-    public void onRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
-        if (event.getType() != ElementType.TEXT)
-            return;
-
+    public void onRenderGameOverlay(RenderGuiOverlayEvent.Pre event) {
         int lastOffset = 0;
 
         mc = Minecraft.getInstance();
@@ -307,7 +304,7 @@ public class PartyList {
     {
         RenderSystem.setShaderTexture(0, ui.texture);
         Minecraft.getInstance().gui.blit(stack, ui.x, ui.y, ui.texture_x, ui.texture_y, ui.width, ui.height);
-        RenderSystem.setShaderTexture(0, ForgeIngameGui.GUI_ICONS_LOCATION);
+        RenderSystem.setShaderTexture(0, ForgeGui.GUI_ICONS_LOCATION);
         return ui.height;
     }
 

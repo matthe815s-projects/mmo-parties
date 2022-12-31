@@ -83,7 +83,7 @@ public class PartyHelper {
          */
         public static EnumRelation GetRelation(ServerPlayer player, ServerPlayer target)
         {
-            PlayerStats playerStats = MMOParties.GetStatsByName( player.getName().getContents() );
+            PlayerStats playerStats = MMOParties.GetStatsByName( player.getName().getString() );
 
             if (playerStats.InParty() && playerStats.party.IsMember( target )) return EnumRelation.PARTY; // The member is part of a part with the other.
             return EnumRelation.NONE;

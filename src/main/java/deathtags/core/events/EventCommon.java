@@ -6,7 +6,7 @@ import deathtags.config.ConfigHolder;
 import deathtags.core.MMOParties;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.player.Player;
@@ -32,7 +32,7 @@ public class EventCommon {
     @SubscribeEvent
     public void onPlayerJoined(PlayerEvent.PlayerLoggedInEvent event)
     {
-        Player player = event.getPlayer();
+        Player player = event.getEntity();
         if (!MMOParties.PlayerStats.containsKey(player)) MMOParties.PlayerStats.put(player, new PlayerStats( player ));
 
         // Attempt to rejoin the last party in which the player was online in.
@@ -48,11 +48,13 @@ public class EventCommon {
     {
         for (ServerPlayer serverPlayer : player.getServer().getPlayerList().getPlayers()) {
             PlayerStats svStats = MMOParties.GetStats(serverPlayer); // Get the stats for this server player.
+            if (svStats == null) return;
+
             // Continue if this is not the party we're looking for.
             if (!svStats.InParty() || !svStats.party.IsMemberOffline(player)) continue;
             // Join the player to this party since it's the one.
             svStats.party.Join(player, false);
-            svStats.party.Broadcast(new TranslatableComponent("rpgparties.message.party.player.returned", player.getName().getString()));
+            svStats.party.Broadcast(Component.translatable("rpgparties.message.party.player.returned", player.getName().getString()));
             break; // Stop here.
         }
     }
@@ -70,19 +72,21 @@ public class EventCommon {
     @SubscribeEvent
     public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event)
     {
-        PlayerStats playerStats = MMOParties.GetStats(event.getPlayer());
-        MMOParties.PlayerStats.remove(event.getPlayer()); // Remove the player's temporary data.
+        PlayerStats playerStats = MMOParties.GetStats(event.getEntity());
+        if (playerStats == null) return;
+
+        MMOParties.PlayerStats.remove(event.getEntity()); // Remove the player's temporary data.
 
         // Process the handling for shifting the leader.
         if (!playerStats.InParty()) return;
 
-        playerStats.party.players.remove(event.getPlayer());
+        playerStats.party.players.remove(event.getEntity());
 
         playerStats.party.SendUpdate();
-        playerStats.party.SendPartyMemberData(event.getPlayer(), true, true);
+        playerStats.party.SendPartyMemberData(event.getEntity(), true, true);
 
         // Change the leader when you leave.
-        if (event.getPlayer() == playerStats.party.leader && playerStats.party.players.size() > 0) playerStats.party.MakeLeader(playerStats.party.players.get(0));
+        if (event.getEntity() == playerStats.party.leader && playerStats.party.players.size() > 0) playerStats.party.MakeLeader(playerStats.party.players.get(0));
     }
 
     /**
@@ -95,16 +99,16 @@ public class EventCommon {
         if (!ConfigHolder.COMMON.friendlyFireDisabled.get()) return; // Friendly fire is allowed so this doesn't matter.
         if (event.getEntity().getCommandSenderWorld().isClientSide) return; // Perform on the server only.
 
-        if (! (event.getEntityLiving() instanceof Player || event.getEntityLiving() instanceof Wolf) // Friendly fire preventative measure only apply to players.
+        if (! (event.getEntity() instanceof Player || event.getEntity() instanceof Wolf) // Friendly fire preventative measure only apply to players.
                 || ! (event.getSource().getDirectEntity() instanceof Player) ) return;
 
         Player player, source = (Player) event.getSource().getDirectEntity();
 
         // Determine the owner if the pet if it's a pet.
-        if (event.getEntityLiving() instanceof Wolf)
-            player = (Player) ((Wolf) event.getEntityLiving()).getOwner();
+        if (event.getEntity() instanceof Wolf)
+            player = (Player) ((Wolf) event.getEntity()).getOwner();
         else
-            player = (Player) event.getEntityLiving();
+            player = (Player) event.getEntity();
 
         if (player == null || MMOParties.GetStats(source).pvpEnabled) return; // If the source has PVP enabled, then skip the rest of the code.
 
