@@ -1,27 +1,27 @@
 package deathtags.gui.builders;
 
-import deathtags.config.ConfigHolder;
+import deathtags.core.ConfigHandler;
 import deathtags.gui.PartyList;
 import deathtags.gui.UISpec;
 import deathtags.networking.BuilderData;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class BuilderAbsorption implements BuilderData {
     float absorption;
 
     @Override
-    public void OnWrite(PacketBuffer buffer, PlayerEntity player) {
+    public void OnWrite(ByteBuf buffer, EntityPlayer player) {
         buffer.writeFloat(player.getAbsorptionAmount());
     }
 
     @Override
-    public void OnRead(PacketBuffer buffer) {
+    public void OnRead(ByteBuf buffer) {
         absorption = buffer.readFloat();
     }
 
     @Override
-    public boolean IsDifferent(PlayerEntity player) {
+    public boolean IsDifferent(EntityPlayer player) {
         return absorption != player.getAbsorptionAmount();
     }
 
@@ -31,7 +31,7 @@ public class BuilderAbsorption implements BuilderData {
         public int Render(BuilderData data, int xOffset, int yOffset, boolean compact) {
             BuilderAbsorption builder = (BuilderAbsorption) data;
             return PartyList.Draw(builder.absorption, builder.absorption, new UISpec(PartyList.HEART_TEXTURE, xOffset, yOffset, 160, 0, 9, 9), 16, 9, compact,
-                    ConfigHolder.CLIENT.showAbsorption.get() && builder.absorption > 0);
+                    ConfigHandler.Client_Options.showAbsorption && builder.absorption > 0);
         }
     }
 }

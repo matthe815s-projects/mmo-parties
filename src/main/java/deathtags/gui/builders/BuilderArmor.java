@@ -1,28 +1,28 @@
 package deathtags.gui.builders;
 
-import deathtags.config.ConfigHolder;
+import deathtags.core.ConfigHandler;
 import deathtags.gui.PartyList;
 import deathtags.gui.UISpec;
 import deathtags.networking.BuilderData;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class BuilderArmor implements BuilderData {
     float armor;
 
     @Override
-    public void OnWrite(PacketBuffer buffer, PlayerEntity player) {
-        buffer.writeFloat(player.getArmorValue());
+    public void OnWrite(ByteBuf buffer, EntityPlayer player) {
+        buffer.writeFloat(player.getTotalArmorValue());
     }
 
     @Override
-    public void OnRead(PacketBuffer buffer) {
+    public void OnRead(ByteBuf buffer) {
         armor = buffer.readFloat();
     }
 
     @Override
-    public boolean IsDifferent(PlayerEntity player) {
-        return armor != player.getArmorValue();
+    public boolean IsDifferent(EntityPlayer player) {
+        return armor != player.getTotalArmorValue();
     }
 
     public static class NuggetBar implements PartyList.NuggetBar {
@@ -31,7 +31,7 @@ public class BuilderArmor implements BuilderData {
         public int Render(BuilderData data, int xOffset, int yOffset, boolean compact) {
             BuilderArmor builder = (BuilderArmor) data;
             return PartyList.Draw(builder.armor, builder.armor, new UISpec(PartyList.HEART_TEXTURE, xOffset, yOffset, 34, 9, 9, 9), 16, -9, compact,
-                    ConfigHolder.CLIENT.showArmor.get() && builder.armor > 0);
+                    ConfigHandler.Client_Options.showArmor && builder.armor > 0);
         }
     }
 }

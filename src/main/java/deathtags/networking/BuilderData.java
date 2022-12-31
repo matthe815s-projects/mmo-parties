@@ -2,8 +2,6 @@ package deathtags.networking;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
 
 public interface BuilderData {
     /**

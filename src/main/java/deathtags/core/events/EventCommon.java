@@ -81,7 +81,7 @@ public class EventCommon {
         if (!ConfigHandler.Server_Options.friendlyFireDisabled) return; // Friendly fire is allowed so this doesn't matter.
         if (event.getEntity().world.isRemote) return; // Perform on the server only.
 
-        if (! (event.getEntityLiving() instanceof EntityPlayer || event.getEntityLiving() instanceof WolfEntity) // Friendly fire preventative measure only apply to players.
+        if (! (event.getEntityLiving() instanceof EntityPlayer || event.getEntityLiving() instanceof EntityWolf) // Friendly fire preventative measure only apply to players.
                 || ! (event.getSource().getTrueSource() instanceof EntityPlayer) ) return;
 
         EntityPlayer player, source = (EntityPlayer) event.getSource().getTrueSource();
@@ -109,6 +109,6 @@ public class EventCommon {
 
         stats.TickTeleport();
 
-        if (stats.party != null) stats.party.SendPartyMemberData(event.player, false); // Sync the player.
+        if (stats.party != null) stats.party.SendPartyMemberData(event.player, false, false); // Sync the player.
     }
 }

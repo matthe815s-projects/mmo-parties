@@ -24,27 +24,33 @@ public class MessageSendMemberData implements IMessage {
 
   }
 
-  public MessageSendMemberData(PartyPacketDataBuilder data) 
+  public MessageSendMemberData(PartyPacketDataBuilder data)
+  {
+		this.builder = data;
+  }
+
+  public MessageSendMemberData(PartyPacketDataBuilder data, boolean remove)
   {
 	  this.builder = data;
+	  this.remove = remove;
   }
 
   @Override
   public void fromBytes(ByteBuf buf) 
   {
-	  MessageSendMemberData data = new MessageSendMemberData( new PartyPacketDataBuilder()
-			  .SetName(buf.readCharSequence(buf.readInt(), Charsets.UTF_8).toString()));
+	  builder = new PartyPacketDataBuilder()
+			  .SetName(buf.readCharSequence(buf.readInt(), Charsets.UTF_8).toString());
 
-	  data.remove = buf.readBoolean();
+	  remove = buf.readBoolean();
 
 	  // Instantiate builders
 	  // Creates a new instance of the builder for each party member.
 	  for (int i = 0; i < PartyPacketDataBuilder.builderData.size(); i++) {
 		  Class<? extends BuilderData> aClass = (PartyPacketDataBuilder.builderData.get(i)).getClass();
 		  try {
-			  BuilderData builder = aClass.newInstance();
-			  builder.OnRead(buf);
-			  data.builder.AddData(i, builder);
+			  BuilderData builderData = aClass.newInstance();
+			  builderData.OnRead(buf);
+			  builder.AddData(i, builderData);
 		  } catch (InstantiationException e) {
 			  throw new RuntimeException(e);
 		  } catch (IllegalAccessException e) {

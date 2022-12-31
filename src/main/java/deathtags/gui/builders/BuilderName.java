@@ -4,24 +4,24 @@ import com.google.common.base.Charsets;
 import deathtags.gui.PartyList;
 import deathtags.gui.UISpec;
 import deathtags.networking.BuilderData;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class BuilderName implements BuilderData {
     String name;
     @Override
-    public void OnWrite(PacketBuffer buffer, PlayerEntity player) {
-        buffer.writeInt(player.getName().getString().length());
-        buffer.writeCharSequence(player.getName().getString(), Charsets.UTF_8);
+    public void OnWrite(ByteBuf buffer, EntityPlayer player) {
+        buffer.writeInt(player.getName().length());
+        buffer.writeCharSequence(player.getName(), Charsets.UTF_8);
     }
 
     @Override
-    public void OnRead(PacketBuffer buffer) {
+    public void OnRead(ByteBuf buffer) {
         name = (String)buffer.readCharSequence(buffer.readInt(), Charsets.UTF_8);
     }
 
     @Override
-    public boolean IsDifferent(PlayerEntity player) {
+    public boolean IsDifferent(EntityPlayer player) {
         return false;
     }
 
