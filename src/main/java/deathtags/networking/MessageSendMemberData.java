@@ -4,12 +4,11 @@ import java.util.function.Supplier;
 
 import com.google.common.base.Charsets;
 
-import com.mojang.brigadier.Message;
 import deathtags.core.MMOParties;
 import deathtags.stats.Party;
 import deathtags.stats.PartyMemberData;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import io.netty.buffer.ByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 public class MessageSendMemberData {
 
@@ -29,7 +28,7 @@ public class MessageSendMemberData {
 		this.remove = remove;
   }
 
-  public static MessageSendMemberData decode(PacketBuffer buf)
+  public static MessageSendMemberData decode(ByteBuf buf)
   {
 	  MessageSendMemberData data = new MessageSendMemberData( new PartyPacketDataBuilder()
 			  .SetName(buf.readCharSequence(buf.readInt(), Charsets.UTF_8).toString()));
@@ -54,7 +53,7 @@ public class MessageSendMemberData {
 	  return data;
   }
 
-  public static void encode(MessageSendMemberData msg, PacketBuffer buf) 
+  public static void encode(MessageSendMemberData msg, ByteBuf buf)
   {
 	  buf.writeInt(msg.builder.nameLength);
 	  buf.writeCharSequence(msg.builder.playerId, Charsets.UTF_8);
@@ -75,7 +74,6 @@ public class MessageSendMemberData {
 		// Remove this data and clear it out.
 		if (message.remove) {
 			MMOParties.localParty.data.remove(player.name);
-			System.out.println("Remove player " + player.name);
 			System.out.println(MMOParties.localParty.data.size());
 			ctx.get().setPacketHandled(true);
 			return;

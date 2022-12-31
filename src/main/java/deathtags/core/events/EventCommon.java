@@ -4,21 +4,18 @@ import deathtags.api.PartyHelper;
 import deathtags.api.relation.EnumRelation;
 import deathtags.config.ConfigHolder;
 import deathtags.core.MMOParties;
-import deathtags.networking.MessageSendMemberData;
-import deathtags.networking.PartyPacketDataBuilder;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
-import net.minecraft.entity.passive.WolfEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.animal.Wolf;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.network.NetworkDirection;
 
 @Mod.EventBusSubscriber
 public class EventCommon {
@@ -35,7 +32,7 @@ public class EventCommon {
     @SubscribeEvent
     public void onPlayerJoined(PlayerEvent.PlayerLoggedInEvent event)
     {
-        PlayerEntity player = event.getPlayer();
+        Player player = event.getPlayer();
         if (!MMOParties.PlayerStats.containsKey(player)) MMOParties.PlayerStats.put(player, new PlayerStats( player ));
 
         // Attempt to rejoin the last party in which the player was online in.
@@ -47,20 +44,20 @@ public class EventCommon {
             HandleGlobalParty(player);
     }
 
-    public void RejoinLastParty(PlayerEntity player)
+    public void RejoinLastParty(Player player)
     {
-        for (ServerPlayerEntity serverPlayer : player.getServer().getPlayerList().getPlayers()) {
+        for (ServerPlayer serverPlayer : player.getServer().getPlayerList().getPlayers()) {
             PlayerStats svStats = MMOParties.GetStats(serverPlayer); // Get the stats for this server player.
             // Continue if this is not the party we're looking for.
             if (!svStats.InParty() || !svStats.party.IsMemberOffline(player)) continue;
             // Join the player to this party since it's the one.
             svStats.party.Join(player, false);
-            svStats.party.Broadcast(new TranslationTextComponent("rpgparties.message.party.player.returned", player.getName().getString()));
+            svStats.party.Broadcast(new TranslatableComponent("rpgparties.message.party.player.returned", player.getName().getString()));
             break; // Stop here.
         }
     }
 
-    public void HandleGlobalParty(PlayerEntity player)
+    public void HandleGlobalParty(Player player)
     {
         if (globalParty == null) globalParty = Party.CreateGlobalParty( player );
         else if (!globalParty.IsMember(player)) globalParty.Join(player, false);
@@ -98,21 +95,21 @@ public class EventCommon {
         if (!ConfigHolder.COMMON.friendlyFireDisabled.get()) return; // Friendly fire is allowed so this doesn't matter.
         if (event.getEntity().getCommandSenderWorld().isClientSide) return; // Perform on the server only.
 
-        if (! (event.getEntityLiving() instanceof PlayerEntity || event.getEntityLiving() instanceof WolfEntity) // Friendly fire preventative measure only apply to players.
-                || ! (event.getSource().getDirectEntity() instanceof PlayerEntity) ) return;
+        if (! (event.getEntityLiving() instanceof Player || event.getEntityLiving() instanceof Wolf) // Friendly fire preventative measure only apply to players.
+                || ! (event.getSource().getDirectEntity() instanceof Player) ) return;
 
-        PlayerEntity player, source = (PlayerEntity) event.getSource().getDirectEntity();
+        Player player, source = (Player) event.getSource().getDirectEntity();
 
         // Determine the owner if the pet if it's a pet.
-        if (event.getEntityLiving() instanceof WolfEntity)
-            player = (PlayerEntity) ((WolfEntity) event.getEntityLiving()).getOwner();
+        if (event.getEntityLiving() instanceof Wolf)
+            player = (Player) ((Wolf) event.getEntityLiving()).getOwner();
         else
-            player = (PlayerEntity) event.getEntityLiving();
+            player = (Player) event.getEntityLiving();
 
         if (player == null || MMOParties.GetStats(source).pvpEnabled) return; // If the source has PVP enabled, then skip the rest of the code.
 
         // Handle friendly fire canceling.
-        if ((PartyHelper.Server.GetRelation((ServerPlayerEntity) player, (ServerPlayerEntity) source) == EnumRelation.PARTY)) {
+        if ((PartyHelper.Server.GetRelation((ServerPlayer) player, (ServerPlayer) source) == EnumRelation.PARTY)) {
             event.setCanceled(true);
             return;
         }

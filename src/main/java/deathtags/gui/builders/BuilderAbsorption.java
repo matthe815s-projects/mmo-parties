@@ -4,24 +4,24 @@ import deathtags.config.ConfigHolder;
 import deathtags.gui.PartyList;
 import deathtags.gui.UISpec;
 import deathtags.networking.BuilderData;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.world.entity.player.Player;
 
 public class BuilderAbsorption implements BuilderData {
     float absorption;
 
     @Override
-    public void OnWrite(PacketBuffer buffer, PlayerEntity player) {
+    public void OnWrite(ByteBuf buffer, Player player) {
         buffer.writeFloat(player.getAbsorptionAmount());
     }
 
     @Override
-    public void OnRead(PacketBuffer buffer) {
+    public void OnRead(ByteBuf buffer) {
         absorption = buffer.readFloat();
     }
 
     @Override
-    public boolean IsDifferent(PlayerEntity player) {
+    public boolean IsDifferent(Player player) {
         return absorption != player.getAbsorptionAmount();
     }
 

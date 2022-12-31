@@ -2,19 +2,19 @@ package deathtags.gui;
 
 import java.util.Random;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import deathtags.config.ConfigHolder;
 import deathtags.networking.BuilderData;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.gui.ForgeIngameGui;
 import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.opengl.GL11;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-
 import deathtags.core.MMOParties;
 import deathtags.stats.PartyMemberData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.MinecraftForge;
@@ -36,7 +36,7 @@ public class PartyList {
     private static Minecraft mc;
     private static int updateCounter = 0;
     private static Random random;
-    private static MatrixStack stack;
+    private static PoseStack stack;
 
     private static boolean renderAscending = false;
     private static boolean renderOpposite = false;
@@ -97,17 +97,10 @@ public class PartyList {
 
     @SubscribeEvent
     public void onRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
-        if ((event.getType() == ElementType.HEALTH || event.getType() == ElementType.ARMOR) && ConfigHolder.CLIENT.hideGUI.get()) {
-            event.setCanceled(true);
-            return;
-        }
-
         if (event.getType() != ElementType.TEXT)
             return;
 
         int lastOffset = 0;
-
-        GL11.glScalef(1, 1, 1);
 
         mc = Minecraft.getInstance();
         
@@ -128,14 +121,13 @@ public class PartyList {
             }
         }
         
-        Minecraft.getInstance().getTextureManager().bind(AbstractGui.GUI_ICONS_LOCATION);
+        RenderSystem.setShaderTexture(0, Gui.GUI_ICONS_LOCATION);
     }
 
     /**
      * Draw a sectioned "nugget bar" in a compacted setting (icon + number) at a specified position.
      * Positioning of the element is automatically handled and supplied in the UI argument.
      * @param current
-     * @param max
      * @param UI
      * @param backgroundOffset
      * @return
@@ -146,7 +138,7 @@ public class PartyList {
         int startX = left;
         int startY = top;
 
-        Minecraft.getInstance().getTextureManager().bind(UI.texture); // Bind the appropriate texture
+        RenderSystem.setShaderTexture(0, UI.texture); // Bind the appropriate texture
 
         Minecraft.getInstance().gui.blit(stack, startX, startY, backgroundOffset, UI.texture_y, 9, 9);
         Minecraft.getInstance().gui.blit(stack, startX, startY, UI.texture_x, UI.texture_y, 9, 9);
@@ -237,7 +229,7 @@ public class PartyList {
             RenderExtraHealth(UI, max, (extraHearts + 20) * 2);
         }
 
-        Minecraft.getInstance().getTextureManager().bind(UI.texture); // Bind the appropriate texture
+        RenderSystem.setShaderTexture(0, UI.texture); // Bind the appropriate texture
 
         // Loop for each additional max nugget.
         for (int i = 0; i < maxLength / 2; i++) {
@@ -313,15 +305,15 @@ public class PartyList {
 
     public static int DrawResource(UISpec ui)
     {
-        Minecraft.getInstance().getTextureManager().bind(ui.texture);
+        RenderSystem.setShaderTexture(0, ui.texture);
         Minecraft.getInstance().gui.blit(stack, ui.x, ui.y, ui.texture_x, ui.texture_y, ui.width, ui.height);
-        Minecraft.getInstance().getTextureManager().bind(ForgeIngameGui.GUI_ICONS_LOCATION);
+        RenderSystem.setShaderTexture(0, ForgeIngameGui.GUI_ICONS_LOCATION);
         return ui.height;
     }
 
 	public static void init() {
 		System.out.println("Load GUI");
-        stack = new MatrixStack();
+        stack = new PoseStack();
 		MinecraftForge.EVENT_BUS.register(new PartyList());
 	}
 }

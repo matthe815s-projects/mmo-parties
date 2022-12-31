@@ -5,8 +5,8 @@ import deathtags.core.MMOParties;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +70,7 @@ public class PartyHelper {
          * Get party by player instance.
          * @return
          */
-        public static Party GetParty(ServerPlayerEntity player)
+        public static Party GetParty(ServerPlayer player)
         {
             return MMOParties.GetStatsByName(player.getName().getString()).party;
         }
@@ -81,7 +81,7 @@ public class PartyHelper {
          * @param target
          * @return
          */
-        public static EnumRelation GetRelation(ServerPlayerEntity player, ServerPlayerEntity target)
+        public static EnumRelation GetRelation(ServerPlayer player, ServerPlayer target)
         {
             PlayerStats playerStats = MMOParties.GetStatsByName( player.getName().getContents() );
 

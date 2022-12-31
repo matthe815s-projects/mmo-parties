@@ -1,14 +1,13 @@
 package deathtags.networking;
 
-import javafx.util.Builder;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PartyPacketDataBuilder {
 
-	public PlayerEntity player;
+	public Player player;
 	public int nameLength;
 	public String playerId;
 	public float health = 0;
@@ -27,7 +26,7 @@ public class PartyPacketDataBuilder {
 		this.data = new BuilderData[builderData.size()];
 	}
 
-	public PartyPacketDataBuilder SetPlayer (PlayerEntity player) {
+	public PartyPacketDataBuilder SetPlayer (Player player) {
 		this.nameLength = player.getName().getContents().length();
 		this.playerId = player.getName().getContents();
 		this.player = player;

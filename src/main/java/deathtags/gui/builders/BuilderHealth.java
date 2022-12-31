@@ -3,27 +3,27 @@ package deathtags.gui.builders;
 import deathtags.gui.PartyList;
 import deathtags.gui.UISpec;
 import deathtags.networking.BuilderData;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.world.entity.player.Player;
 
 public class BuilderHealth implements BuilderData {
     float health;
     float maxHealth;
 
     @Override
-    public void OnWrite(PacketBuffer buffer, PlayerEntity player) {
+    public void OnWrite(ByteBuf buffer, Player player) {
         buffer.writeFloat(player.getHealth());
         buffer.writeFloat(player.getMaxHealth());
     }
 
     @Override
-    public void OnRead(PacketBuffer buffer) {
+    public void OnRead(ByteBuf buffer) {
         health = buffer.readFloat();
         maxHealth = buffer.readFloat();
     }
 
     @Override
-    public boolean IsDifferent(PlayerEntity player) {
+    public boolean IsDifferent(Player player) {
         return health != player.getHealth() || maxHealth != player.getMaxHealth();
     }
 

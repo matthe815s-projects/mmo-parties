@@ -1,12 +1,11 @@
 package deathtags.networking;
 
 import com.google.common.base.Charsets;
-import com.mojang.brigadier.Message;
 import deathtags.core.MMOParties;
 
 import deathtags.gui.screens.InvitedScreen;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import io.netty.buffer.ByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -25,12 +24,12 @@ public class MessagePartyInvite {
 		this.inviter = inviter;
 	}
 
-	public static MessagePartyInvite decode(PacketBuffer buf)
+	public static MessagePartyInvite decode(ByteBuf buf)
 	{
 		return new MessagePartyInvite((String)buf.readCharSequence(buf.readInt(), Charsets.UTF_8));
 	}
 
-	public static void encode(MessagePartyInvite msg, PacketBuffer buf)
+	public static void encode(MessagePartyInvite msg, ByteBuf buf)
 	{
 		buf.writeInt(msg.inviter.length());
 		buf.writeCharSequence(msg.inviter, Charsets.UTF_8);

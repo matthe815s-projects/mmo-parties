@@ -5,8 +5,8 @@ import deathtags.config.ConfigHolder;
 import deathtags.core.MMOParties;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import io.netty.buffer.ByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -25,12 +25,12 @@ public class MessageHandleMenuAction {
 		this.action = action;
 	}
 
-	public static MessageHandleMenuAction decode(PacketBuffer buf)
+	public static MessageHandleMenuAction decode(ByteBuf buf)
 	{
 		return new MessageHandleMenuAction(buf.readCharSequence(buf.readInt(), Charsets.UTF_8), EnumPartyGUIAction.values()[buf.readInt()]);
 	}
 
-	public static void encode(MessageHandleMenuAction msg, PacketBuffer buf)
+	public static void encode(MessageHandleMenuAction msg, ByteBuf buf)
 	{
 		buf.writeInt(msg.name.length());
 		buf.writeCharSequence(msg.name, Charsets.UTF_8);

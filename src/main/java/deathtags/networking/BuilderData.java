@@ -1,7 +1,7 @@
 package deathtags.networking;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.world.entity.player.Player;
 
 public interface BuilderData {
     /**
@@ -9,7 +9,7 @@ public interface BuilderData {
      * @param buffer
      * @return
      */
-    void OnWrite(PacketBuffer buffer, PlayerEntity player);
-    void OnRead(PacketBuffer buffer);
-    boolean IsDifferent(PlayerEntity player);
+    void OnWrite(ByteBuf buffer, Player player);
+    void OnRead(ByteBuf buffer);
+    boolean IsDifferent(Player player);
 }

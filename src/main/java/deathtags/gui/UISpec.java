@@ -1,6 +1,6 @@
 package deathtags.gui;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public class UISpec {
     public ResourceLocation texture;

@@ -16,17 +16,17 @@ import deathtags.networking.MessageUpdateParty;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
 import net.minecraft.client.Minecraft;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.NetworkDirection;
 
 import java.util.concurrent.CompletableFuture;
 
 public class PartyCommand {
 	
-	public static LiteralArgumentBuilder<CommandSource> register () {
+	public static LiteralArgumentBuilder<CommandSourceStack> register () {
 		return Commands.literal("party")
 				.requires(commandSource -> true)
 				.then(
@@ -55,7 +55,7 @@ public class PartyCommand {
 								));
 	}
 
-	private static CompletableFuture<Suggestions> getSuggestions (CommandContext<CommandSource> ctx, SuggestionsBuilder builder) {
+	private static CompletableFuture<Suggestions> getSuggestions (CommandContext<CommandSourceStack> ctx, SuggestionsBuilder builder) {
 		String argument = StringArgumentType.getString(ctx, "sub").trim();
 
 		// When using invite, kick, or leader, it should suggest players to use for these commands.
@@ -68,7 +68,7 @@ public class PartyCommand {
 				break;
 			case "kick":
 			case "leader":
-				PlayerEntity player = null;
+				Player player = null;
 				try {
 					player = ctx.getSource().getPlayerOrException();
 				} catch (CommandSyntaxException e) {
@@ -84,11 +84,11 @@ public class PartyCommand {
 		return builder.buildFuture();
 	}
 	
-	private static int run(CommandContext<CommandSource> context, String sub, String targetStr) throws CommandSyntaxException {
-		ServerPlayerEntity player = context.getSource().getPlayerOrException();
-		ServerPlayerEntity target = null; // This is null until the next statement. It can remain null.
+	private static int run(CommandContext<CommandSourceStack> context, String sub, String targetStr) throws CommandSyntaxException {
+		ServerPlayer player = context.getSource().getPlayerOrException();
+		ServerPlayer target = null; // This is null until the next statement. It can remain null.
 
-		if (targetStr != null) context.getSource().getServer().getPlayerList().getPlayerByName(targetStr);
+		if (targetStr != null) (context.getSource().getPlayerOrException()).getServer().getPlayerList().getPlayerByName(targetStr);
 
 		if (targetStr != null && target == null) { CommandMessageHelper.SendError( player, String.format("The player %s is not online.", targetStr) ); return 0; }
 		if (player.getCommandSenderWorld().isClientSide) return 0; // Only perform operations on the server side.

@@ -1,6 +1,6 @@
 package deathtags.stats;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 
 public class PartyMember {
     /**
@@ -20,7 +20,7 @@ public class PartyMember {
      */
     private boolean moderator;
 
-    public PartyMember(PlayerEntity player, Party party)
+    public PartyMember(Player player, Party party)
     {
         playerName = player.getName().getString();
         this.party = party;

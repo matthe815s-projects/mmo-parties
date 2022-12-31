@@ -1,8 +1,7 @@
 package deathtags.helpers;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.text.*;
-import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.network.chat.*;
+import net.minecraft.world.entity.player.Player;
 
 public class CommandMessageHelper {
 
@@ -11,24 +10,24 @@ public class CommandMessageHelper {
 	 * @param player A server player.
 	 * @param message The message to send.
 	 */
-	public static void SendInfo ( PlayerEntity player, String message, String... arguments )
+	public static void SendInfo (Player player, String message, String... arguments )
 	{
 		player.displayClientMessage( 
-			new TranslationTextComponent( message, arguments )
+			new TranslatableComponent( message, arguments )
 			, false
 		);
 	}
 
-	public static void SendInfoWithButton ( PlayerEntity player, String message, String... arguments )
+	public static void SendInfoWithButton ( Player player, String message, String... arguments )
 	{
-		TranslationTextComponent component = new TranslationTextComponent( message, arguments );
+		TranslatableComponent component = new TranslatableComponent( message, arguments );
 
-		IFormattableTextComponent button = new StringTextComponent(" [ACCEPT]").setStyle(
-				Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept")).withColor(Color.parseColor("#FFAA00"))
+		MutableComponent button = new TextComponent(" [ACCEPT]").setStyle(
+				Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept")).withColor(TextColor.parseColor("#FFAA00"))
 		);
 
-		IFormattableTextComponent button2 = new StringTextComponent(" [DENY]").setStyle(
-				Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party deny")).withColor(Color.parseColor("#FF5555"))
+		MutableComponent button2 = new TextComponent(" [DENY]").setStyle(
+				Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party deny")).withColor(TextColor.parseColor("#FF5555"))
 		);
 
 		component.append(button);
@@ -45,12 +44,12 @@ public class CommandMessageHelper {
 	 * @param player A server player.
 	 * @param message The message to send.
 	 */
-	public static void SendError ( PlayerEntity player, String message, String... arguments )
+	public static void SendError ( Player player, String message, String... arguments )
 	{
 		player.displayClientMessage( 
-			new TranslationTextComponent( message, arguments )
+			new TranslatableComponent( message, arguments )
 			.setStyle( 
-					Style.EMPTY.withColor(TextFormatting.RED)
+					Style.EMPTY.withColor(TextColor.parseColor("#FF0000"))
 			), false
 		);
 	}

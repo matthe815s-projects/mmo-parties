@@ -1,9 +1,8 @@
 package deathtags.stats;
 
-import deathtags.core.MMOParties;
 import deathtags.networking.BuilderData;
 import deathtags.networking.PartyPacketDataBuilder;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 
 public class PartyMemberData {
 	public String name;
@@ -15,7 +14,7 @@ public class PartyMemberData {
 		this.name = builder.playerId;
 	}
 
-	public boolean IsDifferent(PlayerEntity player) {
+	public boolean IsDifferent(Player player) {
 		// Check all of the registered values for differences.
 		for (BuilderData data : additionalData) {
 			if (data.IsDifferent(player)) return true;

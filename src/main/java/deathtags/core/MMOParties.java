@@ -3,6 +3,7 @@ package deathtags.core;
 import java.util.*;
 import java.util.Map.Entry;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import deathtags.api.PartyHelper;
 import deathtags.commands.PartyCommand;
 import deathtags.config.ConfigHolder;
@@ -13,27 +14,24 @@ import deathtags.gui.builders.*;
 import deathtags.networking.*;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
-import net.minecraftforge.server.permission.DefaultPermissionLevel;
-import net.minecraftforge.server.permission.PermissionAPI;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -49,11 +47,11 @@ public class MMOParties {
 	public static Party localParty;
 	public static String partyInviter;
 
-	public static Map<PlayerEntity, PlayerStats> PlayerStats = new HashMap<>();
+	public static Map<Player, PlayerStats> PlayerStats = new HashMap<>();
 
 	private static final String PROTOCOL_VERSION = "2";
 
-	public static KeyBinding OPEN_GUI_KEY;
+	public static KeyMapping OPEN_GUI_KEY;
 	
 	public static final SimpleChannel network = NetworkRegistry.ChannelBuilder
 			.named(new ResourceLocation(MODID, "sync"))
@@ -113,7 +111,7 @@ public class MMOParties {
 		network.registerMessage(4, MessagePartyInvite.class, MessagePartyInvite::encode, MessagePartyInvite::decode, MessagePartyInvite.Handler::handle);
 	}
 
-	public void OnServerInitialize(FMLServerStartingEvent event) {
+	public void OnServerInitialize(ServerStartingEvent event) {
 		PartyHelper.Server.server = event.getServer(); // Set server instance
 		network.registerMessage(5, MessageOpenUI.class, MessageOpenUI::encode, MessageOpenUI::decode, MessageOpenUI.Handler::handleServer);
 	}
@@ -129,7 +127,7 @@ public class MMOParties {
 		network.registerMessage(5, MessageOpenUI.class, MessageOpenUI::encode, MessageOpenUI::decode, MessageOpenUI.Handler::handle); // A special handler for single-player instances.
 
 		// Creates and registers the key-binding on a universal scale.
-		OPEN_GUI_KEY = new KeyBinding("key.opengui.desc", KeyConflictContext.UNIVERSAL, InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_P, "key.mmoparties.category"); // Open GUI on G.
+		OPEN_GUI_KEY = new KeyMapping("key.opengui.desc", KeyConflictContext.UNIVERSAL, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_P, "key.mmoparties.category"); // Open GUI on G.
 		ClientRegistry.registerKeyBinding(OPEN_GUI_KEY);
 	}
 
@@ -139,7 +137,6 @@ public class MMOParties {
 	public void OnCommandRegister(RegisterCommandsEvent event)
 	{	
 		event.getDispatcher().register(PartyCommand.register());
-		PermissionAPI.registerNode("rpgparties.*", DefaultPermissionLevel.ALL, "The base permission");
 	}
 
 	/**
@@ -151,7 +148,7 @@ public class MMOParties {
 	 */
 	public static PlayerStats GetStatsByName(String username)
 	{
-		for (Entry<PlayerEntity, deathtags.stats.PlayerStats> plr : PlayerStats.entrySet()) {
+		for (Entry<Player, deathtags.stats.PlayerStats> plr : PlayerStats.entrySet()) {
 			if ( plr.getKey().getName().getContents().equals(username) )
 				return plr.getValue();
 		}
@@ -165,7 +162,7 @@ public class MMOParties {
 	 * @param player
 	 * @return Player Datastore
 	 */
-	public static PlayerStats GetStats(PlayerEntity player)
+	public static PlayerStats GetStats(Player player)
 	{
 		return GetStatsByName(player.getName().getString());
 	}
