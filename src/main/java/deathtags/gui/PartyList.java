@@ -2,25 +2,21 @@ package deathtags.gui;
 
 import java.util.Random;
 
-import deathtags.config.ConfigHolder;
+import deathtags.core.ConfigHandler;
 import deathtags.networking.BuilderData;
 import net.minecraft.client.gui.Gui;
-import net.minecraftforge.client.gui.ForgeIngameGui;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-
 import deathtags.core.MMOParties;
 import deathtags.stats.PartyMemberData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 /**
  * The UI handler that controls the creation and rendering of all party elements
@@ -55,20 +51,21 @@ public class PartyList {
      */
     public static UISpec GetAnchorOffset()
     {
-        switch (ConfigHolder.CLIENT.anchorPoint.get()) {
+        ScaledResolution window = new ScaledResolution(mc);
+        switch (ConfigHandler.Client_Options.anchorPoint) {
             case "top-left":
                 return new UISpec(8, 0);
 
             case "bottom-left":
                 renderAscending = true;
-                return new UISpec(8, mc.getWindow().getGuiScaledHeight());
+                return new UISpec(8, window.getScaledHeight());
 
             case "top-right":
-                return new UISpec(mc.getWindow().getGuiScaledWidth() - 5, 0);
+                return new UISpec(window.getScaledWidth() - 5, 0);
 
             case "bottom-right":
                 renderAscending = true;
-                return new UISpec(mc.getWindow().getGuiScaledWidth(), mc.getWindow().getGuiScaledHeight() - 20);
+                return new UISpec(window.getScaledWidth(), window.getScaledHeight() - 20);
 
             default:
                 System.out.println("Invalid anchor position selected.");
@@ -98,7 +95,7 @@ public class PartyList {
 
     @SubscribeEvent
     public void onRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
-        if ((event.getType() == ElementType.HEALTH || event.getType() == ElementType.ARMOR) && ConfigHolder.CLIENT.hideGUI.get()) {
+        if ((event.getType() == ElementType.HEALTH || event.getType() == ElementType.ARMOR) && ConfigHandler.Client_Options.hideGUI) {
             event.setCanceled(true);
             return;
         }
@@ -120,11 +117,11 @@ public class PartyList {
 
             for (PartyMemberData data : MMOParties.localParty.data.values()) {
                 // Hide yourself if the option is enabled.
-                if (ConfigHolder.CLIENT.hideSelf.get() && data.name.equals(mc.player.getName().getString())) continue;
+                if (ConfigHandler.Client_Options.hideSelf && data.name.equals(mc.player.getName())) continue;
 
                 // Render a new player and track the additional offset for the next player.
                 lastOffset += RenderMember(data, lastOffset, pN, MMOParties.localParty.local_players.size() > 4
-                        || ConfigHolder.CLIENT.useSimpleUI.get() == true);
+                        || ConfigHandler.Client_Options.useSimpleUI == true);
                 pN++;
             }
         }
@@ -223,14 +220,14 @@ public class PartyList {
         UI.x = UI.x / 2;
         int length = 0, bars = 0;
 
-        float maxLength = ConfigHolder.CLIENT.numbersAsPercentage.get() ? 20 : max;
+        float maxLength = ConfigHandler.Client_Options.numbersAsPercentage ? 20 : max;
 
         // Normalize hearts into a value of 20 if the config is enabled.
-        if (ConfigHolder.CLIENT.numbersAsPercentage.get()) {
+        if (ConfigHandler.Client_Options.numbersAsPercentage) {
             int extraHearts = (int)((current - 20) / 2);
 
             // If the renderer displays as additional hearts, it shouldn't percentage the current.
-            if (ConfigHolder.CLIENT.extraNumberType.get() != "additional")
+            if (ConfigHandler.Client_Options.extraNumberType != "additional")
             current = (current / max) * 20;
 
             // Render any health that goes beyond the cap.
@@ -272,16 +269,16 @@ public class PartyList {
         // Render remainder health to the side
         int remainderX = UI.x + (10 * 8) + 4;
 
-        switch (ConfigHolder.CLIENT.extraNumberType.get()) {
+        switch (ConfigHandler.Client_Options.extraNumberType) {
             case "percentage": // This will show the x% after bars.
-                mc.fontRenderer.drawShadow(String.format("%s",Math.floor(extraHearts / max * 100)) + "%", remainderX, UI.y, 0xFFFFFF);
+                mc.fontRenderer.drawStringWithShadow(String.format("%s",Math.floor(extraHearts / max * 100)) + "%", remainderX, UI.y, 0xFFFFFF);
                 break;
             case "compare": // This will show the x/x after the bars.
-                mc.fontRenderer.drawShadow(String.format("%s/%s",extraHearts - 20, max), remainderX, UI.y, 0xFFFFFF);
+                mc.fontRenderer.drawStringWithShadow(String.format("%s/%s",extraHearts - 20, max), remainderX, UI.y, 0xFFFFFF);
                 break;
             case "additional": // This will show +X after health.
                 if (extraHearts <= 20) return;
-                mc.fontRenderer.drawShadow(String.format("+%s", (extraHearts - 20) / 2), remainderX, UI.y, 0xFFFFFF);
+                mc.fontRenderer.drawStringWithShadow(String.format("+%s", (extraHearts - 20) / 2), remainderX, UI.y, 0xFFFFFF);
                 break;
             case "none": // This will not render anything beyond max and instead scale the health bar.
             default:
@@ -299,10 +296,10 @@ public class PartyList {
 
         // Draw half or full depending on health amount.
         if ((int) current > dropletHalf) {
-            mc.ingameGUI.blit(x, y, UI.texture_x, UI.texture_y, 9, 9);
+            mc.ingameGUI.drawTexturedModalRect(x, y, UI.texture_x, UI.texture_y, 9, 9);
         }
         else if ((int) current == dropletHalf)
-            mc.ingameGUI.blit(x, y, UI.texture_x + halfOffset, UI.texture_y, 9, 9);
+            mc.ingameGUI.drawTexturedModalRect(x, y, UI.texture_x + halfOffset, UI.texture_y, 9, 9);
     }
 
     public static int DrawText(String text, UISpec location)

@@ -189,7 +189,7 @@ public class Party extends PlayerGroup
 	}
 
 	@Override
-	public void SendPartyMemberData(EntityPlayer member, boolean bypassLimit)
+	public void SendPartyMemberData(EntityPlayer member, boolean bypassLimit, boolean remove)
 	{
 		if (IsDataDifferent(member) || bypassLimit)
 		{
@@ -205,7 +205,7 @@ public class Party extends PlayerGroup
 				MMOParties.network.sendTo(
 						new MessageSendMemberData(
 								new PartyPacketDataBuilder ()
-										.SetPlayer(member.getName())
+										.SetPlayer(member)
 										.SetHealth(member.getHealth())
 										.SetMaxHealth(member.getMaxHealth())
 										.SetArmor(member.getTotalArmorValue())
