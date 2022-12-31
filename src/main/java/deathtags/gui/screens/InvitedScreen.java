@@ -69,7 +69,7 @@ public class InvitedScreen extends GuiScreen {
             // Render an item
 
             p_230444_2_.getMinecraft().fontRenderer.drawString(new TextComponentTranslation("rpgparties.toast.header", MMOParties.partyInviter).getFormattedText(), 30, 7, 0xBBBBBB);
-            p_230444_2_.getMinecraft().fontRenderer.drawString(new TextComponentTranslation("rpgparties.toast.keybind", (char)MMOParties.OPEN_GUI_KEY.getKeyCode()).getFormattedText(), 30, 18, 0xFFFFFF);
+            p_230444_2_.getMinecraft().fontRenderer.drawString(new TextComponentTranslation("rpgparties.toast.keybind", Character.toString((char)(MMOParties.OPEN_GUI_KEY.getKeyCode()+87))).getFormattedText(), 30, 18, 0xFFFFFF);
             return p_230444_3_ - this.lastChanged >= 5000L ? IToast.Visibility.HIDE : IToast.Visibility.SHOW;
         }
     }
