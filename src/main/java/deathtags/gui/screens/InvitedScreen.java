@@ -36,12 +36,12 @@ public class InvitedScreen extends Screen {
 
     @Override
     protected void init() {
-        this.addWidget(this.CreateButton("rpgparties.gui.accept", 2, p_onPress_1_ -> {
+        this.addRenderableWidget(this.CreateButton("rpgparties.gui.accept", 2, p_onPress_1_ -> {
             MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.ACCEPT));
             MMOParties.partyInviter = null;
         }));
 
-        this.addWidget(this.CreateButton("rpgparties.gui.deny", 3, p_onPress_1_ -> {
+        this.addRenderableWidget(this.CreateButton("rpgparties.gui.deny", 3, p_onPress_1_ -> {
             MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.DENY));
             MMOParties.partyInviter = null;
         }));
