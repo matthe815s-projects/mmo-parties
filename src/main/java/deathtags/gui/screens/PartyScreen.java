@@ -74,33 +74,33 @@ public class PartyScreen extends Screen {
         int buttonNumber = 1;
 
         // Invite more players
-        this.addWidget(CreateButton("rpgparties.gui.invite", buttonNumber++, p_onPress_1_ -> Minecraft.getInstance().setScreen(new PartyScreen(Component.translatable("rpgparties.gui.title.invite"), 1))));
+        this.addRenderableWidget(CreateButton("rpgparties.gui.invite", buttonNumber++, p_onPress_1_ -> Minecraft.getInstance().setScreen(new PartyScreen(Component.translatable("rpgparties.gui.title.invite"), 1))));
 
         MMOParties.localParty.local_players.forEach(player -> {
             int height = 26 * (2 + MMOParties.localParty.local_players.indexOf(player));
 
-            Widget widget = this.addWidget(CreateButton(player, 2 + MMOParties.localParty.local_players.indexOf(player), p_onPress_1_ -> {}));
+            Widget widget = this.addRenderableWidget(CreateButton(player, 2 + MMOParties.localParty.local_players.indexOf(player), p_onPress_1_ -> {}));
             ((Button)widget).active = false; // Make the button look darker
 
             // Hide these options if not the leader or yourself
             if (!MMOParties.localParty.data.get(Minecraft.getInstance().player.getName().getString()).leader || player == Minecraft.getInstance().player.getName().getString()) return;
 
-            this.addWidget(new ImageButton((this.width + 200 + 20) / 2, height, 20, 20, 0, 46, 20, new ResourceLocation("mmoparties", "textures/icons.png"), button -> {
+            this.addRenderableWidget(new ImageButton((this.width + 200 + 20) / 2, height, 20, 20, 0, 46, 20, new ResourceLocation("mmoparties", "textures/icons.png"), button -> {
                 this.onClose();
                 MMOParties.network.sendToServer(new MessageHandleMenuAction(player, EnumPartyGUIAction.LEADER));
             }));
 
-            this.addWidget(new ImageButton((this.width + 200 + 60) / 2, height, 20, 20, 20, 46, 20, new ResourceLocation("mmoparties", "textures/icons.png"), button -> {
+            this.addRenderableWidget(new ImageButton((this.width + 200 + 60) / 2, height, 20, 20, 20, 46, 20, new ResourceLocation("mmoparties", "textures/icons.png"), button -> {
                 this.onClose();
                 MMOParties.network.sendToServer(new MessageHandleMenuAction(player, EnumPartyGUIAction.KICK));
             }));
         });
 
-        this.addWidget(CreateButton("rpgparties.gui.leave", 3 + MMOParties.localParty.local_players.size(), p_onPress_1_ -> MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.LEAVE))));
+        this.addRenderableWidget(CreateButton("rpgparties.gui.leave", 3 + MMOParties.localParty.local_players.size(), p_onPress_1_ -> MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.LEAVE))));
 
         if (!MMOParties.localParty.data.get(Minecraft.getInstance().player.getName().getString()).leader) return; // Hide these options if not the leader.
 
-        this.addWidget(CreateButton("rpgparties.gui.disband", 4 + MMOParties.localParty.local_players.size(), p_onPress_1_ -> MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.DISBAND))));
+        this.addRenderableWidget(CreateButton("rpgparties.gui.disband", 4 + MMOParties.localParty.local_players.size(), p_onPress_1_ -> MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.DISBAND))));
     }
 
     @Override
@@ -114,7 +114,7 @@ public class PartyScreen extends Screen {
                 break;
 
             case INVITE: // invite player
-                Widget widget = this.addWidget(new Button((this.width) - 70, 8, 60, 20, Component.translatable("rpgparties.gui.inviteall"), button -> {
+                Widget widget = this.addRenderableWidget(new Button((this.width) - 70, 8, 60, 20, Component.translatable("rpgparties.gui.inviteall"), button -> {
                     MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.INVITE)); // Send UI event to the server.
                 })); // invite all button
 
@@ -124,7 +124,7 @@ public class PartyScreen extends Screen {
                 int i = 1;
 
                 for (String player : GetApplicablePlayers()) {
-                    this.addWidget(CreateButton(player, i++, p_onPress_1_ -> MMOParties.network.sendToServer(new MessageHandleMenuAction(player, EnumPartyGUIAction.INVITE)))); // Send UI event to the server.
+                    this.addRenderableWidget(CreateButton(player, i++, p_onPress_1_ -> MMOParties.network.sendToServer(new MessageHandleMenuAction(player, EnumPartyGUIAction.INVITE)))); // Send UI event to the server.
                 }
 
                 break;
