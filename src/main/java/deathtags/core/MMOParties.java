@@ -71,7 +71,7 @@ public class MMOParties {
 		// Registers all standard UI elements for the base mod barring any compatibility mods.
 		// Includes: Leader crown, name, status effects, health, absorption, hunger, and armor.
 		// Rendering occurs in the order of registration.
-		RegisterCompatibility(new BuilderLeader(), new BuilderLeader.Renderer());
+		// RegisterCompatibility(new BuilderLeader(), new BuilderLeader.Renderer());
 		RegisterCompatibility(new BuilderName(), new BuilderName.Renderer());
 		RegisterCompatibility(new BuilderHealth(), new BuilderHealth.NuggetBar());
 		RegisterCompatibility(new BuilderAbsorption(), new BuilderAbsorption.NuggetBar());
