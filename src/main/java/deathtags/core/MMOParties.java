@@ -79,7 +79,10 @@ public class MMOParties {
 		// Construct game events.
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::OnSetup);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::OnClientInitialize);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::KeyBinds);
+
+		if (FMLEnvironment.dist == Dist.CLIENT) {
+			FMLJavaModLoadingContext.get().getModEventBus().addListener(this::KeyBinds);
+		}
 
 		MinecraftForge.EVENT_BUS.addListener(this::OnCommandRegister);
 		MinecraftForge.EVENT_BUS.addListener(this::OnServerInitialize);

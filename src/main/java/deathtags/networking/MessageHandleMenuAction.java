@@ -42,9 +42,7 @@ public class MessageHandleMenuAction {
 		public static void handle(final MessageHandleMenuAction pkt, Supplier<NetworkEvent.Context> ctx)
 		{
 			ctx.get().setPacketHandled(true);
-			System.out.println(ctx.get().getSender().getName().getString());
 			PlayerStats stats = MMOParties.GetStatsByName(ctx.get().getSender().getName().getString());
-			System.out.println(stats);
 
 			switch (pkt.action) {
 				case INVITE:
