@@ -118,6 +118,8 @@ public class MMOParties {
 	}
 
 	public void KeyBinds(RegisterKeyMappingsEvent event) {
+		// Creates and registers the key-binding on a universal scale.
+		OPEN_GUI_KEY = new KeyMapping("key.opengui.desc", KeyConflictContext.UNIVERSAL, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_P, "key.mmoparties.category"); // Open GUI on P.
 		event.register(OPEN_GUI_KEY);
 	}
 
@@ -129,17 +131,14 @@ public class MMOParties {
 	public void OnClientInitialize(FMLClientSetupEvent event)
 	{
 		PartyList.init(); // Initializes the Party renderer.
-		network.registerMessage(5, MessageOpenUI.class, MessageOpenUI::encode, MessageOpenUI::decode, MessageOpenUI.Handler::handle); // A special handler for single-player instances.
-
-		// Creates and registers the key-binding on a universal scale.
-		OPEN_GUI_KEY = new KeyMapping("key.opengui.desc", KeyConflictContext.UNIVERSAL, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_P, "key.mmoparties.category"); // Open GUI on G.
+		network.registerMessage(5, MessageOpenUI.class, MessageOpenUI::encode, MessageOpenUI::decode, MessageOpenUI.Handler::handle); // A special handler for single-player instances
 	}
 
 	/**
 	 * Handles registering the mod commands as well as permissions.
 	 */
 	public void OnCommandRegister(RegisterCommandsEvent event)
-	{	
+	{
 		event.getDispatcher().register(PartyCommand.register());
 	}
 
