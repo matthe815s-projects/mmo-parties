@@ -1,6 +1,7 @@
 package deathtags.gui.screens;
 
 import deathtags.core.MMOParties;
+import deathtags.gui.builders.BuilderLeader;
 import deathtags.networking.EnumPartyGUIAction;
 import deathtags.networking.MessageHandleMenuAction;
 import net.minecraft.client.Minecraft;
@@ -92,7 +93,7 @@ public class PartyScreen extends GuiScreen {
             GuiButton widget = this.addButton(CreateButton(player, 2 + MMOParties.localParty.local_players.indexOf(player), () -> {}));
             widget.enabled = false; // Make the button look darker
 
-            if (!(MMOParties.localParty.data.get(Minecraft.getMinecraft().player.getName()).leader && MMOParties.localParty.data.get(player).leader))
+            if (!((BuilderLeader)MMOParties.localParty.data.get(Minecraft.getMinecraft().player.getName()).additionalData[0]).isLeader && MMOParties.localParty.data.get(player).leader)
                 return;
 
             this.addButton(CreateSubButton("K",20, height, () -> {
@@ -109,7 +110,7 @@ public class PartyScreen extends GuiScreen {
             MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.LEAVE));
         }));
 
-        if (!MMOParties.localParty.data.get(Minecraft.getMinecraft().player.getName()).leader) return; // Hide these options if not the leader.
+        if (!((BuilderLeader)MMOParties.localParty.data.get(Minecraft.getMinecraft().player.getName()).additionalData[0]).isLeader) return; // Hide these options if not the leader.
 
         this.addButton(CreateButton("rpgparties.gui.disband", 2 + MMOParties.localParty.local_players.size(), () -> {
             Minecraft.getMinecraft().displayGuiScreen(new PartyScreen(EnumPartyGUIAction.INVITE));
