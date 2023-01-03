@@ -195,7 +195,7 @@ public class Party extends PlayerGroup
 						.SetHealth(member.getHealth())
 						.SetMaxHealth(member.getMaxHealth())
 						.SetArmor(member.getArmorValue())
-						.SetLeader(this.leader==member)
+						.SetLeader(this.leader.getName()==member.getName())
 						.SetAbsorption(member.getAbsorptionAmount())
 						.SetHunger(member.getFoodData().getFoodLevel());
 
