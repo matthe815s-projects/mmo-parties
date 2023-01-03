@@ -3,6 +3,7 @@ package deathtags.gui.screens;
 import com.mojang.blaze3d.vertex.PoseStack;
 import deathtags.config.ConfigHolder;
 import deathtags.core.MMOParties;
+import deathtags.gui.builders.BuilderLeader;
 import deathtags.networking.EnumPartyGUIAction;
 import deathtags.networking.MessageHandleMenuAction;
 import net.minecraft.client.Minecraft;
@@ -82,7 +83,7 @@ public class PartyScreen extends Screen {
             ((Button)widget).active = false; // Make the button look darker
 
             // Hide these options if not the leader or yourself
-            if (!MMOParties.localParty.data.get(Minecraft.getInstance().player.getName().getString()).leader || player == Minecraft.getInstance().player.getName().getString()) return;
+            if (!((BuilderLeader)MMOParties.localParty.data.get(Minecraft.getInstance().player.getName().getString()).additionalData[0]).isLeader || player == Minecraft.getInstance().player.getName().getString()) return;
 
             this.addRenderableWidget(new ImageButton((this.width + 200 + 20) / 2, height, 20, 20, 0, 46, 20, new ResourceLocation("mmoparties", "textures/icons.png"), button -> {
                 this.onClose();
@@ -97,7 +98,7 @@ public class PartyScreen extends Screen {
 
         this.addRenderableWidget(CreateButton("rpgparties.gui.leave", 3 + MMOParties.localParty.local_players.size(), p_onPress_1_ -> MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.LEAVE))));
 
-        if (!MMOParties.localParty.data.get(Minecraft.getInstance().player.getName().getString()).leader) return; // Hide these options if not the leader.
+        if (!((BuilderLeader)MMOParties.localParty.data.get(Minecraft.getInstance().player.getName().getString()).additionalData[0]).isLeader) return; // Hide these options if not the leader.
 
         this.addRenderableWidget(CreateButton("rpgparties.gui.disband", 4 + MMOParties.localParty.local_players.size(), p_onPress_1_ -> MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.DISBAND))));
     }
