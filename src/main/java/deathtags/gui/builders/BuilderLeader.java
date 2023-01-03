@@ -11,15 +11,16 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 
 public class BuilderLeader implements BuilderData {
-    boolean isLeader;
+    public boolean isLeader;
     @Override
     public void OnWrite(PacketBuffer buffer, PlayerEntity player) {
-//        if (player == null) return; // Nothing here.
-//
-//        // Handle an edge case that can cause crashing (writing a packet while closing the server)
-//        if (!(MMOParties.GetStats(player) != null & MMOParties.GetStats(player).InParty())) return;
+        if (player == null || MMOParties.GetStats(player) == null || !MMOParties.GetStats(player).InParty()) {
+            buffer.writeBoolean(false);
+            return; // Nothing here.
+        }
 
-        buffer.writeBoolean(false);
+
+        buffer.writeBoolean(MMOParties.GetStats(player).party.leader == player);
     }
 
     @Override

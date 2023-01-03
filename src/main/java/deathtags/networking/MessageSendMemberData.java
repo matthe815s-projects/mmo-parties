@@ -75,8 +75,6 @@ public class MessageSendMemberData {
 		// Remove this data and clear it out.
 		if (message.remove) {
 			MMOParties.localParty.data.remove(player.name);
-			System.out.println("Remove player " + player.name);
-			System.out.println(MMOParties.localParty.data.size());
 			ctx.get().setPacketHandled(true);
 			return;
 		}
