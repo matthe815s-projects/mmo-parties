@@ -8,15 +8,15 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.world.entity.player.Player;
 
 public class BuilderLeader implements BuilderData {
-    boolean isLeader;
+    public boolean isLeader;
     @Override
     public void OnWrite(ByteBuf buffer, Player player) {
-//        if (player == null) return; // Nothing here.
-//
-//        // Handle an edge case that can cause crashing (writing a packet while closing the server)
-//        if (!(MMOParties.GetStats(player) != null & MMOParties.GetStats(player).InParty())) return;
+        if (player == null || MMOParties.GetStats(player) == null || !MMOParties.GetStats(player).InParty()) {
+            buffer.writeBoolean(false);
+            return; // Nothing here.
+        }
 
-        buffer.writeBoolean(false);
+        buffer.writeBoolean(MMOParties.GetStats(player).party.leader == player);
     }
 
     @Override
