@@ -12,7 +12,8 @@ public class BuilderHunger implements BuilderData {
 
     @Override
     public void OnWrite(ByteBuf buffer, Player player) {
-        buffer.writeFloat(player.getFoodData().getFoodLevel());
+        hunger = player.getFoodData().getFoodLevel();
+        buffer.writeFloat(hunger);
     }
 
     @Override

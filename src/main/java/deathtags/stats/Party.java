@@ -187,17 +187,19 @@ public class Party extends PlayerGroup
 	{
 		if (IsDataDifferent(member) || bypassLimit)
 		{
+			PartyPacketDataBuilder builder = new PartyPacketDataBuilder ()
+				.SetPlayer(member)
+				.SetHealth(member.getHealth())
+				.SetMaxHealth(member.getMaxHealth())
+				.SetArmor(member.getArmorValue())
+				.SetLeader(this.leader.getName()==member.getName())
+				.SetAbsorption(member.getAbsorptionAmount())
+				.SetHunger(member.getFoodData().getFoodLevel());
+
+			this.data.put(member.getName().getString(), new PartyMemberData(builder));
+
 			for (Player party_player : players) {
 				if (!(party_player instanceof ServerPlayer)) return;
-
-				PartyPacketDataBuilder builder = new PartyPacketDataBuilder ()
-						.SetPlayer(member)
-						.SetHealth(member.getHealth())
-						.SetMaxHealth(member.getMaxHealth())
-						.SetArmor(member.getArmorValue())
-						.SetLeader(this.leader.getName()==member.getName())
-						.SetAbsorption(member.getAbsorptionAmount())
-						.SetHunger(member.getFoodData().getFoodLevel());
 
 				MMOParties.network.sendTo(
 					new MessageSendMemberData(builder
@@ -209,7 +211,7 @@ public class Party extends PlayerGroup
 	@Override
 	public boolean IsDataDifferent(Player player)
 	{
-		if (!this.data.containsKey(player) || this.data.get(player).IsDifferent(player))
+		if (!this.data.containsKey(player.getName().getString()) || this.data.get(player.getName().getString()).IsDifferent(player))
 			return true;
 		
 		return false;

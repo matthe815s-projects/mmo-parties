@@ -12,7 +12,8 @@ public class BuilderArmor implements BuilderData {
 
     @Override
     public void OnWrite(ByteBuf buffer, Player player) {
-        buffer.writeFloat(player.getArmorValue());
+        armor = player.getArmorValue();
+        buffer.writeFloat(armor);
     }
 
     @Override

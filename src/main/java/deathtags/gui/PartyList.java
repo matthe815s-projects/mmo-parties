@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screens.Overlay;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.GuiOverlayManager;
 import net.minecraftforge.client.gui.overlay.NamedGuiOverlay;
 import net.minecraftforge.fml.common.Mod;
 
@@ -95,8 +96,12 @@ public class PartyList {
         else return DrawNuggetBarCompact(current, UI, backgroundOffset);
     }
 
+    static ResourceLocation PLAYER_HEALTH_ELEMENT = new ResourceLocation("minecraft", "player_health");
+
     @SubscribeEvent
     public void onRenderGameOverlay(RenderGuiOverlayEvent.Pre event) {
+        if (event.getOverlay() != GuiOverlayManager.findOverlay(PLAYER_HEALTH_ELEMENT)) return;
+
         int lastOffset = 0;
 
         mc = Minecraft.getInstance();
