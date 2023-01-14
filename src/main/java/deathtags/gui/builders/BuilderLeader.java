@@ -15,8 +15,9 @@ public class BuilderLeader implements BuilderData {
             buffer.writeBoolean(false);
             return; // Nothing here.
         }
-
-        buffer.writeBoolean(MMOParties.GetStats(player).party.leader == player);
+        
+        isLeader = MMOParties.GetStats(player).party.leader == player;
+        buffer.writeBoolean(isLeader);
     }
 
     @Override
@@ -26,7 +27,7 @@ public class BuilderLeader implements BuilderData {
 
     @Override
     public boolean IsDifferent(Player player) {
-        return isLeader != (MMOParties.GetStats(player).party.leader == player);
+        return !(isLeader == (MMOParties.GetStats(player).party.leader == player));
     }
 
     public static class Renderer implements PartyList.NuggetBar {

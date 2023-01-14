@@ -10,11 +10,14 @@ public class PartyMemberData {
 	public BuilderData[] additionalData;
 
 	public PartyMemberData(PartyPacketDataBuilder builder) {
-		this.additionalData = builder.data;
 		this.name = builder.playerId;
+		this.additionalData = builder.data;
 	}
 
 	public boolean IsDifferent(Player player) {
+		// No data bypass
+		if (additionalData == null) return true;
+
 		// Check all of the registered values for differences.
 		for (BuilderData data : additionalData) {
 			if (data.IsDifferent(player)) return true;

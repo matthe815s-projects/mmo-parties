@@ -59,13 +59,24 @@ public class MessageSendMemberData {
 	  buf.writeCharSequence(msg.builder.playerId, Charsets.UTF_8);
 	  buf.writeBoolean(msg.remove);
 
-	  PartyPacketDataBuilder.builderData.forEach(builderData -> {
-		builderData.OnWrite(buf, msg.builder.player);
-	  });
+	  MMOParties.GetStats(msg.builder.player).party.data.get(msg.builder.player.getName().getString())
+			  .additionalData = new BuilderData[PartyPacketDataBuilder.builderData.size()];
+
+	  for (int index = 0; index < PartyPacketDataBuilder.builderData.size(); index++) {
+		  BuilderData builderData = PartyPacketDataBuilder.builderData.get(index);
+		  MMOParties.GetStats(msg.builder.player).party.data.get(msg.builder.player.getName().getString())
+				  .additionalData[index] = builderData;
+
+		  builderData.OnWrite(buf, msg.builder.player);
+		  System.out.println("Wrote packet");
+	  }
+
+	  System.out.println(buf.array().toString());
   }
 
   public static class Handler {
     public static void handle(MessageSendMemberData message, Supplier<NetworkEvent.Context> ctx) {
+		System.out.println("Packet");
 		PartyMemberData player = new PartyMemberData(message.builder);
 
 		if (MMOParties.localParty == null) // Create a new party if one doesn't exist already.
