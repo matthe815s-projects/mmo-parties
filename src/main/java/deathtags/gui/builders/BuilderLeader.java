@@ -15,9 +15,8 @@ public class BuilderLeader implements BuilderData {
             buffer.writeBoolean(false);
             return; // Nothing here.
         }
-
+        
         isLeader = MMOParties.GetStats(player).party.leader == player;
-
         buffer.writeBoolean(isLeader);
     }
 
