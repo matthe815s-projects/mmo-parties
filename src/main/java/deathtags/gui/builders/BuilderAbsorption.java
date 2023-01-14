@@ -12,7 +12,8 @@ public class BuilderAbsorption implements BuilderData {
 
     @Override
     public void OnWrite(ByteBuf buffer, Player player) {
-        buffer.writeFloat(player.getAbsorptionAmount());
+        absorption = player.getAbsorptionAmount();
+        buffer.writeFloat(absorption);
     }
 
     @Override

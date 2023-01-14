@@ -12,8 +12,11 @@ public class BuilderHealth implements BuilderData {
 
     @Override
     public void OnWrite(ByteBuf buffer, Player player) {
-        buffer.writeFloat(player.getHealth());
-        buffer.writeFloat(player.getMaxHealth());
+        health = player.getHealth();
+        maxHealth = player.getMaxHealth();
+
+        buffer.writeFloat(health);
+        buffer.writeFloat(maxHealth);
     }
 
     @Override
