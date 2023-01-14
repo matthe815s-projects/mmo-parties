@@ -28,7 +28,7 @@ public class BuilderLeader implements BuilderData {
 
     @Override
     public boolean IsDifferent(Player player) {
-        return false;
+        return !(isLeader == (MMOParties.GetStats(player).party.leader == player));
     }
 
     public static class Renderer implements PartyList.NuggetBar {
