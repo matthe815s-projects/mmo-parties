@@ -1,7 +1,14 @@
 package deathtags.networking;
 
+import javafx.util.Builder;
+import net.minecraft.entity.player.PlayerEntity;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class PartyPacketDataBuilder {
 
+	public PlayerEntity player;
 	public int nameLength;
 	public String playerId;
 	public float health = 0;
@@ -12,9 +19,22 @@ public class PartyPacketDataBuilder {
 	public float shields = 0;
 	public float maxShields = 0;
 	public float hunger = 0;
+	public BuilderData[] data;
 
-	public PartyPacketDataBuilder SetPlayer (String name) {
-		this.nameLength = name.length();
+	public static List<BuilderData> builderData = new ArrayList<>();
+
+	public PartyPacketDataBuilder() {
+		this.data = new BuilderData[builderData.size()];
+	}
+
+	public PartyPacketDataBuilder SetPlayer (PlayerEntity player) {
+		this.nameLength = player.getName().getContents().length();
+		this.playerId = player.getName().getContents();
+		this.player = player;
+		return this;
+	}
+
+	public PartyPacketDataBuilder SetName (String name) {
 		this.playerId = name;
 		return this;
 	}
@@ -56,6 +76,11 @@ public class PartyPacketDataBuilder {
 	
 	public PartyPacketDataBuilder SetHunger (float hunger) {
 		this.hunger = hunger;
+		return this;
+	}
+
+	public PartyPacketDataBuilder AddData (int index, BuilderData data) {
+		this.data[index] = data;
 		return this;
 	}
 

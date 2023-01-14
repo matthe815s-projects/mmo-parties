@@ -11,11 +11,6 @@ public abstract class PlayerGroup {
 	 * The group leader.
 	 */
 	public PlayerEntity leader = null;
-	
-	/**
-	 * A cache of the last sent packet.
-	 */
-	public Map<String, PlayerPing> pings = new HashMap<String, PlayerPing>();
 
 	/**
 	 * Send a member-list update to the entire group.
@@ -27,7 +22,7 @@ public abstract class PlayerGroup {
 	 * @param member The member in question.
 	 * @param bypassLimit Whether or not it should account for the last ping.
 	 */
-	public abstract void SendPartyMemberData(PlayerEntity member, boolean bypassLimit);
+	public abstract void SendPartyMemberData(PlayerEntity member, boolean bypassLimit, boolean remove);
 	
 	/**
 	 * If the cached data, and the current data are identical.
@@ -70,7 +65,7 @@ public abstract class PlayerGroup {
 		this.leader = member;
 		this.Broadcast(new TranslationTextComponent("rpgparties.message.leader.make", member.getName().getString(), this.GetGroupAlias()));
 
-		for ( PlayerEntity player : this.GetOnlinePlayers() ) SendPartyMemberData ( player, true );
+		for ( PlayerEntity player : this.GetOnlinePlayers() ) SendPartyMemberData ( player, true, false );
 		SendUpdate();
 	}
 }

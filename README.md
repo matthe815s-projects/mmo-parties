@@ -1,37 +1,30 @@
+<div align="center">
 
-RPG Parties
+<img src="https://github.com/matthe815/mmo-parties/blob/1.12-develop/src/main/resources/assets/mmoparties/textures/logo.png?raw=true" height="150" width="150" /></br></br>
+<a href="https://discord.gg/invite/G6HrJk7BBc"><img src="https://img.shields.io/discord/606926504424767488?color=5865F2&logo=discord&logoColor=white" alt="Discord server" /></a>
+</div>
 
-Party up with your friends!
+## Contribution Guide
+Here's a quick start guide on file locations for contributing to the mod!</br>
 
- 
+Localization Resources must be named after the lang-code which you can find on the Minecraft wiki.</br>
 
-RPG Parties allows you to party up with your friends as if you were playing an RPG! As soon as your friend accepts, you'll be able to view their status wherever they are!
+<b>Localization File Location:</b> `src/main/resources/assets/mmoparties/lang/*.json`</br>
+<b>Pre 1.16:</b> `src/main/resources/assets/mmoparties/lang/*.yml`
 
-With a UI very loosely inspired from Final Fantasy, the UI sits on the top-left corner of your screen and displays a customizable amount of information - Health, Armor, etc.
+To submit localizations, make a pull request with the prefix of `localization:`
 
-In addition, this mod has an internal API to support additional content added to the UI.
+## Bug Reports
+In the case that you find a bug or exploit, please submit an issue with the prefix `bug:`</br>
+Include as much information as possible related to the issue including context leading up to the event.
 
- 
+Bugs that cannot be replicated cannot be fixed.
 
-When the party leader leaves, a new random party leader is assigned. In addition, leaving the game will remove you from the party.
+## Links
+- [Curseforge][curseforge]
+- [More Mods][website]
+- [Discord Server][discord]
 
-Additionally as a party, you cannot damage your friends, making combat a lot safer around your party!
-
- 
-
-To begin, please use /party in the chat box!
-
- 
-
-What mods are supported for party-UI?
-
-Superior Shields (1.12 only)
-
-If you have other mods you'd like to see supported, please leave a comment!
- 
-
-Can I use this in a modpack?
-Of course! I don't mind.
-
-
-
+[curseforge]: curseforge.com/minecraft/mc-mods/rpg-parties
+[website]: https://matthe815.dev
+[discord]: https://discord.gg/invite/G6HrJk7BBc

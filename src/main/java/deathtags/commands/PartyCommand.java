@@ -1,6 +1,5 @@
 package deathtags.commands;
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -13,6 +12,7 @@ import deathtags.core.MMOParties;
 import deathtags.core.events.EventClient;
 import deathtags.helpers.CommandMessageHelper;
 import deathtags.networking.MessageOpenUI;
+import deathtags.networking.MessageUpdateParty;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
 import net.minecraft.client.Minecraft;
@@ -40,7 +40,8 @@ public class PartyCommand {
 											.suggest("kick")
 											.suggest("leader")
 											.suggest("disband") // Build suggestions
-											.suggest("gui");
+											.suggest("gui")
+											.suggest("pvp");
 
 									if (ConfigHolder.COMMON.allowPartyTP.get()) // If you're allowed to party teleport, display the option
 										suggestionsBuilder.suggest("tp");
@@ -57,14 +58,25 @@ public class PartyCommand {
 	private static CompletableFuture<Suggestions> getSuggestions (CommandContext<CommandSource> ctx, SuggestionsBuilder builder) {
 		String argument = StringArgumentType.getString(ctx, "sub").trim();
 
-		System.out.println(argument);
-
+		// When using invite, kick, or leader, it should suggest players to use for these commands.
+		// In the case of kick and leader, it'll only suggest players within your party.
 		switch (argument) {
 			case "invite":
-			case "kick":
-			case "leader":
 				ctx.getSource().getServer().getPlayerList().getPlayers().forEach(player -> {
 					builder.suggest(player.getName().getString());
+				});
+				break;
+			case "kick":
+			case "leader":
+				PlayerEntity player = null;
+				try {
+					player = ctx.getSource().getPlayerOrException();
+				} catch (CommandSyntaxException e) {
+					throw new RuntimeException(e);
+				}
+
+				MMOParties.GetStats(player).party.players.forEach(playerEntity -> {
+					builder.suggest(playerEntity.getName().getString());
 				});
 				break;
 		}
@@ -74,7 +86,7 @@ public class PartyCommand {
 	
 	private static int run(CommandContext<CommandSource> context, String sub, String targetStr) throws CommandSyntaxException {
 		ServerPlayerEntity player = context.getSource().getPlayerOrException();
-		ServerPlayerEntity target = null;
+		ServerPlayerEntity target = null; // This is null until the next statement. It can remain null.
 
 		if (targetStr != null) context.getSource().getServer().getPlayerList().getPlayerByName(targetStr);
 
@@ -99,11 +111,7 @@ public class PartyCommand {
 
 				stats.party.Leave(target);
 				break;
-			
-			case "create":
-				Party.Create( player ); // Create a new party for the player.
-				break;
-			
+
 			case "invite":
 				if (targetStr == null) { CommandMessageHelper.SendError(player, "rpgparties.message.error.argument", player.getName().getContents()); return 0; }
 				if (!stats.InParty()) Party.Create ( player ); // Create a party to invite with if not existent.
@@ -145,7 +153,7 @@ public class PartyCommand {
 				
 				stats.party.MakeLeader(player);
 				break;
-				
+
 			case "disband":
 				if (!stats.InParty())
 				{ CommandMessageHelper.SendError( player, "rpgparties.message.error.party" ); return 0; }
@@ -158,9 +166,17 @@ public class PartyCommand {
 
 			case "gui":
 				if (!player.getCommandSenderWorld().isClientSide) MMOParties.network.sendTo(new MessageOpenUI(), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT); // Send open message
-				else if (Minecraft.getInstance().hasSingleplayerServer()) EventClient.openScreen();
+				else if (Minecraft.getInstance().hasSingleplayerServer()) EventClient.OpenPartyScreen();
  				break;
 
+			case "pvp":
+				stats.pvpEnabled = !stats.pvpEnabled;
+				CommandMessageHelper.SendInfo( player,  stats.pvpEnabled ? "rpgparties.message.pvp.enabled" : "rpgparties.message.pvp.disabled" );
+				break;
+
+			case "add":
+				MMOParties.network.sendTo(new MessageUpdateParty("dev,devtestman2,dev3"), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+				break;
 			default:
 				break;
 		}
