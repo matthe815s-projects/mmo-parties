@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "mmoparties",
+  "version": "${version}",
+  "name": "Mmoparties",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/mmoparties/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "dev.matthe815.mmoparties.client.MmopartiesClient"
+    ],
+    "main": [
+      "dev.matthe815.mmoparties.Mmoparties"
+    ]
+  },
+  "mixins": [
+    "mmoparties.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.13",
+    "fabric": "*",
+    "minecraft": "1.19.3"
+  }
+}
