@@ -4,6 +4,7 @@ import deathtags.core.MMOParties;
 import deathtags.gui.PartyList;
 import deathtags.gui.UISpec;
 import deathtags.networking.BuilderData;
+import deathtags.stats.PlayerStats;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.world.entity.player.Player;
 
@@ -11,12 +12,13 @@ public class BuilderLeader implements BuilderData {
     public boolean isLeader;
     @Override
     public void OnWrite(ByteBuf buffer, Player player) {
-        if (player == null || MMOParties.GetStats(player) == null || !MMOParties.GetStats(player).InParty()) {
+        PlayerStats stats = MMOParties.GetStats(player);
+        if (player == null || stats == null || !stats.InParty()) {
             buffer.writeBoolean(false);
             return; // Nothing here.
         }
 
-        isLeader = MMOParties.GetStats(player).party.leader == player;
+        isLeader = stats.party.leader == player;
 
         buffer.writeBoolean(isLeader);
     }
@@ -28,6 +30,7 @@ public class BuilderLeader implements BuilderData {
 
     @Override
     public boolean IsDifferent(Player player) {
+        if (MMOParties.GetStats(player) == null) return false; // Integrity check
         return !(isLeader == (MMOParties.GetStats(player).party.leader == player));
     }
 
