@@ -16,7 +16,7 @@ plugins {
 apply plugin: 'net.minecraftforge.gradle'
 
 
-version = '2.4.0.1.19'
+version = '2.4.2.1.19'
 group = 'com.matthe815' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'mmoparties'
 
