@@ -17,9 +17,9 @@ public class BuilderLeader implements BuilderData {
             buffer.writeBoolean(false);
             return; // Nothing here.
         }
-
+        
         isLeader = stats.party.leader == player;
-
+        
         buffer.writeBoolean(isLeader);
     }
 
