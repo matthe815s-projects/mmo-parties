@@ -1,25 +1,25 @@
 package deathtags.gui.builders;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import deathtags.core.MMOParties;
 import deathtags.gui.PartyList;
 import deathtags.gui.UISpec;
 import deathtags.networking.BuilderData;
-import net.minecraft.client.gui.toasts.IToast;
-import net.minecraft.client.gui.toasts.ToastGui;
+import deathtags.stats.PlayerStats;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 
 public class BuilderLeader implements BuilderData {
-    boolean isLeader;
+    public boolean isLeader;
     @Override
     public void OnWrite(PacketBuffer buffer, PlayerEntity player) {
-//        if (player == null) return; // Nothing here.
-//
-//        // Handle an edge case that can cause crashing (writing a packet while closing the server)
-//        if (!(MMOParties.GetStats(player) != null & MMOParties.GetStats(player).InParty())) return;
+        PlayerStats stats = MMOParties.GetStats(player);
 
-        buffer.writeBoolean(false);
+        if (player == null || stats == null || !stats.InParty()) {
+            buffer.writeBoolean(false);
+            return; // Nothing here.
+        }
+
+        buffer.writeBoolean(stats.party.leader == player);
     }
 
     @Override
@@ -29,6 +29,7 @@ public class BuilderLeader implements BuilderData {
 
     @Override
     public boolean IsDifferent(PlayerEntity player) {
+        if (MMOParties.GetStats(player) == null) return false; // data verification.
         return isLeader != (MMOParties.GetStats(player).party.leader == player);
     }
 
