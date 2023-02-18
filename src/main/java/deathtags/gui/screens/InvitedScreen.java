@@ -28,10 +28,12 @@ public class InvitedScreen extends Screen {
     private Button CreateButton(String text, int buttonNumber, Button.OnPress pressable) {
         int buttonY = 26 * (buttonNumber);
 
-        return new Button((this.width - 200) / 2, buttonY, 200, 20, Component.translatable(text), button -> {
+        Button.Builder button = Button.builder(Component.translatable(text), butt -> {
             this.onClose();
-            pressable.onPress(button);
-        });
+            pressable.onPress(butt);
+        }).pos((this.width - 200) / 2, buttonY).width(200);
+
+        return button.build();
     }
 
     @Override
