@@ -18,45 +18,57 @@ import net.minecraftforge.fml.relauncher.Side;
 public class MessageSendMemberData implements IMessage {
 
   private PartyPacketDataBuilder builder;
+  boolean remove = false;
   
   public MessageSendMemberData() {
 
   }
 
-  public MessageSendMemberData(PartyPacketDataBuilder data) 
+  public MessageSendMemberData(PartyPacketDataBuilder data)
+  {
+		this.builder = data;
+  }
+
+  public MessageSendMemberData(PartyPacketDataBuilder data, boolean remove)
   {
 	  this.builder = data;
+	  this.remove = remove;
   }
 
   @Override
   public void fromBytes(ByteBuf buf) 
   {
-	  this.builder = new PartyPacketDataBuilder()
-			  .SetPlayer(buf.readCharSequence(buf.readInt(), Charsets.UTF_8).toString())
-			  .SetHealth(buf.readFloat())
-			  .SetMaxHealth(buf.readFloat())
-			  .SetArmor(buf.readFloat())
-			  .SetLeader(buf.readBoolean())
-			  .SetAbsorption(buf.readFloat())
-			  .SetShields(buf.readFloat())
-			  .SetMaxShields(buf.readFloat())
-			  .SetHunger(buf.readFloat());
-			 
+	  builder = new PartyPacketDataBuilder()
+			  .SetName(buf.readCharSequence(buf.readInt(), Charsets.UTF_8).toString());
+
+	  remove = buf.readBoolean();
+
+	  // Instantiate builders
+	  // Creates a new instance of the builder for each party member.
+	  for (int i = 0; i < PartyPacketDataBuilder.builderData.size(); i++) {
+		  Class<? extends BuilderData> aClass = (PartyPacketDataBuilder.builderData.get(i)).getClass();
+		  try {
+			  BuilderData builderData = aClass.newInstance();
+			  builderData.OnRead(buf);
+			  builder.AddData(i, builderData);
+		  } catch (InstantiationException e) {
+			  throw new RuntimeException(e);
+		  } catch (IllegalAccessException e) {
+			  throw new RuntimeException(e);
+		  }
+	  }
   }
 
   @Override
   public void toBytes(ByteBuf buf) 
   {
 	  buf.writeInt(builder.nameLength);
-	  buf.writeBytes(builder.playerId.getBytes());
-	  buf.writeFloat(builder.health);
-	  buf.writeFloat(builder.maxHealth);
-	  buf.writeFloat(builder.armor);
-	  buf.writeBoolean(builder.leader);
-	  buf.writeFloat(builder.absorption);
-	  buf.writeFloat(builder.shields);
-	  buf.writeFloat(builder.maxShields);
-	  buf.writeFloat(builder.hunger);
+	  buf.writeCharSequence(builder.playerId, Charsets.UTF_8);
+	  buf.writeBoolean(remove);
+
+	  PartyPacketDataBuilder.builderData.forEach(builderData -> {
+		  builderData.OnWrite(buf, builder.player);
+	  });
   }
 
   public static class Handler implements IMessageHandler<MessageSendMemberData, IMessage> {
@@ -68,8 +80,16 @@ public class MessageSendMemberData implements IMessage {
 
     		if (MMOParties.localParty == null)
     			MMOParties.localParty = new Party();
-    		
-    		MMOParties.localParty.data.put(player.name, player);
+
+			// Remove this data and clear it out.
+			if (message.remove) {
+				MMOParties.localParty.data.remove(player.name);
+				System.out.println("Remove player " + player.name);
+				System.out.println(MMOParties.localParty.data.size());
+				return null;
+			}
+
+			MMOParties.localParty.data.put(player.name, player);
     	}
     	
     	return null;

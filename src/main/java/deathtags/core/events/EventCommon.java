@@ -7,8 +7,10 @@ import deathtags.core.MMOParties;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
 import jdk.nashorn.internal.runtime.regexp.joni.Config;
+import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -26,73 +28,87 @@ public class EventCommon {
         EntityPlayer player = event.player;
         if (!MMOParties.PlayerStats.containsKey(player)) MMOParties.PlayerStats.put(player, new PlayerStats( player ));
 
-        event.player.getServer().getPlayerList().getPlayers().forEach(serverEntityPlayer -> {
-            PlayerStats ply = MMOParties.GetStats(serverEntityPlayer);
-            if (ply.InParty() && !MMOParties.GetStats(player).InParty()) { // Check if in party
-                if (ply.party.IsMemberOffline(player)) { // Check if new player was last in that party
-                    ply.party.Join(player, false);
-                    return;
-                }
-            }
-        });
+        // Attempt to rejoin the last party in which the player was online in.
+        RejoinLastParty(player);
 
-        // Handle auto-partying
-        if (!ConfigHandler.Server_Options.autoAssignParties) return;
+        // Automatically assign the global party to this player.
+        // Will not assign if the previous re-join party function goes through.
+        if (ConfigHandler.Server_Options.autoAssignParties)
+            HandleGlobalParty(player);
+    }
 
-        if (globalParty == null) globalParty = Party.CreateGlobalParty( player );
-        else {
-            // Don't double join.
-            if (!globalParty.IsMember(player)) globalParty.Join(event.player, true);
+    public void RejoinLastParty(EntityPlayer player)
+    {
+        for (EntityPlayerMP serverPlayer : player.getServer().getPlayerList().getPlayers()) {
+            PlayerStats svStats = MMOParties.GetStats(serverPlayer); // Get the stats for this server player.
+            // Continue if this is not the party we're looking for.
+            if (!svStats.InParty() || !svStats.party.IsMemberOffline(player)) continue;
+            // Join the player to this party since it's the one.
+            svStats.party.Join(player, false);
+            svStats.party.Broadcast(new TextComponentTranslation("rpgparties.message.party.player.returned", player.getName()));
+            break; // Stop here.
         }
     }
+
+    public void HandleGlobalParty(EntityPlayer player)
+    {
+        if (globalParty == null) globalParty = Party.CreateGlobalParty( player );
+        else if (!globalParty.IsMember(player)) globalParty.Join(player, false);
+    }
+
 
     @SubscribeEvent
     public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event)
     {
-        PlayerStats playerStats = MMOParties.GetStatsByName(event.player.getName());
-
-        // Only if in party.
-        if (playerStats.InParty()) {
-            playerStats.party.players.remove(event.player);
-
-            // Change the leader when you leave.
-            if (playerStats.party.players.size() > 0) playerStats.party.MakeLeader(playerStats.party.players.get(0));
-        }
-
+        PlayerStats playerStats = MMOParties.GetStats(event.player);
         MMOParties.PlayerStats.remove(event.player); // Remove the player's temporary data.
+
+        // Process the handling for shifting the leader.
+        if (!playerStats.InParty()) return;
+
+        playerStats.party.players.remove(event.player);
+
+        playerStats.party.SendUpdate();
+        playerStats.party.SendPartyMemberData(event.player, true, true);
+
+        // Change the leader when you leave.
+        if (event.player == playerStats.party.leader && playerStats.party.players.size() > 0) playerStats.party.MakeLeader(playerStats.party.players.get(0));
     }
 
     @SubscribeEvent(priority= EventPriority.HIGHEST)
     public void OnPlayerHurt(LivingHurtEvent event)
     {
         if (!ConfigHandler.Server_Options.friendlyFireDisabled) return; // Friendly fire is allowed so this doesn't matter.
-        if (!event.getEntity().world.isRemote) return; // Perform on the server only.
+        if (event.getEntity().world.isRemote) return; // Perform on the server only.
 
-        if (! (event.getEntityLiving() instanceof EntityPlayer)
-                || ! (event.getSource().getTrueSource() instanceof EntityPlayer) ) return; // Only perform on players.
+        if (! (event.getEntityLiving() instanceof EntityPlayer || event.getEntityLiving() instanceof EntityWolf) // Friendly fire preventative measure only apply to players.
+                || ! (event.getSource().getTrueSource() instanceof EntityPlayer) ) return;
 
-        EntityPlayer player = (EntityPlayer) event.getEntityLiving();
-        EntityPlayer source = (EntityPlayer) event.getSource().getTrueSource();
+        EntityPlayer player, source = (EntityPlayer) event.getSource().getTrueSource();
+
+        // Determine the owner if the pet if it's a pet.
+        if (event.getEntityLiving() instanceof EntityWolf)
+            player = (EntityPlayer) ((EntityWolf) event.getEntityLiving()).getOwner();
+        else
+            player = (EntityPlayer) event.getEntityLiving();
+
+        if (player == null || MMOParties.GetStats(source).pvpEnabled) return; // If the source has PVP enabled, then skip the rest of the code.
 
         // Handle friendly fire canceling.
-        if (PartyHelper.Server.GetRelation((EntityPlayerMP) player, (EntityPlayerMP) source) == EnumRelation.PARTY) {
+        if ((PartyHelper.Server.GetRelation((EntityPlayerMP) player, (EntityPlayerMP) source) == EnumRelation.PARTY)) {
             event.setCanceled(true);
             return;
         }
     }
 
     @SubscribeEvent
-    public void OnPlayerMove(TickEvent.PlayerTickEvent event)
+    public void OnPlayerGameTick(TickEvent.PlayerTickEvent event)
     {
-        if (!event.player.world.isRemote) // Don't care if it's a client event.
-            return;
-
-        EntityPlayer player = event.player;
-        PlayerStats stats = MMOParties.GetStatsByName(player.getName());
-
-        if (stats == null) return;
+        PlayerStats stats = MMOParties.GetStats(event.player);
+        if (stats == null) return; // Dunno why there wouldn't be a stats but Minecraft Forge is weird.
 
         stats.TickTeleport();
-        if (stats.party != null) MMOParties.PlayerStats.get(player).party.SendPartyMemberData(player, false); // Sync the player.
+
+        if (stats.party != null) stats.party.SendPartyMemberData(event.player, false, false); // Sync the player.
     }
 }

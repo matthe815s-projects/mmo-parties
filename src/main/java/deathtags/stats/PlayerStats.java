@@ -11,6 +11,7 @@ public class PlayerStats
 
 	public EntityPlayer target;
 	public int teleportTicks = 0;
+	public boolean pvpEnabled = false;
 
 	public PlayerStats (EntityPlayer player ) {
 		this.player = player;

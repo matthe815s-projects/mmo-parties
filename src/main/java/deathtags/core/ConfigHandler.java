@@ -10,11 +10,15 @@ public class ConfigHandler {
 	public static DebugOptions Debug_Options = new DebugOptions();
 	
 	public static class ClientOptions {
-		public boolean showShields = true;
 		public boolean showAbsorption = true;
 		public boolean showArmor = true;
 		public boolean showHunger = false;
 		public boolean useSimpleUI = false;
+		public boolean hideSelf = false;
+		public boolean hideGUI = false;
+		public String anchorPoint = "top-left";
+		public boolean numbersAsPercentage = false;
+		public String extraNumberType = "additional";
 		public int uiYOffset = 3;
 	}
 	

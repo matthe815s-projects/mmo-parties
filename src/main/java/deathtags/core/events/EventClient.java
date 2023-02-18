@@ -1,6 +1,7 @@
 package deathtags.core.events;
 
 import deathtags.core.MMOParties;
+import deathtags.gui.screens.InvitedScreen;
 import deathtags.gui.screens.PartyScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.Mod;
@@ -15,26 +16,34 @@ public class EventClient {
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
-    public void disconnectFromServer(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
+    public void OnServerDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
         MMOParties.localParty = null;
     }
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
-    public void keyInput(InputEvent.KeyInputEvent event) {
-        if (Minecraft.getMinecraft().isIntegratedServerRunning() && Minecraft.getMinecraft().getIntegratedServer().getCurrentPlayerCount() != 1) return;
-        if ((Minecraft.getMinecraft().isIntegratedServerRunning() == false && (Minecraft.getMinecraft().getCurrentServerData() != null && !Minecraft.getMinecraft().getCurrentServerData().isOnLAN()))
-                && Minecraft.getMinecraft().getConnection() == null) { return; } // No menu in singleplayer.
-
+    public void OnKeyInput(InputEvent.KeyInputEvent event) {
         if (MMOParties.OPEN_GUI_KEY.isKeyDown()) { // Detect party GUI keybind.
-            Minecraft.getMinecraft().displayGuiScreen(new PartyScreen());
+            // Open the party invitation menu if you have an invite.
+            if (MMOParties.partyInviter != null)
+                EventClient.OpenInvitationScreen();
+            else
+                EventClient.OpenPartyScreen();
         }
     }
 
 
     @SideOnly(Side.CLIENT)
-    public static void openScreen() {
+    public static void OpenPartyScreen() {
         Minecraft.getMinecraft().displayGuiScreen(new PartyScreen());
     }
+
+    /**
+     * Handles opening of the invitation screen.
+     * Opens automatically when an invite is received.
+     * @link deathtags.networking.MessagePartyInvite
+     */
+    @SideOnly(Side.CLIENT)
+    public static void OpenInvitationScreen() { Minecraft.getMinecraft().displayGuiScreen(new InvitedScreen()); }
 
 }

@@ -1,13 +1,13 @@
 package deathtags.gui.screens;
 
 import deathtags.core.MMOParties;
+import deathtags.gui.builders.BuilderLeader;
 import deathtags.networking.EnumPartyGUIAction;
-import deathtags.networking.MessageGUIInvitePlayer;
+import deathtags.networking.MessageHandleMenuAction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,28 +93,28 @@ public class PartyScreen extends GuiScreen {
             GuiButton widget = this.addButton(CreateButton(player, 2 + MMOParties.localParty.local_players.indexOf(player), () -> {}));
             widget.enabled = false; // Make the button look darker
 
-            if (!(MMOParties.localParty.data.get(Minecraft.getMinecraft().player.getName()).leader && MMOParties.localParty.data.get(player).leader))
+            if (!((BuilderLeader)MMOParties.localParty.data.get(Minecraft.getMinecraft().player.getName()).additionalData[0]).isLeader && MMOParties.localParty.data.get(player).leader)
                 return;
 
             this.addButton(CreateSubButton("K",20, height, () -> {
-                MMOParties.network.sendToServer(new MessageGUIInvitePlayer(player, EnumPartyGUIAction.KICK));
+                MMOParties.network.sendToServer(new MessageHandleMenuAction(player, EnumPartyGUIAction.KICK));
             }));
 
             this.addButton(CreateSubButton("L",40, height, () -> {
-                MMOParties.network.sendToServer(new MessageGUIInvitePlayer(player, EnumPartyGUIAction.LEADER));
+                MMOParties.network.sendToServer(new MessageHandleMenuAction(player, EnumPartyGUIAction.LEADER));
             }));
         });
 
         this.addButton(CreateButton("rpgparties.gui.leave", 1 + MMOParties.localParty.local_players.size(), () -> {
             Minecraft.getMinecraft().displayGuiScreen(new PartyScreen(EnumPartyGUIAction.INVITE));
-            MMOParties.network.sendToServer(new MessageGUIInvitePlayer("", EnumPartyGUIAction.LEAVE));
+            MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.LEAVE));
         }));
 
-        if (!MMOParties.localParty.data.get(Minecraft.getMinecraft().player.getName()).leader) return; // Hide these options if not the leader.
+        if (!((BuilderLeader)MMOParties.localParty.data.get(Minecraft.getMinecraft().player.getName()).additionalData[0]).isLeader) return; // Hide these options if not the leader.
 
         this.addButton(CreateButton("rpgparties.gui.disband", 2 + MMOParties.localParty.local_players.size(), () -> {
             Minecraft.getMinecraft().displayGuiScreen(new PartyScreen(EnumPartyGUIAction.INVITE));
-            MMOParties.network.sendToServer(new MessageGUIInvitePlayer("", EnumPartyGUIAction.DISBAND));
+            MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.DISBAND));
         }));
     }
 
@@ -132,7 +132,7 @@ public class PartyScreen extends GuiScreen {
                     if (player == Minecraft.getMinecraft().player.getName()) continue; // Hide self.
 
                     this.addButton(CreateButton(player, 8 + this.buttons.size(), () -> {
-                        MMOParties.network.sendToServer(new MessageGUIInvitePlayer(player, EnumPartyGUIAction.INVITE));
+                        MMOParties.network.sendToServer(new MessageHandleMenuAction(player, EnumPartyGUIAction.INVITE));
                     })); // Send UI event to the server.
                 }
 

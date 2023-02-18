@@ -15,7 +15,6 @@ import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -168,7 +167,12 @@ public class PartyCommand extends CommandBase {
 
 			case "gui":
 				if (player.world.isRemote) MMOParties.network.sendTo(new MessageOpenUI(), player); // Send open message
-				else if (Minecraft.getMinecraft().isSingleplayer()) EventClient.openScreen();
+				else if (Minecraft.getMinecraft().isSingleplayer()) EventClient.OpenPartyScreen();
+				break;
+
+			case "debug":
+				if (!ConfigHandler.Debug_Options.debuggingEnabled) return;
+					CommandMessageHelper.SendInfo( player, MMOParties.DEBUGGING_ENABLED ? "Debug Mode has been enabled" : "Debug Mode has been disabled." );
 				break;
 
 			case "debug":
