@@ -32,7 +32,7 @@ import net.minecraftforge.fml.relauncher.Side;
 public class MMOParties {
 
 	public static final String MODID = "mmoparties";
-	public static final String VERSION = "2.3.0";
+	public static final String VERSION = "2.4.2";
 	public static final String NAME = "RPG Parties";
 	
 	public static SimpleNetworkWrapper network;
