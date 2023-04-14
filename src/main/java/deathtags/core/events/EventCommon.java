@@ -72,20 +72,22 @@ public class EventCommon {
     public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event)
     {
         PlayerStats playerStats = MMOParties.GetStats(event.getEntity());
+
         if (playerStats == null) return;
 
-        MMOParties.PlayerStats.remove(event.getEntity()); // Remove the player's temporary data.
-
         // Process the handling for shifting the leader.
-        if (!playerStats.InParty()) return;
+        if (playerStats.InParty())
+        {
+            playerStats.party.players.remove(event.getEntity());
 
-        playerStats.party.players.remove(event.getEntity());
+            playerStats.party.SendUpdate();
+            playerStats.party.SendPartyMemberData(event.getEntity(), true, true);
 
-        playerStats.party.SendUpdate();
-        playerStats.party.SendPartyMemberData(event.getEntity(), true, true);
+            // Change the leader when you leave.
+            if (event.getEntity() == playerStats.party.leader && playerStats.party.players.size() > 0) playerStats.party.MakeLeader(playerStats.party.players.get(0));
+        }
 
-        // Change the leader when you leave.
-        if (event.getEntity() == playerStats.party.leader && playerStats.party.players.size() > 0) playerStats.party.MakeLeader(playerStats.party.players.get(0));
+        MMOParties.PlayerStats.remove(event.getEntity()); // Remove the player's temporary data.
     }
 
     /**
