@@ -1,7 +1,6 @@
 package deathtags.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import deathtags.config.ConfigHolder;
 import deathtags.core.MMOParties;
 import deathtags.gui.builders.BuilderLeader;
 import deathtags.networking.EnumPartyGUIAction;
@@ -14,7 +13,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 /**
@@ -50,12 +48,12 @@ public class PartyScreen extends Screen {
     private Button CreateButton(String text, int buttonNumber, Button.OnPress pressable) {
         int buttonY = 26 * (buttonNumber);
 
-        Button.Builder button = Button.builder(Component.translatable(text), butt -> {
+        Button button = new Button((this.width - 200) / 2, buttonY, 200, 20, Component.translatable(text), butt -> {
             this.onClose();
             pressable.onPress(butt);
-        }).pos((this.width - 200) / 2, buttonY).width(200);
+        });
 
-        return button.build();
+        return button;
     }
 
     private String[] GetApplicablePlayers()
@@ -80,31 +78,23 @@ public class PartyScreen extends Screen {
         MMOParties.localParty.local_players.forEach(player -> {
             int height = 26 * (2 + MMOParties.localParty.local_players.indexOf(player));
 
-            Button button = this.addRenderableWidget(CreateButton(player, 2 + MMOParties.localParty.local_players.indexOf(player), p_onPress_1_ -> {}));
-            button.active = false; // Make the button look darker
+            Button widget = this.addRenderableWidget(CreateButton(player, 2 + MMOParties.localParty.local_players.indexOf(player), p_onPress_1_ -> {}));
+            widget.active = false; // Make the button look darker
 
             // Hide these options if not the leader or yourself
-            if (!((BuilderLeader)MMOParties.localParty.data.get(Minecraft.getInstance().player.getName().getString()).additionalData[0]).isLeader && player != Minecraft.getInstance().player.getName().getString()) return;
+            if (!((BuilderLeader)MMOParties.localParty.data.get(Minecraft.getInstance().player.getName().getString()).additionalData[0]).isLeader || player == Minecraft.getInstance().player.getName().getString()) return;
 
-            Button.Builder builder = ImageButton.builder(Component.empty(), handler -> {
+            this.addRenderableWidget(new ImageButton((this.width + 200 + 20) / 2, height, 20, 20, 0, 46, 20, new ResourceLocation("mmoparties", "textures/icons.png"), button -> {
                 this.onClose();
                 MMOParties.network.sendToServer(new MessageHandleMenuAction(player, EnumPartyGUIAction.LEADER));
-            });
+            }));
 
-            builder.pos((this.width + 200 + 20) / 2, height);
-            builder.width(20);
-
-            this.addRenderableWidget(builder.build());
-
-            builder = ImageButton.builder(Component.empty(), handler -> {
+            this.addRenderableWidget(new ImageButton((this.width + 200 + 60) / 2, height, 20, 20, 20, 46, 20, new ResourceLocation("mmoparties", "textures/icons.png"), button -> {
                 this.onClose();
                 MMOParties.network.sendToServer(new MessageHandleMenuAction(player, EnumPartyGUIAction.KICK));
-            });
+            }));
 
-            builder.pos((this.width + 200 + 20) / 2, height);
-            builder.width(20);
-
-            this.addRenderableWidget(builder.build());
+            this.addRenderableWidget(widget);
         });
 
         this.addRenderableWidget(CreateButton("rpgparties.gui.leave", 3 + MMOParties.localParty.local_players.size(), p_onPress_1_ -> MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.LEAVE))));

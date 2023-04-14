@@ -7,6 +7,7 @@ import com.google.common.base.Charsets;
 import deathtags.core.MMOParties;
 import deathtags.stats.Party;
 import deathtags.stats.PartyMemberData;
+import deathtags.stats.PlayerStats;
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -59,7 +60,9 @@ public class MessageSendMemberData {
 	  buf.writeCharSequence(msg.builder.playerId, Charsets.UTF_8);
 	  buf.writeBoolean(msg.remove);
 
-	  MMOParties.GetStats(msg.builder.player).party.data.get(msg.builder.player.getName().getString())
+	  PlayerStats stats = MMOParties.GetStats(msg.builder.player);
+
+	  stats.party.data.get(msg.builder.player.getName().getString())
 			  .additionalData = new BuilderData[PartyPacketDataBuilder.builderData.size()];
 
 	  for (int index = 0; index < PartyPacketDataBuilder.builderData.size(); index++) {

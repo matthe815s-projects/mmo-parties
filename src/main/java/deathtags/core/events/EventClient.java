@@ -31,6 +31,9 @@ public class EventClient {
     public void OnKeyInput(InputEvent.Key event) {
         // Open the party menu when the GUI key is pressed.
         if (MMOParties.OPEN_GUI_KEY.isDown()) {
+            // You can't be mid invitee if you've already accepted.
+            if (MMOParties.localParty != null & MMOParties.partyInviter != null) MMOParties.partyInviter = null;
+
             // Open the party invitation menu if you have an invite.
             if (MMOParties.partyInviter != null)
                 EventClient.OpenInvitationScreen();

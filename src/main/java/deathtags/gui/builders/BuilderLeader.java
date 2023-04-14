@@ -9,17 +9,15 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.world.entity.player.Player;
 
 public class BuilderLeader implements BuilderData {
-    public boolean isLeader;
+    public boolean isLeader = false;
     @Override
     public void OnWrite(ByteBuf buffer, Player player) {
         PlayerStats stats = MMOParties.GetStats(player);
         if (player == null || stats == null || !stats.InParty()) {
-            buffer.writeBoolean(false);
+            buffer.writeBoolean(stats.party.leader == player);
             return; // Nothing here.
         }
-        
-        isLeader = stats.party.leader == player;
-        
+
         buffer.writeBoolean(isLeader);
     }
 
