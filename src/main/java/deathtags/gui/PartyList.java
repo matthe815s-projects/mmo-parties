@@ -174,6 +174,7 @@ public class PartyList {
         UISpec defaultOffset = GetAnchorOffset();
         int yOffset = (15 * (pN + 1)) + lastOffset;
         int posX = defaultOffset.x;
+        int configOffsetY = ConfigHolder.CLIENT.uiYOffset.get();
 
         // Invert rendering of each player if in the bottom corners.
         if (renderAscending) yOffset = -yOffset;
@@ -181,7 +182,7 @@ public class PartyList {
         // Rendering compact or in verbose changes the amount of visible data as well as the yOffset.
         // The only bar visible within compact mode is hearts, and it's in a number form.
         if (compact) {
-            yOffset = (int)(yOffset / 1.7) + 4;
+            yOffset = (int)((yOffset / 1.7) + 4) + configOffsetY;
             nuggetBars[1].Render(data.additionalData[1], posX, ((defaultOffset.y - 10) + yOffset), true);
             nuggetBars[2].Render(data.additionalData[2], posX + 30 + (4 * data.name.length()), ((defaultOffset.y - 10) + yOffset), true);
             return additionalOffset;
