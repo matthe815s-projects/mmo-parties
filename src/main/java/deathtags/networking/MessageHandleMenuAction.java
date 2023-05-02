@@ -3,9 +3,11 @@ package deathtags.networking;
 import com.google.common.base.Charsets;
 import deathtags.config.ConfigHolder;
 import deathtags.core.MMOParties;
+import deathtags.helpers.CommandMessageHelper;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -58,6 +60,10 @@ public class MessageHandleMenuAction {
 					}
 					else {
 						// Invite the player supplied in the charsequence to your party.
+						ServerPlayer player = ctx.get().getSender().server.getPlayerList().getPlayerByName(pkt.name);
+						if (player == null) {
+							CommandMessageHelper.SendError(ctx.get().getSender(), "An error has occurred when trying to invite this player.");
+						}
 						stats.party.Invite(ctx.get().getSender(), ctx.get().getSender().server.getPlayerList().getPlayerByName(pkt.name));
 					}
 					break;
