@@ -88,7 +88,7 @@ public class PartyCommand {
 		ServerPlayerEntity player = context.getSource().getPlayerOrException();
 		ServerPlayerEntity target = null; // This is null until the next statement. It can remain null.
 
-		if (targetStr != null) context.getSource().getServer().getPlayerList().getPlayerByName(targetStr);
+		if (targetStr != null) target = context.getSource().getServer().getPlayerList().getPlayerByName(targetStr);
 
 		if (targetStr != null && target == null) { CommandMessageHelper.SendError( player, String.format("The player %s is not online.", targetStr) ); return 0; }
 		if (player.getCommandSenderWorld().isClientSide) return 0; // Only perform operations on the server side.
