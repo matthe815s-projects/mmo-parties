@@ -149,7 +149,7 @@ public class PartyCommand {
 				if (stats.party.leader != player) // Only the leader can promote
 				{ CommandMessageHelper.SendError( player, "Only the leader may promote members." ); return 0; }
 
-				if (targetStr == null) { CommandMessageHelper.SendError(player, "rpgparties.message.error.argument", player.getName().getContents()); return 0; }
+				if (targetStr == null) { CommandMessageHelper.SendError(player, "rpgparties.message.error.argument", player.getName().getString()); return 0; }
 				
 				stats.party.MakeLeader(player);
 				break;
