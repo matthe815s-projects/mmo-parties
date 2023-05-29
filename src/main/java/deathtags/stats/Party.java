@@ -101,7 +101,7 @@ public class Party extends PlayerGroup
 		stats.party = this;
 		stats.partyInvite = null; // Clear the party invite to prevent potential double joining.
 		
-		if (displayMessage) Broadcast( Component.translatable( "rpgparties.message.party.joined", player.getName().getContents() ) );
+		if (displayMessage) Broadcast( Component.translatable( "rpgparties.message.party.joined", player.getName().getString() ) );
 		
 		for ( Player member : players ) SendPartyMemberData( member, true, false ); // Update all of the party members.
 		
@@ -112,7 +112,7 @@ public class Party extends PlayerGroup
 	{
 		this.players.remove(player);
 		
-		Broadcast( Component.translatable( "rpgparties.message.party.player.left", player.getName().getContents() ) );
+		Broadcast( Component.translatable( "rpgparties.message.party.player.left", player.getName().toString() ) );
 
 		SendPartyMemberData(player,true, true); // Send one last update.
 		

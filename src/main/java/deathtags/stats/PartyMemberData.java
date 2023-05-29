@@ -20,6 +20,7 @@ public class PartyMemberData {
 
 		// Check all of the registered values for differences.
 		for (BuilderData data : additionalData) {
+			if (data == null) return true;
 			if (data.IsDifferent(player)) return true;
 		}
 

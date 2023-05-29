@@ -1,7 +1,6 @@
 package deathtags.gui.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import deathtags.config.ConfigHolder;
 import deathtags.core.MMOParties;
 import deathtags.gui.builders.BuilderLeader;
 import deathtags.networking.EnumPartyGUIAction;
@@ -9,7 +8,6 @@ import deathtags.networking.MessageHandleMenuAction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -50,12 +48,12 @@ public class PartyScreen extends Screen {
     private Button CreateButton(String text, int buttonNumber, Button.OnPress pressable) {
         int buttonY = 26 * (buttonNumber);
 
-        if (menu == EnumPartyGUIAction.INVITE) buttonY = 26 * (this.children().size()); // Exception for the invite menu.
-
-        return new Button((this.width - 200) / 2, buttonY, 200, 20, Component.translatable(text), button -> {
+        Button button = new Button((this.width - 200) / 2, buttonY, 200, 20, Component.translatable(text), butt -> {
             this.onClose();
-            pressable.onPress(button);
+            pressable.onPress(butt);
         });
+
+        return button;
     }
 
     private String[] GetApplicablePlayers()
@@ -80,11 +78,11 @@ public class PartyScreen extends Screen {
         MMOParties.localParty.local_players.forEach(player -> {
             int height = 26 * (2 + MMOParties.localParty.local_players.indexOf(player));
 
-            Widget widget = this.addRenderableWidget(CreateButton(player, 2 + MMOParties.localParty.local_players.indexOf(player), p_onPress_1_ -> {}));
-            ((Button)widget).active = false; // Make the button look darker
+            Button widget = this.addRenderableWidget(CreateButton(player, 2 + MMOParties.localParty.local_players.indexOf(player), p_onPress_1_ -> {}));
+            widget.active = false; // Make the button look darker
 
             // Hide these options if not the leader or yourself
-            if (!((BuilderLeader)MMOParties.localParty.data.get(Minecraft.getInstance().player.getName().getString()).additionalData[0]).isLeader && player != Minecraft.getInstance().player.getName().getString()) return;
+            if (!((BuilderLeader)MMOParties.localParty.data.get(Minecraft.getInstance().player.getName().getString()).additionalData[0]).isLeader || player == Minecraft.getInstance().player.getName().getString()) return;
 
             this.addRenderableWidget(new ImageButton((this.width + 200 + 20) / 2, height, 20, 20, 0, 46, 20, new ResourceLocation("mmoparties", "textures/icons.png"), button -> {
                 this.onClose();
@@ -95,6 +93,8 @@ public class PartyScreen extends Screen {
                 this.onClose();
                 MMOParties.network.sendToServer(new MessageHandleMenuAction(player, EnumPartyGUIAction.KICK));
             }));
+
+            this.addRenderableWidget(widget);
         });
 
         this.addRenderableWidget(CreateButton("rpgparties.gui.leave", 3 + MMOParties.localParty.local_players.size(), p_onPress_1_ -> MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.LEAVE))));
@@ -116,12 +116,6 @@ public class PartyScreen extends Screen {
                 break;
 
             case INVITE: // invite player
-                Widget widget = this.addRenderableWidget(new Button((this.width) - 70, 8, 60, 20, Component.translatable("rpgparties.gui.inviteall"), button -> {
-                    MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.INVITE)); // Send UI event to the server.
-                })); // invite all button
-
-                ((Button)widget).active = ConfigHolder.COMMON.allowInviteAll.get(); // Disable if not allowed.
-
                 // Add usable buttons for all players in a server.
                 int i = 1;
 

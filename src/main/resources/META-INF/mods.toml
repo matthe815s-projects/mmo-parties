@@ -5,7 +5,7 @@ license="mit"
 
 [[mods]]
 modId="mmoparties"
-version="2.4.0"
+version="2.4.3"
 displayName="MMOParties"
 #updateJSONURL=""
 displayURL="https://github.com/matthe815/mmo-parties"

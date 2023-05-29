@@ -28,20 +28,22 @@ public class InvitedScreen extends Screen {
     private Button CreateButton(String text, int buttonNumber, Button.OnPress pressable) {
         int buttonY = 26 * (buttonNumber);
 
-        return new Button((this.width - 200) / 2, buttonY, 200, 20, Component.translatable(text), button -> {
+        Button button = new Button((this.width - 200) / 2, buttonY, 200, 20, Component.translatable(text), butt -> {
             this.onClose();
-            pressable.onPress(button);
+            pressable.onPress(butt);
         });
+
+        return button;
     }
 
     @Override
     protected void init() {
-        this.addWidget(this.CreateButton("rpgparties.gui.accept", 2, p_onPress_1_ -> {
+        this.addRenderableWidget(this.CreateButton("rpgparties.gui.accept", 2, p_onPress_1_ -> {
             MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.ACCEPT));
             MMOParties.partyInviter = null;
         }));
 
-        this.addWidget(this.CreateButton("rpgparties.gui.deny", 3, p_onPress_1_ -> {
+        this.addRenderableWidget(this.CreateButton("rpgparties.gui.deny", 3, p_onPress_1_ -> {
             MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.DENY));
             MMOParties.partyInviter = null;
         }));
