@@ -13,73 +13,56 @@ import net.minecraftforge.network.NetworkEvent;
 public class MessageSendMemberData {
 
   private PartyPacketDataBuilder builder;
-  private boolean remove = false;
   
-  public MessageSendMemberData() {}
+  public MessageSendMemberData() {
 
-  public MessageSendMemberData(PartyPacketDataBuilder data)
+  }
+
+  public MessageSendMemberData(PartyPacketDataBuilder data) 
   {
 	  this.builder = data;
   }
 
-  public MessageSendMemberData(PartyPacketDataBuilder data, boolean remove)
-  {
-		this.builder = data;
-		this.remove = remove;
-  }
-
   public static MessageSendMemberData decode(ByteBuf buf)
   {
-	  MessageSendMemberData data = new MessageSendMemberData( new PartyPacketDataBuilder()
-			  .SetName(buf.readCharSequence(buf.readInt(), Charsets.UTF_8).toString()));
-
-	  data.remove = buf.readBoolean();
-
-	  // Instantiate builders
-	  // Creates a new instance of the builder for each party member.
-	  for (int i = 0; i < PartyPacketDataBuilder.builderData.size(); i++) {
-		  Class<? extends BuilderData> aClass = (PartyPacketDataBuilder.builderData.get(i)).getClass();
-		  try {
-			  BuilderData builder = aClass.newInstance();
-			  builder.OnRead(buf);
-			  data.builder.AddData(i, builder);
-		  } catch (InstantiationException e) {
-			  throw new RuntimeException(e);
-		  } catch (IllegalAccessException e) {
-			  throw new RuntimeException(e);
-		  }
-	  }
-
-	  return data;
+	  return new MessageSendMemberData( new PartyPacketDataBuilder()
+			  .SetPlayer(buf.readCharSequence(buf.readInt(), Charsets.UTF_8).toString())
+			  .SetHealth(buf.readFloat())
+			  .SetMaxHealth(buf.readFloat())
+			  .SetArmor(buf.readFloat())
+			  .SetLeader(buf.readBoolean())
+			  .SetAbsorption(buf.readFloat())
+			  .SetShields(buf.readFloat())
+			  .SetMaxShields(buf.readFloat())
+			  .SetHunger(buf.readFloat()));
+			 
   }
 
   public static void encode(MessageSendMemberData msg, ByteBuf buf)
   {
 	  buf.writeInt(msg.builder.nameLength);
 	  buf.writeCharSequence(msg.builder.playerId, Charsets.UTF_8);
-	  buf.writeBoolean(msg.remove);
-
-	  PartyPacketDataBuilder.builderData.forEach(builderData -> {
-		builderData.OnWrite(buf, msg.builder.player);
-	  });
+	  buf.writeFloat(msg.builder.health);
+	  buf.writeFloat(msg.builder.maxHealth);
+	  buf.writeFloat(msg.builder.armor);
+	  buf.writeBoolean(msg.builder.leader);
+	  buf.writeFloat(msg.builder.absorption);
+	  buf.writeFloat(msg.builder.shields);
+	  buf.writeFloat(msg.builder.maxShields);
+	  buf.writeFloat(msg.builder.hunger);
   }
 
   public static class Handler {
+
     public static void handle(MessageSendMemberData message, Supplier<NetworkEvent.Context> ctx) {
 		PartyMemberData player = new PartyMemberData(message.builder);
 
-		if (MMOParties.localParty == null) // Create a new party if one doesn't exist already.
+		if (MMOParties.localParty == null)
 			MMOParties.localParty = new Party();
-
-		// Remove this data and clear it out.
-		if (message.remove) {
-			MMOParties.localParty.data.remove(player.name);
-			ctx.get().setPacketHandled(true);
-			return;
-		}
 
 		MMOParties.localParty.data.put(player.name, player);
 		ctx.get().setPacketHandled(true);
-	}
-  }
+    	}
+    	
+  	}
 }

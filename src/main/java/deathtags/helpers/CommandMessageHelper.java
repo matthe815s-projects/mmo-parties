@@ -12,9 +12,9 @@ public class CommandMessageHelper {
 	 */
 	public static void SendInfo (Player player, String message, String... arguments )
 	{
-		player.displayClientMessage( 
-			new TranslatableComponent( message, arguments )
-			, false
+		player.displayClientMessage(
+				new TranslatableComponent( message, arguments )
+				, false
 		);
 	}
 
@@ -22,11 +22,11 @@ public class CommandMessageHelper {
 	{
 		TranslatableComponent component = new TranslatableComponent( message, arguments );
 
-		MutableComponent button = new TextComponent(" [ACCEPT]").setStyle(
+		TextComponent button = (TextComponent) new TextComponent(" [ACCEPT]").setStyle(
 				Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept")).withColor(TextColor.parseColor("#FFAA00"))
 		);
 
-		MutableComponent button2 = new TextComponent(" [DENY]").setStyle(
+		TextComponent button2 = (TextComponent) new TextComponent(" [DENY]").setStyle(
 				Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party deny")).withColor(TextColor.parseColor("#FF5555"))
 		);
 
@@ -38,7 +38,7 @@ public class CommandMessageHelper {
 				, false
 		);
 	}
-	
+
 	/**
 	 * Send a gray error chat to a player.
 	 * @param player A server player.
@@ -46,12 +46,12 @@ public class CommandMessageHelper {
 	 */
 	public static void SendError ( Player player, String message, String... arguments )
 	{
-		player.displayClientMessage( 
-			new TranslatableComponent( message, arguments )
-			.setStyle( 
-					Style.EMPTY.withColor(TextColor.parseColor("#FF0000"))
-			), false
+		player.displayClientMessage(
+				new TranslatableComponent( message, arguments )
+						.setStyle(
+								Style.EMPTY.withColor(TextColor.parseColor("#FF0000"))
+						), false
 		);
 	}
-	
+
 }

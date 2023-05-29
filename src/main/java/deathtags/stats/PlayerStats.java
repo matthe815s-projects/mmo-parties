@@ -8,7 +8,6 @@ public class PlayerStats
 	public Player player;
 	public Party party = null;
 	public Party partyInvite = null;
-	public boolean pvpEnabled = false;
 
 	public Player target;
 	public int teleportTicks = 0;

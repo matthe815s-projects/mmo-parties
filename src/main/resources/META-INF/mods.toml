@@ -5,10 +5,10 @@ license="mit"
 
 [[mods]]
 modId="mmoparties"
-version="2.4.0"
+version="2.3.0"
 displayName="MMOParties"
 #updateJSONURL=""
 displayURL="https://github.com/matthe815/mmo-parties"
 #logoFile="logo.png"
 authors="Matthe815"
-description="Adds an MMO party HUD and party system"
+description="Adds various food-related HUD improvements"
