@@ -32,4 +32,4 @@ rpgparties.gui.inviteall=Invitar a todos
 rpgparties.gui.accept=Accept
 rpgparties.gui.deny=Deny
 rpgparties.toast.header=Invite From %s
-rpgparties.toast.keybind=Press '%s' to accept.rpgparties.gui.invite
+rpgparties.toast.keybind=Press '%s' to accept.
