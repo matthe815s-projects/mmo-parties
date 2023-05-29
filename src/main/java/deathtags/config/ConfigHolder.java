@@ -11,7 +11,6 @@ public class ConfigHolder {
         public final ForgeConfigSpec.ConfigValue<Boolean> allowPartyTP;
         public final ForgeConfigSpec.ConfigValue<Boolean> autoAssignParties;
         public final ForgeConfigSpec.ConfigValue<Boolean> allowInviteAll;
-        public final ForgeConfigSpec.ConfigValue<Boolean> debugMode;
 
         public Common(ForgeConfigSpec.Builder builder)
         {
@@ -23,10 +22,8 @@ public class ConfigHolder {
                             .define("Allow teleportation", true);
             this.autoAssignParties = builder.comment("Whether or not to auto-assign all players to a party")
                             .define("Auto-assign Parties", false);
-            this.allowInviteAll = builder.comment("Whether or not to allow invite all")
-                            .define("Allow Invite All", true);
-            this.debugMode = builder.comment("Whether or not debug mode is enabled")
-                            .define("Enable Debug Mode", false);
+            this.allowInviteAll = builder.comment("Whether or not to allow invite allow")
+                            .define("Allow-Invite All", false);
             builder.pop();
         }
     }
@@ -38,11 +35,6 @@ public class ConfigHolder {
         public final ForgeConfigSpec.ConfigValue<Boolean> showHunger;
         public final ForgeConfigSpec.ConfigValue<Integer> uiYOffset;
         public final ForgeConfigSpec.ConfigValue<Boolean> useSimpleUI;
-        public final ForgeConfigSpec.ConfigValue<String>  anchorPoint;
-        public final ForgeConfigSpec.ConfigValue<Boolean> hideSelf;
-        public final ForgeConfigSpec.ConfigValue<Boolean> numbersAsPercentage;
-        public final ForgeConfigSpec.ConfigValue<String> extraNumberType;
-        public final ForgeConfigSpec.ConfigValue<Boolean> hideGUI;
 
         public Client(ForgeConfigSpec.Builder builder)
         {
@@ -50,25 +42,13 @@ public class ConfigHolder {
             this.showAbsorption = builder.comment("Whether or not to display absorption hearts")
                     .define("Show Absorption", true);
             this.showArmor = builder.comment("Whether or not to display armor")
-                    .define("Show Armor", true);
+                    .define("Show Absorption", true);
             this.showHunger = builder.comment("Whether or not to display hunger")
                     .define("Show Hunger", true);
             this.uiYOffset = builder.comment("The vertical offset at which to display the party list at.")
                     .define("Y Offset", 2);
             this.useSimpleUI = builder.comment("Whether or not to use the simple UI")
                     .define("Use Simple UI", false);
-            this.anchorPoint = builder.comment("The point to anchor the UI to.")
-                    .define("UI Anchor", "top-left");
-            this.hideSelf = builder.comment("Whether or not to hide yourself in the party list")
-                    .define("Hide Self", true);
-            this.hideGUI = builder.comment("Whether or not to hide your own GUI.")
-                    .define("Hide GUI", false);
-
-            this.numbersAsPercentage = builder.comment("Whether or not to render all HUD elements as percentages instead.")
-                    .define("Numbers As Percentages", false);
-            this.extraNumberType = builder.comment("How to handle health beyond the maximum. Will do nothing if Numbers As Percentage is disabled.",
-                    "Valid values: none, percentage, additional, compare")
-                    .define("Extra Number Type", "additional");
         }
     }
 
