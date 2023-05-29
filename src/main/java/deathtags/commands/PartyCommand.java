@@ -71,8 +71,8 @@ public class PartyCommand {
 	private static int run(CommandContext<CommandSourceStack> context, String sub, String targetStr) throws CommandSyntaxException {
 		ServerPlayer player = context.getSource().getPlayerOrException();
 		ServerPlayer target = null;
-
-		if (targetStr != null) context.getSource().getServer().getPlayerList().getPlayerByName(targetStr);
+    
+		if (targetStr != null) target = (context.getSource().getPlayerOrException()).getServer().getPlayerList().getPlayerByName(targetStr);
 
 		if (targetStr != null && target == null) { CommandMessageHelper.SendError( player, String.format("The player %s is not online.", targetStr) ); return 0; }
 		if (player.getCommandSenderWorld().isClientSide) return 0; // Only perform operations on the server side.
@@ -101,7 +101,7 @@ public class PartyCommand {
 				break;
 
 			case "invite":
-				if (targetStr == null) { CommandMessageHelper.SendError(player, "rpgparties.message.error.argument", player.getName().getContents()); return 0; }
+				if (targetStr == null) { CommandMessageHelper.SendError(player, "rpgparties.message.error.argument", player.getName().getString()); return 0; }
 				if (!stats.InParty()) Party.Create ( player ); // Create a party to invite with if not existent.
 
 				stats.party.Invite ( player, target ); // Send an invite to the target player.
@@ -137,7 +137,7 @@ public class PartyCommand {
 				if (stats.party.leader != player) // Only the leader can promote
 				{ CommandMessageHelper.SendError( player, "Only the leader may promote members." ); return 0; }
 
-				if (targetStr == null) { CommandMessageHelper.SendError(player, "rpgparties.message.error.argument", player.getName().getContents()); return 0; }
+				if (targetStr == null) { CommandMessageHelper.SendError(player, "rpgparties.message.error.argument", player.getName().getString()); return 0; }
 
 				stats.party.MakeLeader(player);
 				break;
