@@ -31,5 +31,5 @@ rpgparties.gui.disband=解散
 rpgparties.gui.inviteall=みんなを誘う
 rpgparties.gui.accept=Accept
 rpgparties.gui.deny=Deny
-rpgparties.toast.header=Invite From %s
-rpgparties.toast.keybind=Press '%s' to accept.rpgparties.gui.invite
+rpgparties.toast.header=%sから招待
+rpgparties.toast.keybind=受けるために'%s'を押して

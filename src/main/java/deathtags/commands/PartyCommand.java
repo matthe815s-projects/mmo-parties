@@ -7,7 +7,6 @@ import java.util.List;
 import deathtags.core.ConfigHandler;
 import deathtags.core.MMOParties;
 import deathtags.core.events.EventClient;
-import deathtags.gui.HealthBar;
 import deathtags.helpers.ArrayHelpers;
 import deathtags.helpers.CommandMessageHelper;
 import deathtags.networking.MessageOpenUI;
@@ -172,12 +171,6 @@ public class PartyCommand extends CommandBase {
 
 			case "debug":
 				if (!ConfigHandler.Debug_Options.debuggingEnabled) return;
-					CommandMessageHelper.SendInfo( player, MMOParties.DEBUGGING_ENABLED ? "Debug Mode has been enabled" : "Debug Mode has been disabled." );
-				break;
-
-			case "debug":
-				if (!ConfigHandler.Debug_Options.debuggingEnabled) return;
-					HealthBar.DISPLAY_SELF = true;
 					CommandMessageHelper.SendInfo( player, MMOParties.DEBUGGING_ENABLED ? "Debug Mode has been enabled" : "Debug Mode has been disabled." );
 				break;
 
