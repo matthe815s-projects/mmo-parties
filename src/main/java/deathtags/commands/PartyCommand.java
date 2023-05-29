@@ -113,7 +113,7 @@ public class PartyCommand {
 				break;
 
 			case "invite":
-				if (targetStr == null) { CommandMessageHelper.SendError(player, "rpgparties.message.error.argument", player.getName().getContents()); return 0; }
+				if (targetStr == null) { CommandMessageHelper.SendError(player, "rpgparties.message.error.argument", player.getName().getString()); return 0; }
 				if (!stats.InParty()) Party.Create ( player ); // Create a party to invite with if not existent.
 				
 				stats.party.Invite ( player, target ); // Send an invite to the target player.
