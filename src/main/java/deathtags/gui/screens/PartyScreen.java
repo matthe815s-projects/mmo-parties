@@ -79,7 +79,6 @@ public class PartyScreen extends Screen {
             int height = 26 * (2 + MMOParties.localParty.local_players.indexOf(player));
             if (MMOParties.localParty.data.get(Minecraft.getInstance().player.getName().getString()).additionalData == null) return;
 
-
             Button widget = this.addRenderableWidget(CreateButton(player, 2 + MMOParties.localParty.local_players.indexOf(player), p_onPress_1_ -> {}));
             widget.active = false; // Make the button look darker
 
