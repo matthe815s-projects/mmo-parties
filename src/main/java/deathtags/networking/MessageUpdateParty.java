@@ -9,7 +9,7 @@ import com.google.common.base.Charsets;
 import deathtags.core.MMOParties;
 import deathtags.stats.Party;
 import io.netty.buffer.ByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public class MessageUpdateParty {
 
@@ -34,8 +34,7 @@ public class MessageUpdateParty {
 
 	public static class Handler
 	{
-		public static void handle(final MessageUpdateParty pkt, Supplier<NetworkEvent.Context> ctx)
-		{
+		public static void handle(MessageUpdateParty pkt, CustomPayloadEvent.Context context) {
 			List<String> players = new ArrayList<String>(Arrays.asList(pkt.members.split(",")));
 
 			if (MMOParties.localParty == null)
@@ -43,8 +42,8 @@ public class MessageUpdateParty {
 
 			MMOParties.localParty.local_players = players;
 
-			if (pkt.members == "") MMOParties.localParty = null;
-			ctx.get().setPacketHandled(true);
+			if (pkt.members.isEmpty()) MMOParties.localParty = null;
+			context.setPacketHandled(true);
 		}
 	}
 }

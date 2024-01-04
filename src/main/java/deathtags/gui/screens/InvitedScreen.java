@@ -6,6 +6,7 @@ import deathtags.core.MMOParties;
 import deathtags.networking.EnumPartyGUIAction;
 import deathtags.networking.MessageHandleMenuAction;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastComponent;
@@ -28,10 +29,10 @@ public class InvitedScreen extends Screen {
     private Button CreateButton(String text, int buttonNumber, Button.OnPress pressable) {
         int buttonY = 26 * (buttonNumber);
 
-        Button button = new Button((this.width - 200) / 2, buttonY, 200, 20, Component.translatable(text), butt -> {
+        Button button = Button.builder(Component.translatable(text), butt -> {
             this.onClose();
             pressable.onPress(butt);
-        });
+        }).size(200, 20).pos((this.width - 200) / 2, buttonY).build();
 
         return button;
     }
@@ -39,21 +40,23 @@ public class InvitedScreen extends Screen {
     @Override
     protected void init() {
         this.addRenderableWidget(this.CreateButton("rpgparties.gui.accept", 2, p_onPress_1_ -> {
-            MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.ACCEPT));
+            assert Minecraft.getInstance().player != null;
+            MMOParties.network.send(new MessageHandleMenuAction("", EnumPartyGUIAction.ACCEPT), Minecraft.getInstance().player.connection.getConnection());
             MMOParties.partyInviter = null;
         }));
 
         this.addRenderableWidget(this.CreateButton("rpgparties.gui.deny", 3, p_onPress_1_ -> {
-            MMOParties.network.sendToServer(new MessageHandleMenuAction("", EnumPartyGUIAction.DENY));
+            assert Minecraft.getInstance().player != null;
+            MMOParties.network.send(new MessageHandleMenuAction("", EnumPartyGUIAction.DENY), Minecraft.getInstance().player.connection.getConnection());
             MMOParties.partyInviter = null;
         }));
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float ticks) {
-        this.renderBackground(stack); // Background
-        drawCenteredString(stack, this.font, this.title.getString(), this.width / 2, 8, 0XFFFFFF);
-        drawCenteredString(stack, this.font, Component.translatable("rpgparties.message.party.invite.from", MMOParties.partyInviter), this.width / 2, 20, 0XFFFFFF);
+    public void render(GuiGraphics stack, int mouseX, int mouseY, float ticks) {
+        this.renderBackground(stack, mouseX, mouseY, ticks);
+        stack.drawCenteredString(this.font, this.title.getString(), this.width / 2, 8, 0XFFFFFF);
+        stack.drawCenteredString(this.font, Component.translatable("rpgparties.message.party.invite.from", MMOParties.partyInviter), this.width / 2, 20, 0XFFFFFF);
         super.render(stack, mouseX, mouseY, ticks);
     }
 
@@ -61,22 +64,21 @@ public class InvitedScreen extends Screen {
         public long lastChanged = 0;
         public boolean changed = true;
         @Override
-        public Visibility render(PoseStack p_230444_1_, ToastComponent p_230444_2_, long p_230444_3_) {
+        public Visibility render(GuiGraphics gui, ToastComponent p_230444_2_, long p_230444_3_) {
             if (this.changed) {
                 this.lastChanged = p_230444_3_;
                 this.changed = false;
             }
 
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderTexture(0, TEXTURE);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            p_230444_2_.blit(p_230444_1_, 0, 0, 0, 0, this.width(), this.height());
+            gui.blit(gui, 0, 0, 0, 0, this.width(), this.height());
 
             // Render an item
-            p_230444_2_.getMinecraft().getItemRenderer().renderAndDecorateFakeItem(new ItemStack(Items.PLAYER_HEAD), 6, 6);
+            p_230444_2_.getMinecraft().getItemRenderer().render(new ItemStack(Items.PLAYER_HEAD), 6, 6);
 
-            p_230444_2_.getMinecraft().font.draw(p_230444_1_, Component.translatable("rpgparties.toast.header", MMOParties.partyInviter), 30.0F, 7.0F, 0xBBBBBB);
-            p_230444_2_.getMinecraft().font.draw(p_230444_1_, Component.translatable("rpgparties.toast.keybind", MMOParties.OPEN_GUI_KEY.getKey().getDisplayName().getString()), 30.0F, 18.0F, 0xFFFFFF);
+            gui.drawString(p_230444_2_.getMinecraft().font, Component.translatable("rpgparties.toast.header", MMOParties.partyInviter), 30, 7, 0xBBBBBB);
+            gui.drawString(p_230444_2_.getMinecraft().font, Component.translatable("rpgparties.toast.keybind", MMOParties.OPEN_GUI_KEY.getKey().getDisplayName().getString()), 30, 18, 0xFFFFFF));
             return p_230444_3_ - this.lastChanged >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
         }
     }

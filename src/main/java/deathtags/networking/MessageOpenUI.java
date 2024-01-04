@@ -5,8 +5,8 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -23,16 +23,16 @@ public class MessageOpenUI {
 	public static class Handler
 	{
 		@OnlyIn(Dist.CLIENT)
-		public static void handle(final MessageOpenUI pkt, Supplier<NetworkEvent.Context> ctx)
+		public static void handle(final MessageOpenUI pkt, CustomPayloadEvent.Context ctx)
 		{
-			if (!ctx.get().getDirection().equals(NetworkDirection.PLAY_TO_CLIENT)) return; // Only allow from server.
+			if (!ctx.getDirection().equals(NetworkDirection.PLAY_TO_CLIENT)) return; // Only allow from server.
 			Minecraft.getInstance().setScreen(new PartyScreen());
-			ctx.get().setPacketHandled(true);
+			ctx.setPacketHandled(true);
 		}
 
 		/**
 		 * Required for the packet to function, but performs no operation.
 		 */
-		public static void handleServer(final MessageOpenUI pkt, Supplier<NetworkEvent.Context> ctx) {}
+		public static void handleServer(final MessageOpenUI pkt, CustomPayloadEvent.Context ctx) {}
 	}
 }

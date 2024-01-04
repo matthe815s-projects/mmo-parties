@@ -30,8 +30,9 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.network.SimpleChannel;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -49,15 +50,15 @@ public class MMOParties {
 
 	public static Map<Player, PlayerStats> PlayerStats = new HashMap<>();
 
-	private static final String PROTOCOL_VERSION = "2";
+	private static final int PROTOCOL_VERSION = 2;
 
 	public static KeyMapping OPEN_GUI_KEY;
-	
-	public static final SimpleChannel network = NetworkRegistry.ChannelBuilder
+
+	public static final SimpleChannel network = ChannelBuilder
 			.named(new ResourceLocation(MODID, "sync"))
-			.clientAcceptedVersions(s -> true)
-			.serverAcceptedVersions(s -> true)
-			.networkProtocolVersion(() -> PROTOCOL_VERSION)
+			.clientAcceptedVersions((s, v) -> v == PROTOCOL_VERSION)
+			.serverAcceptedVersions((s, v) -> v == PROTOCOL_VERSION)
+			.networkProtocolVersion(PROTOCOL_VERSION)
 			.simpleChannel();
 	
 	public MMOParties ()
@@ -109,15 +110,35 @@ public class MMOParties {
 	 */
 	public void SetupNetworking()
 	{
-		network.registerMessage(1, MessageUpdateParty.class, MessageUpdateParty::encode, MessageUpdateParty::decode, MessageUpdateParty.Handler::handle );
-		network.registerMessage(2, MessageSendMemberData.class, MessageSendMemberData::encode, MessageSendMemberData::decode, MessageSendMemberData.Handler::handle);
-		network.registerMessage(3, MessageHandleMenuAction.class, MessageHandleMenuAction::encode, MessageHandleMenuAction::decode, MessageHandleMenuAction.Handler::handle);
-		network.registerMessage(4, MessagePartyInvite.class, MessagePartyInvite::encode, MessagePartyInvite::decode, MessagePartyInvite.Handler::handle);
+		network.messageBuilder(MessageUpdateParty.class)
+				.encoder(MessageUpdateParty::encode)
+				.decoder(MessageUpdateParty::decode)
+				.consumerMainThread(MessageUpdateParty.Handler::handle)
+				.add();
+		network.messageBuilder(MessageSendMemberData.class)
+				.encoder(MessageSendMemberData::encode)
+				.decoder(MessageSendMemberData::decode)
+				.consumerMainThread(MessageSendMemberData.Handler::handle)
+				.add();
+		network.messageBuilder(MessageHandleMenuAction.class)
+				.encoder(MessageHandleMenuAction::encode)
+				.decoder(MessageHandleMenuAction::decode)
+				.consumerMainThread(MessageHandleMenuAction.Handler::handle)
+				.add();
+		network.messageBuilder(MessagePartyInvite.class)
+				.encoder(MessagePartyInvite::encode)
+				.decoder(MessagePartyInvite::decode)
+				.consumerMainThread(MessagePartyInvite.Handler::handle)
+				.add();
 	}
 
 	public void OnServerInitialize(ServerStartingEvent event) {
 		PartyHelper.Server.server = event.getServer(); // Set server instance
-		network.registerMessage(5, MessageOpenUI.class, MessageOpenUI::encode, MessageOpenUI::decode, MessageOpenUI.Handler::handleServer);
+		network.messageBuilder(MessageOpenUI.class)
+				.encoder(MessageOpenUI::encode)
+				.decoder(MessageOpenUI::decode)
+				.consumerMainThread(MessageOpenUI.Handler::handleServer)
+				.add();
 	}
 
 	public void KeyBinds(RegisterKeyMappingsEvent event) {
@@ -134,7 +155,11 @@ public class MMOParties {
 	public void OnClientInitialize(FMLClientSetupEvent event)
 	{
 		PartyList.init(); // Initializes the Party renderer.
-		network.registerMessage(5, MessageOpenUI.class, MessageOpenUI::encode, MessageOpenUI::decode, MessageOpenUI.Handler::handle); // A special handler for single-player instances
+		network.messageBuilder(MessageOpenUI.class)
+				.encoder(MessageOpenUI::encode)
+				.decoder(MessageOpenUI::decode)
+				.consumerMainThread(MessageOpenUI.Handler::handle)
+				.add(); // A special handler for single-player instances
 	}
 
 	/**

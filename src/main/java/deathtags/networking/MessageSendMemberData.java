@@ -1,5 +1,6 @@
 package deathtags.networking;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.Supplier;
 
 import com.google.common.base.Charsets;
@@ -9,7 +10,7 @@ import deathtags.stats.Party;
 import deathtags.stats.PartyMemberData;
 import deathtags.stats.PlayerStats;
 import io.netty.buffer.ByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public class MessageSendMemberData {
 
@@ -41,15 +42,19 @@ public class MessageSendMemberData {
 	  for (int i = 0; i < PartyPacketDataBuilder.builderData.size(); i++) {
 		  Class<? extends BuilderData> aClass = (PartyPacketDataBuilder.builderData.get(i)).getClass();
 		  try {
-			  BuilderData builder = aClass.newInstance();
+			  BuilderData builder = aClass.getDeclaredConstructor().newInstance();
 			  builder.OnRead(buf);
 			  data.builder.AddData(i, builder);
 		  } catch (InstantiationException e) {
 			  throw new RuntimeException(e);
 		  } catch (IllegalAccessException e) {
 			  throw new RuntimeException(e);
-		  }
-	  }
+		  } catch (InvocationTargetException e) {
+              throw new RuntimeException(e);
+          } catch (NoSuchMethodException e) {
+              throw new RuntimeException(e);
+          }
+      }
 
 	  return data;
   }
@@ -78,7 +83,7 @@ public class MessageSendMemberData {
   }
 
   public static class Handler {
-    public static void handle(MessageSendMemberData message, Supplier<NetworkEvent.Context> ctx) {
+    public static void handle(MessageSendMemberData message, CustomPayloadEvent.Context ctx) {
 		System.out.println("Packet");
 		PartyMemberData player = new PartyMemberData(message.builder);
 
@@ -89,12 +94,12 @@ public class MessageSendMemberData {
 		if (message.remove) {
 			MMOParties.localParty.data.remove(player.name);
 			System.out.println(MMOParties.localParty.data.size());
-			ctx.get().setPacketHandled(true);
+			ctx.setPacketHandled(true);
 			return;
 		}
 
 		MMOParties.localParty.data.put(player.name, player);
-		ctx.get().setPacketHandled(true);
+		ctx.setPacketHandled(true);
 	}
   }
 }

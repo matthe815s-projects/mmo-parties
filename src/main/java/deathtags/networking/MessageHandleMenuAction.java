@@ -6,8 +6,9 @@ import deathtags.core.MMOParties;
 import deathtags.stats.Party;
 import deathtags.stats.PlayerStats;
 import io.netty.buffer.ByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -39,62 +40,69 @@ public class MessageHandleMenuAction {
 
 	public static class Handler
 	{
-		public static void handle(final MessageHandleMenuAction pkt, Supplier<NetworkEvent.Context> ctx)
+		public static void handle(final MessageHandleMenuAction pkt, CustomPayloadEvent.Context ctx)
 		{
-			ctx.get().setPacketHandled(true);
-			PlayerStats stats = MMOParties.GetStatsByName(ctx.get().getSender().getName().getString());
+			ctx.setPacketHandled(true);
+			PlayerStats stats = MMOParties.GetStatsByName(Objects.requireNonNull(ctx.getSender()).getName().getString());
 
 			switch (pkt.action) {
 				case INVITE:
 					// Start a new party if one doesn't already exist.
-					if (!stats.InParty()) stats.party = new Party(ctx.get().getSender());
+                    assert stats != null;
+                    if (!stats.InParty()) stats.party = new Party(ctx.getSender());
 					if (stats.player != stats.party.leader) return;
 
 					// If invite all is allowed and used.
-					if (pkt.name == "" && ConfigHolder.COMMON.allowInviteAll.get()) {
-						ctx.get().getSender().server.getPlayerList().getPlayers().forEach(serverPlayerEntity -> {
-							stats.party.Invite(ctx.get().getSender(), serverPlayerEntity); // Invite player.
+					if (Objects.equals(pkt.name, "") && ConfigHolder.COMMON.allowInviteAll.get()) {
+						ctx.getSender().server.getPlayerList().getPlayers().forEach(serverPlayerEntity -> {
+							stats.party.Invite(ctx.getSender(), serverPlayerEntity); // Invite player.
 						});
 					}
 					else {
 						// Invite the player supplied in the charsequence to your party.
-						stats.party.Invite(ctx.get().getSender(), ctx.get().getSender().server.getPlayerList().getPlayerByName(pkt.name));
+						stats.party.Invite(ctx.getSender(), ctx.getSender().server.getPlayerList().getPlayerByName(pkt.name));
 					}
 					break;
 
 				case KICK:
-					if (!stats.InParty()) return;
+                    assert stats != null;
+                    if (!stats.InParty()) return;
 					if (stats.player != stats.party.leader) return;
 
-					stats.party.Leave(ctx.get().getSender().server.getPlayerList().getPlayerByName(pkt.name));
+					stats.party.Leave(ctx.getSender().server.getPlayerList().getPlayerByName(pkt.name));
 					break;
 
 				case LEADER:
-					if (!stats.InParty()) return;
+                    assert stats != null;
+                    if (!stats.InParty()) return;
 					if (stats.player != stats.party.leader) return;
 
-					stats.party.MakeLeader(ctx.get().getSender().server.getPlayerList().getPlayerByName(pkt.name)); // Set a new leader.
+					stats.party.MakeLeader(Objects.requireNonNull(ctx.getSender().server.getPlayerList().getPlayerByName(pkt.name))); // Set a new leader.
 					break;
 
 				case DISBAND:
-					if (!stats.InParty()) return;
+                    assert stats != null;
+                    if (!stats.InParty()) return;
 					if (stats.player != stats.party.leader) return;
 
 					stats.party.Disband();
 					break;
 
 				case LEAVE:
-					if (!stats.InParty()) return;
+                    assert stats != null;
+                    if (!stats.InParty()) return;
 					stats.Leave();
 					break;
 
 				case ACCEPT:
-					if (stats.partyInvite == null) return;
+                    assert stats != null;
+                    if (stats.partyInvite == null) return;
 					stats.partyInvite.Join(stats.player, true);
 					break;
 
 				case DENY:
-					if (stats.partyInvite == null) return;
+                    assert stats != null;
+                    if (stats.partyInvite == null) return;
 					stats.partyInvite = null;
 					break;
 			}

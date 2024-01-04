@@ -6,6 +6,7 @@ import deathtags.gui.builders.BuilderLeader;
 import deathtags.networking.EnumPartyGUIAction;
 import deathtags.networking.MessageHandleMenuAction;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
@@ -133,9 +134,9 @@ public class PartyScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float ticks) {
-        this.renderBackground(stack); // Background
-        drawCenteredString(stack, this.font, this.title.getString(), this.width / 2, 8, 0XFFFFFF);
+    public void render(GuiGraphics stack, int mouseX, int mouseY, float ticks) {
+        this.renderBackground(stack, mouseX, mouseY, ticks); // Background
+        stack.drawCenteredString(this.font, this.title.getString(), this.width / 2, 8, 0XFFFFFF);
         super.render(stack, mouseX, mouseY, ticks);
     }
 

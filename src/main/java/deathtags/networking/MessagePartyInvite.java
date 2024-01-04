@@ -5,7 +5,7 @@ import deathtags.core.MMOParties;
 
 import deathtags.gui.screens.InvitedScreen;
 import io.netty.buffer.ByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 import java.util.function.Supplier;
 
@@ -37,11 +37,11 @@ public class MessagePartyInvite {
 
 	public static class Handler
 	{
-		public static void handle(final MessagePartyInvite pkt, Supplier<NetworkEvent.Context> ctx)
+		public static void handle(final MessagePartyInvite pkt, CustomPayloadEvent.Context ctx)
 		{
 			MMOParties.partyInviter = pkt.inviter;
 			InvitedScreen.ShowToast();
-			ctx.get().setPacketHandled(true);
+			ctx.setPacketHandled(true);
 		}
 	}
 }
