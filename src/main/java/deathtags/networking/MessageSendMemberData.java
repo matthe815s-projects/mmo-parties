@@ -71,15 +71,11 @@ public class MessageSendMemberData {
 				  .additionalData[index] = builderData;
 
 		  builderData.OnWrite(buf, msg.builder.player);
-		  System.out.println("Wrote packet");
 	  }
-
-	  System.out.println(buf.array().toString());
   }
 
   public static class Handler {
     public static void handle(MessageSendMemberData message, Supplier<NetworkEvent.Context> ctx) {
-		System.out.println("Packet");
 		PartyMemberData player = new PartyMemberData(message.builder);
 
 		if (MMOParties.localParty == null) // Create a new party if one doesn't exist already.
