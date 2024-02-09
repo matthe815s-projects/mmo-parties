@@ -7,12 +7,17 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import deathtags.config.ConfigHolder;
 import deathtags.networking.BuilderData;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Overlay;
+import net.minecraft.client.renderer.texture.SpriteContents;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.GuiOverlayManager;
 import net.minecraftforge.client.gui.overlay.NamedGuiOverlay;
+import net.minecraftforge.client.textures.TextureAtlasSpriteLoaderManager;
 import net.minecraftforge.fml.common.Mod;
 
 import deathtags.core.MMOParties;
@@ -89,11 +94,11 @@ public class PartyList {
      * @param render
      * @return
      */
-    public static int Draw(float current, float max, UISpec UI, int backgroundOffset, int halfOffset, boolean compact, boolean render) {
+    public static int Draw(GuiGraphics gui, float current, float max, UISpec UI, int backgroundOffset, int halfOffset, boolean compact, boolean render) {
         if (render == false) return -1; // Don't render. Used for config values and what not.
 
-        if (!compact) return DrawNuggetBar(current, max, UI, backgroundOffset, halfOffset);
-        else return DrawNuggetBarCompact(current, UI, backgroundOffset);
+        if (!compact) return DrawNuggetBar(gui, current, max, UI, backgroundOffset, halfOffset);
+        else return DrawNuggetBarCompact(gui, current, UI, backgroundOffset);
     }
 
     static ResourceLocation PLAYER_HEALTH_ELEMENT = new ResourceLocation("minecraft", "player_health");
@@ -117,7 +122,7 @@ public class PartyList {
                 if (ConfigHolder.CLIENT.hideSelf.get() && data.name.equals(mc.player.getName().getString())) continue;
 
                 // Render a new player and track the additional offset for the next player.
-                lastOffset += RenderMember(data, lastOffset, pN, MMOParties.localParty.local_players.size() > 4
+                lastOffset += RenderMember(event.getGuiGraphics(), data, lastOffset, pN, MMOParties.localParty.local_players.size() > 4
                         || ConfigHolder.CLIENT.useSimpleUI.get() == true);
                 pN++;
             }
@@ -134,7 +139,7 @@ public class PartyList {
      * @param backgroundOffset
      * @return
      */
-    public static int DrawNuggetBarCompact(float current, UISpec UI, int backgroundOffset) {
+    public static int DrawNuggetBarCompact(GuiGraphics gui, float current, UISpec UI, int backgroundOffset) {
         int left = UI.x;
         int top = UI.y;
         int startX = left;
@@ -142,10 +147,10 @@ public class PartyList {
 
         RenderSystem.setShaderTexture(0, UI.texture); // Bind the appropriate texture
 
-        Minecraft.getInstance().gui.blit(stack, startX, startY, backgroundOffset, UI.texture_y, 9, 9);
-        Minecraft.getInstance().gui.blit(stack, startX, startY, UI.texture_x, UI.texture_y, 9, 9);
+        gui.blitSprite(UI.texture, startX, startY, 9, 9);
+        gui.blitSprite(UI.texture, startX, startY, UI.texture_x, UI.texture_y);
 
-        mc.font.draw(stack, String.format("%s", Math.floor(current)), startX + 12, startY, 0xFFFFFF);
+        gui.drawString(mc.font, String.format("%s", Math.floor(current)), startX + 12, startY, 0xFFFFFF);
 
         return 6;
     }
@@ -156,7 +161,7 @@ public class PartyList {
      * @since 2.3.0
      */
     public interface NuggetBar {
-        int Render(BuilderData data, int xOffset, int yOffset, boolean compact);
+        int Render(GuiGraphics gui, BuilderData data, int xOffset, int yOffset, boolean compact);
     }
 
     /**
@@ -167,7 +172,7 @@ public class PartyList {
      * @param compact
      * @return
      */
-    int RenderMember(PartyMemberData data, int lastOffset, int pN, boolean compact) {
+    int RenderMember(GuiGraphics gui, PartyMemberData data, int lastOffset, int pN, boolean compact) {
         if (data == null) return 0; // There shouldn't be an instance where this is null, but..
 
         int iconRows = 0, additionalOffset = 0;
@@ -183,8 +188,8 @@ public class PartyList {
         // The only bar visible within compact mode is hearts, and it's in a number form.
         if (compact) {
             yOffset = (int)((yOffset / 1.7) + 4) + configOffsetY;
-            nuggetBars[1].Render(data.additionalData[1], posX, ((defaultOffset.y - 10) + yOffset), true);
-            nuggetBars[2].Render(data.additionalData[2], posX + 30 + (4 * data.name.length()), ((defaultOffset.y - 10) + yOffset), true);
+            nuggetBars[1].Render(gui, data.additionalData[1], posX, ((defaultOffset.y - 10) + yOffset), true);
+            nuggetBars[2].Render(gui, data.additionalData[2], posX + 30 + (4 * data.name.length()), ((defaultOffset.y - 10) + yOffset), true);
             return additionalOffset;
         }
 
@@ -196,7 +201,7 @@ public class PartyList {
             int rowOffset = (12 * iconRows);
             if (renderAscending) rowOffset = -rowOffset; // Reverse rendering.
 
-            int offset = nuggetBars[i].Render(data.additionalData[i], posX, (defaultOffset.y + rowOffset) + yOffset, false);
+            int offset = nuggetBars[i].Render(gui, data.additionalData[i], posX, (defaultOffset.y + rowOffset) + yOffset, false);
             additionalOffset += offset;
             if (offset != -1) iconRows++;
         }

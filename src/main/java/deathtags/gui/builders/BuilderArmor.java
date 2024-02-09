@@ -5,6 +5,7 @@ import deathtags.gui.PartyList;
 import deathtags.gui.UISpec;
 import deathtags.networking.BuilderData;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
 
 public class BuilderArmor implements BuilderData {
@@ -29,7 +30,7 @@ public class BuilderArmor implements BuilderData {
     public static class NuggetBar implements PartyList.NuggetBar {
 
         @Override
-        public int Render(BuilderData data, int xOffset, int yOffset, boolean compact) {
+        public int Render(GuiGraphics gui, BuilderData data, int xOffset, int yOffset, boolean compact) {
             BuilderArmor builder = (BuilderArmor) data;
             return PartyList.Draw(builder.armor, builder.armor, new UISpec(PartyList.HEART_TEXTURE, xOffset, yOffset, 34, 9, 9, 9), 16, -9, compact,
                     ConfigHolder.CLIENT.showArmor.get() && builder.armor > 0);

@@ -78,7 +78,7 @@ public class InvitedScreen extends Screen {
             p_230444_2_.getMinecraft().getItemRenderer().render(new ItemStack(Items.PLAYER_HEAD), 6, 6);
 
             gui.drawString(p_230444_2_.getMinecraft().font, Component.translatable("rpgparties.toast.header", MMOParties.partyInviter), 30, 7, 0xBBBBBB);
-            gui.drawString(p_230444_2_.getMinecraft().font, Component.translatable("rpgparties.toast.keybind", MMOParties.OPEN_GUI_KEY.getKey().getDisplayName().getString()), 30, 18, 0xFFFFFF));
+            gui.drawString(p_230444_2_.getMinecraft().font, Component.translatable("rpgparties.toast.keybind", MMOParties.OPEN_GUI_KEY.getKey().getDisplayName().getString()), 30, 18, 0xFFFFFF);
             return p_230444_3_ - this.lastChanged >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
         }
     }
