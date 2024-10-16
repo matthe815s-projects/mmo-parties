@@ -53,7 +53,7 @@ public class InvitedScreenCommon extends Screen {
 
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            gui.blit(BACKGROUND_LOCATION, 0, 0, 0, 0, this.width(), this.height());
+            gui.blit(MENU_BACKGROUND, 0, 0, 0, 0, this.width(), this.height());
 
             // Render an item
             // p_230444_2_.getMinecraft().getItemRenderer().render(new ItemStack(Items.PLAYER_HEAD), 6, 6);

@@ -1,5 +1,6 @@
 package dev.matthe815.mmoparties.forge.helpers;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
 import net.minecraft.world.entity.player.Player;
 
@@ -23,11 +24,11 @@ public class CommandMessageHelper {
 		MutableComponent component = Component.translatable( message, arguments );
 
 		MutableComponent button = Component.literal(" [ACCEPT]").setStyle(
-				Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept")).withColor(TextColor.parseColor("#FFAA00"))
+				Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept")).withColor(ChatFormatting.GREEN)
 		);
 
 		MutableComponent button2 = Component.literal(" [DENY]").setStyle(
-				Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party deny")).withColor(TextColor.parseColor("#FF5555"))
+				Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party deny")).withColor(ChatFormatting.RED)
 		);
 
 		component.append(button);
@@ -49,7 +50,7 @@ public class CommandMessageHelper {
 		player.displayClientMessage( 
 			Component.translatable( message, arguments )
 			.setStyle( 
-					Style.EMPTY.withColor(TextColor.parseColor("#FF0000"))
+					Style.EMPTY.withColor(ChatFormatting.RED)
 			), false
 		);
 	}

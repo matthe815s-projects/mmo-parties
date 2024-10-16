@@ -1,25 +1,16 @@
 package dev.matthe815.mmoparties.forge.core;
 
-import java.util.*;
-import java.util.Map.Entry;
-
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.matthe815.mmoparties.common.core.MMOPartiesCommon;
-import dev.matthe815.mmoparties.common.networking.builders.BuilderData;
 import dev.matthe815.mmoparties.forge.api.PartyHelper;
 import dev.matthe815.mmoparties.forge.commands.PartyCommand;
 import dev.matthe815.mmoparties.forge.config.ConfigHolder;
-import dev.matthe815.mmoparties.common.events.EventClient;
-import dev.matthe815.mmoparties.common.events.EventCommon;
-import dev.matthe815.mmoparties.common.gui.PartyList;
-import dev.matthe815.mmoparties.common.stats.Party;
-import dev.matthe815.mmoparties.common.stats.PlayerStats;
 import dev.matthe815.mmoparties.forge.events.EventClientForge;
 import dev.matthe815.mmoparties.forge.events.EventCommonForge;
+import dev.matthe815.mmoparties.forge.gui.PartyListForge;
 import dev.matthe815.mmoparties.forge.networking.*;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
@@ -46,7 +37,7 @@ import org.lwjgl.glfw.GLFW;
 public class MMOParties extends MMOPartiesCommon {
 	private static final int PROTOCOL_VERSION = 2;
 	public static final SimpleChannel network = ChannelBuilder
-			.named(new ResourceLocation(MODID, "sync"))
+			.named(ResourceLocation.fromNamespaceAndPath(MODID, "sync"))
 			.clientAcceptedVersions((s, v) -> v == PROTOCOL_VERSION)
 			.serverAcceptedVersions((s, v) -> v == PROTOCOL_VERSION)
 			.networkProtocolVersion(PROTOCOL_VERSION)
@@ -88,6 +79,7 @@ public class MMOParties extends MMOPartiesCommon {
 		// Register event handlerse
 		MinecraftForge.EVENT_BUS.register(new EventCommonForge());
 		MinecraftForge.EVENT_BUS.register(new EventClientForge());
+		MinecraftForge.EVENT_BUS.register(new PartyListForge());
 	}
 
 	/**

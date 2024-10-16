@@ -17,7 +17,6 @@ public class EventClientForge {
      * Handles removing any temporary data when leaving a world/server
      */
     @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
     public void OnServerDisconnect(ClientPlayerNetworkEvent.LoggingOut event)
     {
         MMOParties.localParty = null;
@@ -27,7 +26,6 @@ public class EventClientForge {
      * Handles any mod specific key-inputs.
      */
     @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
     public void OnKeyInput(InputEvent.Key event) {
         // Open the party menu when the GUI key is pressed.
         if (MMOParties.OPEN_GUI_KEY.isDown()) {

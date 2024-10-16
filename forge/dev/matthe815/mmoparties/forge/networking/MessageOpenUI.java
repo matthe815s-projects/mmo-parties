@@ -23,7 +23,7 @@ public class MessageOpenUI {
 		@OnlyIn(Dist.CLIENT)
 		public static void handle(final MessageOpenUI pkt, CustomPayloadEvent.Context ctx)
 		{
-			if (!ctx.getDirection().equals(NetworkDirection.PLAY_TO_CLIENT)) return; // Only allow from server.
+			if (!ctx.isClientSide()) return; // Only allow from server.
 			Minecraft.getInstance().setScreen(new PartyScreen());
 			ctx.setPacketHandled(true);
 		}

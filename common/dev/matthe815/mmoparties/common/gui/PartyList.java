@@ -21,7 +21,7 @@ import net.minecraft.client.Minecraft;
  */
 public class PartyList {
 
-    public static final ResourceLocation TEXTURE_ICON = new ResourceLocation(MMOPartiesCommon.MODID,
+    public static final ResourceLocation TEXTURE_ICON = ResourceLocation.fromNamespaceAndPath(MMOPartiesCommon.MODID,
         "textures/icons.png");
 
     private static Minecraft mc;
@@ -39,7 +39,7 @@ public class PartyList {
         mc = Minecraft.getInstance();
     }
 
-    public void onRenderGameOverlay(GuiGraphics gui) {
+    public static void onRenderGameOverlay(GuiGraphics gui) {
         updateCounter++;
         if (MMOPartiesCommon.localParty == null || MMOPartiesCommon.localParty.local_players.isEmpty()) return;
 
@@ -131,7 +131,7 @@ public class PartyList {
      * @param compact Whether to draw in compact mode.
      * @return Relative-Y for the new row.
      */
-    int RenderMember(UISpec UI, PartyMemberData data, int playerNumber, boolean compact) {
+    static int RenderMember(UISpec UI, PartyMemberData data, int playerNumber, boolean compact) {
         if (data == null) return 0; // There shouldn't be an instance where this is null.
 
         UISpec defaultOffset = GetAnchorOffset(UI.renderer);

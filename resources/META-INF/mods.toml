@@ -1,11 +1,11 @@
 modLoader="javafml"
-loaderVersion="[28,)"
+loaderVersion="[0,)"
 issueTrackerURL="https://github.com/matthe815/mmo-parties"
 license="mit"
 
 [[mods]]
 modId="mmoparties"
-version="2.4.3"
+version="3.0.0"
 displayName="MMOParties"
 #updateJSONURL=""
 displayURL="https://github.com/matthe815/mmo-parties"

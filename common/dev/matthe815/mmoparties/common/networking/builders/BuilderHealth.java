@@ -1,5 +1,6 @@
 package dev.matthe815.mmoparties.common.networking.builders;
 
+import dev.matthe815.mmoparties.common.core.MMOPartiesCommon;
 import dev.matthe815.mmoparties.common.gui.PartyList;
 import dev.matthe815.mmoparties.common.gui.UISpec;
 import io.netty.buffer.ByteBuf;
@@ -32,9 +33,9 @@ public class BuilderHealth implements BuilderData {
     }
 
     public static class NuggetBar implements PartyList.NuggetBar {
-        ResourceLocation FULL = new ResourceLocation("textures/gui/sprites/hud/heart/full.png");
-        ResourceLocation HALF = new ResourceLocation("minecraft", "textures/gui/sprites/hud/heart/half.png");
-        ResourceLocation BACKGROUND = new ResourceLocation("minecraft", "textures/gui/sprites/hud/heart/container.png");
+        ResourceLocation FULL = ResourceLocation.withDefaultNamespace("textures/gui/sprites/hud/heart/full.png");
+        ResourceLocation HALF = ResourceLocation.withDefaultNamespace("textures/gui/sprites/hud/heart/half.png");
+        ResourceLocation BACKGROUND = ResourceLocation.withDefaultNamespace("textures/gui/sprites/hud/heart/container.png");
 
         @Override
         public int Render(GuiGraphics gui, BuilderData data, int xOffset, int yOffset, boolean compact) {
