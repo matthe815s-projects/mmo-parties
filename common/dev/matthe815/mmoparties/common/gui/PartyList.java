@@ -1,5 +1,6 @@
 package dev.matthe815.mmoparties.common.gui;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.matthe815.mmoparties.common.core.MMOPartiesCommon;
 import dev.matthe815.mmoparties.forge.api.compatibility.CompatibilityHelper;
 import java.util.Objects;
@@ -194,6 +195,8 @@ public class PartyList {
             RenderExtraHealth(UI, max, (extraHearts + 20) * 2);
         }
 
+        RenderSystem.setShaderTexture(0, UI.texture);
+
         // Loop for each additional max nugget.
         for (int i = 0; i < maxLength / 2; i++) {
             int dropletHalf = i * 2 + 1;
@@ -251,14 +254,7 @@ public class PartyList {
     static void DrawNugget(UISpec UI, float current, int dropletHalf, int x, int y)
     {
         // Draw background
-        UI.renderer.blit(UI.texture, x, y, 0, 0, 9, 9);
-
-        // Draw half or full depending on health amount.
-        if ((int) current > dropletHalf) {
-            UI.renderer.blit(UI.texture, x, y, 9, 0, 9, 9);
-        }
-        else if ((int) current == dropletHalf)
-            UI.renderer.blitSprite(UI.textureHalf, x, y, 9, 9);
+        Renderer.drawHalvedLayeredSprite(new UISpec(UI.renderer, UI.texture, UI.textureHalf, UI.textureBack, x, y, 9, 9), current, dropletHalf);
     }
 
     public static int DrawText(String text, UISpec location)

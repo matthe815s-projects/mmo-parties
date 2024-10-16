@@ -33,9 +33,9 @@ public class BuilderHealth implements BuilderData {
     }
 
     public static class NuggetBar implements PartyList.NuggetBar {
-        ResourceLocation FULL = ResourceLocation.withDefaultNamespace("textures/gui/sprites/hud/heart/full.png");
-        ResourceLocation HALF = ResourceLocation.withDefaultNamespace("textures/gui/sprites/hud/heart/half.png");
-        ResourceLocation BACKGROUND = ResourceLocation.withDefaultNamespace("textures/gui/sprites/hud/heart/container.png");
+        ResourceLocation FULL = ResourceLocation.withDefaultNamespace("hud/heart/full");
+        ResourceLocation HALF = ResourceLocation.withDefaultNamespace("hud/heart/half");
+        ResourceLocation BACKGROUND = ResourceLocation.withDefaultNamespace("hud/heart/container");
 
         @Override
         public int Render(GuiGraphics gui, BuilderData data, int xOffset, int yOffset, boolean compact) {

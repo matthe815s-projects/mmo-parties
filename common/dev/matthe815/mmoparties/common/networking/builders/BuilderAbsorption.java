@@ -28,9 +28,9 @@ public class BuilderAbsorption implements BuilderData {
     }
 
     public static class NuggetBar implements PartyList.NuggetBar {
-        ResourceLocation FULL = ResourceLocation.fromNamespaceAndPath("minecraft", "textures/gui/sprites/hud/heart/full.png");
-        ResourceLocation HALF = ResourceLocation.fromNamespaceAndPath("minecraft", "textures/gui/sprites/hud/heart/half.png");
-        ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("minecraft", "textures/gui/sprites/hud/heart/container.png");
+        ResourceLocation FULL = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/heart/absorbing_full");
+        ResourceLocation HALF = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/heart/absorbing_half");
+        ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/heart/container");
 
         @Override
         public int Render(GuiGraphics gui, BuilderData data, int xOffset, int yOffset, boolean compact) {
