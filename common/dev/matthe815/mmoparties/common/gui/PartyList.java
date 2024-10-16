@@ -195,8 +195,6 @@ public class PartyList {
             RenderExtraHealth(UI, max, (extraHearts + 20) * 2);
         }
 
-        RenderSystem.setShaderTexture(0, UI.texture);
-
         // Loop for each additional max nugget.
         for (int i = 0; i < maxLength / 2; i++) {
             int dropletHalf = i * 2 + 1;

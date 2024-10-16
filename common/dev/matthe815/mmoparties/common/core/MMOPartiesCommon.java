@@ -8,10 +8,7 @@ import dev.matthe815.mmoparties.common.stats.PlayerStats;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 /**
@@ -76,16 +73,10 @@ public class MMOPartiesCommon {
 	public static void RegisterCompatibility(BuilderData builder, PartyList.NuggetBar bar, boolean isDedicatedServer)
 	{
 		PartyPacketDataBuilder.builderData.add(builder);
-
 		if (isDedicatedServer) return;
 
 		// Make a bigger array and clone it.
-		List<PartyList.NuggetBar> bars = new ArrayList<>();
-
-		for (int i = 0; i< PartyList.nuggetBars.length; i++) {
-			bars.add(PartyList.nuggetBars[i]);
-		}
-
+        List<PartyList.NuggetBar> bars = new ArrayList<>(Arrays.asList(PartyList.nuggetBars));
 		bars.add(bar);
 		PartyList.nuggetBars = bars.toArray(new PartyList.NuggetBar[0]); // Convert the list to an array.
 	}
