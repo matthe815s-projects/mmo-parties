@@ -10,22 +10,22 @@ public class Renderer {
     }
 
     public static void drawSprite (UISpec UI) {
-        UI.renderer.blitSprite(UI.texture, UI.x, UI.y, 0, 0);
+        UI.renderer.blit(UI.texture, UI.x, UI.y, 0, 0, 0, 0);
     }
 
     public static void drawLayeredSprite (UISpec UI) {
-        UI.renderer.blitSprite(UI.textureBack, UI.x, UI.y, 0, 0);
-        UI.renderer.blitSprite(UI.texture, UI.x, UI.y, 0, 0);
+        UI.renderer.blit(UI.textureBack, UI.x, UI.y, 0, 0, 0, 0);
+        UI.renderer.blit(UI.texture, UI.x, UI.y, 0, 0, 0 ,0);
     }
 
     public static void drawHalvedLayeredSprite (UISpec UI, float current, int half) {
-        UI.renderer.blitSprite(UI.textureBack, UI.x, UI.y, UI.width, UI.height);
+        UI.renderer.blit(UI.textureBack, UI.x, UI.y, UI.width, UI.height, 0, 0);
 
         // Draw half or full depending on health amount.
         if ((int) current > half) {
-            UI.renderer.blitSprite(UI.texture, UI.x, UI.y, UI.width, UI.height);
+            UI.renderer.blit(UI.texture, UI.x, UI.y, UI.width, UI.height, 0, 0);
         }
         else if ((int) current == half)
-            UI.renderer.blitSprite(UI.textureHalf, UI.x, UI.y, UI.width, UI.height);
+            UI.renderer.blit(UI.textureHalf, UI.x, UI.y, UI.width, UI.height, 0, 0);
     }
 }

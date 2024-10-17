@@ -10,6 +10,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 
@@ -86,12 +87,12 @@ public class PartyScreen extends Screen {
             this.addRenderableWidget(widget);
         });
 
-        this.addRenderableWidget(CreateButton("rpgparties.gui.leave", 3 + MMOParties.localParty.local_players.size(), p_onPress_1_ -> MMOParties.network.send(new MessageHandleMenuAction("", EnumPartyGUIAction.LEAVE), Minecraft.getInstance().getConnection().getConnection())));
+        this.addRenderableWidget(CreateButton("rpgparties.gui.leave", 3 + MMOParties.localParty.local_players.size(), p_onPress_1_ -> MMOParties.network.send(PacketDistributor.SERVER.with(null), new MessageHandleMenuAction("", EnumPartyGUIAction.LEAVE))));
 
         // Hide these options if not the leader.
         if (!((BuilderLeader)MMOParties.localParty.data.get(Minecraft.getInstance().player.getName().getString()).additionalData[0]).isLeader) return;
 
-        this.addRenderableWidget(CreateButton("rpgparties.gui.disband", 4 + MMOParties.localParty.local_players.size(), p_onPress_1_ -> MMOParties.network.send(new MessageHandleMenuAction("", EnumPartyGUIAction.DISBAND), Minecraft.getInstance().getConnection().getConnection())));
+        this.addRenderableWidget(CreateButton("rpgparties.gui.disband", 4 + MMOParties.localParty.local_players.size(), p_onPress_1_ -> MMOParties.network.send(PacketDistributor.SERVER.with(null), new MessageHandleMenuAction("", EnumPartyGUIAction.DISBAND))));
     }
 
     @Override
@@ -109,7 +110,7 @@ public class PartyScreen extends Screen {
                 int i = 1;
 
                 for (String player : GetApplicablePlayers()) {
-                    this.addRenderableWidget(CreateButton(player, i++, p_onPress_1_ -> MMOParties.network.send(new MessageHandleMenuAction(player, EnumPartyGUIAction.INVITE), Minecraft.getInstance().getConnection().getConnection()))); // Send UI event to the server.
+                    this.addRenderableWidget(CreateButton(player, i++, p_onPress_1_ -> MMOParties.network.send(PacketDistributor.SERVER.with(null), new MessageHandleMenuAction(player, EnumPartyGUIAction.INVITE)))); // Send UI event to the server.
                 }
 
                 break;
@@ -122,7 +123,7 @@ public class PartyScreen extends Screen {
 
     @Override
     public void render(GuiGraphics stack, int mouseX, int mouseY, float ticks) {
-        this.renderBackground(stack, mouseX, mouseY, ticks); // Background
+        this.renderBackground(stack); // Background
         stack.drawCenteredString(this.font, this.title.getString(), this.width / 2, 8, 0XFFFFFF);
         super.render(stack, mouseX, mouseY, ticks);
     }

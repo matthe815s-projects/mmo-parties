@@ -1,11 +1,13 @@
 package dev.matthe815.mmoparties.forge.networking;
 
+import java.util.function.Supplier;
+
 import com.google.common.base.Charsets;
 import dev.matthe815.mmoparties.forge.core.MMOParties;
 
 import dev.matthe815.mmoparties.common.gui.screens.InvitedScreenCommon;
 import io.netty.buffer.ByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 /**
  * Handles receiving an invite.
@@ -35,8 +37,9 @@ public class MessagePartyInvite {
 
 	public static class Handler
 	{
-		public static void handle(final MessagePartyInvite pkt, CustomPayloadEvent.Context ctx)
+		public static void handle(final MessagePartyInvite pkt, Supplier<NetworkEvent.Context> supplier)
 		{
+			NetworkEvent.Context ctx = supplier.get();
 			MMOParties.partyInviter = pkt.inviter;
 			InvitedScreenCommon.ShowToast();
 			ctx.setPacketHandled(true);

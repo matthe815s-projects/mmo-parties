@@ -6,9 +6,10 @@ import dev.matthe815.mmoparties.forge.core.MMOParties;
 import dev.matthe815.mmoparties.common.stats.Party;
 import dev.matthe815.mmoparties.common.stats.PlayerStats;
 import io.netty.buffer.ByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Handles menu actions for the popup GUI.
@@ -39,8 +40,9 @@ public class MessageHandleMenuAction {
 
 	public static class Handler
 	{
-		public static void handle(final MessageHandleMenuAction pkt, CustomPayloadEvent.Context ctx)
+		public static void handle(final MessageHandleMenuAction pkt, Supplier<NetworkEvent.Context> supplier)
 		{
+			NetworkEvent.Context ctx = supplier.get();
 			ctx.setPacketHandled(true);
 			PlayerStats stats = MMOParties.GetStatsByName(Objects.requireNonNull(ctx.getSender()).getName().getString());
 

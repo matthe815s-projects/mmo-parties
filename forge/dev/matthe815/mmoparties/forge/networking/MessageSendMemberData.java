@@ -1,6 +1,7 @@
 package dev.matthe815.mmoparties.forge.networking;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.function.Supplier;
 
 import com.google.common.base.Charsets;
 
@@ -12,7 +13,7 @@ import dev.matthe815.mmoparties.common.stats.Party;
 import dev.matthe815.mmoparties.common.stats.PartyMemberData;
 import dev.matthe815.mmoparties.common.stats.PlayerStats;
 import io.netty.buffer.ByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 public class MessageSendMemberData {
 
@@ -85,7 +86,9 @@ public class MessageSendMemberData {
   }
 
   public static class Handler {
-    public static void handle(MessageSendMemberData message, CustomPayloadEvent.Context ctx) {
+    public static void handle(MessageSendMemberData message, Supplier<NetworkEvent.Context> supplier) {
+		NetworkEvent.Context ctx = supplier.get();
+
 		if (ConfigCommon.COMMON.debugMode) System.out.println("Packet");
 		PartyMemberData player = new PartyMemberData(message.builder);
 

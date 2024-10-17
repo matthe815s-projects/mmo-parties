@@ -16,6 +16,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.PacketDistributor;
 
 public class Party extends PlayerGroup
 {	
@@ -78,7 +79,7 @@ public class Party extends PlayerGroup
 			{ CommandMessageHelper.SendError( invoker, "rpgparties.message.party.player.exists", player.getName().getString() ); return; }
 		
 		targetPlayer.partyInvite = this;
-		MMOParties.network.send(new MessagePartyInvite(invoker.getName().getString()), ((ServerPlayer)player).connection.getConnection());
+		MMOParties.network.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new MessagePartyInvite(invoker.getName().getString()));
 		
 		CommandMessageHelper.SendInfo( invoker, "rpgparties.message.party.invited" , player.getName().getString() );
 	}
@@ -120,7 +121,7 @@ public class Party extends PlayerGroup
 		SendUpdate();
 
 		MMOParties.GetStats(player).party = null; // No party.
-		MMOParties.network.send(new MessageUpdateParty(""), ((ServerPlayer)player).connection.getConnection()); // Clear the player's party.
+		MMOParties.network.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new MessageUpdateParty("")); // Clear the player's party.
 
 		// Disband the party of 1 player. Don't disband if auto-parties is enabled.
 		if (players.size() == 1 && !ConfigHolder.COMMON.autoAssignParties.get()) Disband();
@@ -140,7 +141,7 @@ public class Party extends PlayerGroup
 		for (Player member : players) {
 			PlayerStats stats = MMOParties.GetStatsByName ( member.getName().getString() );
 			stats.party = null;
-			MMOParties.network.send(new MessageUpdateParty(""), ((ServerPlayer)member).connection.getConnection());
+			MMOParties.network.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) member), new MessageUpdateParty(""));
 		}
 
 		players.clear();
@@ -170,14 +171,14 @@ public class Party extends PlayerGroup
 		String[] playerNames = new String[players.size()];
 		int i = 0;
 		
-		for (Player party_player : players) {
-			playerNames[i] = party_player.getName().getString();
+		for (Player partyPlayer : players) {
+			playerNames[i] = partyPlayer.getName().getString();
 			i++;
 		}
 
-		for (Player party_player : players) {
-			if (!(party_player instanceof ServerPlayer)) return;
-			MMOParties.network.send(new MessageUpdateParty(String.join(",", playerNames)), ((ServerPlayer)party_player).connection.getConnection());
+		for (Player partyPlayer : players) {
+			if (!(partyPlayer instanceof ServerPlayer)) return;
+			MMOParties.network.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) partyPlayer), new MessageUpdateParty(String.join(",", playerNames)));
 		}
 	}
 	
@@ -200,9 +201,9 @@ public class Party extends PlayerGroup
 			for (Player party_player : players) {
 				if (!(party_player instanceof ServerPlayer)) return;
 
-				MMOParties.network.send(
+				MMOParties.network.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) party_player),
 					new MessageSendMemberData(builder
-				, remove), ((ServerPlayer)party_player).connection.getConnection());
+				, remove));
 			}
 		}
 	}

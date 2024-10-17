@@ -22,8 +22,10 @@ import net.minecraft.client.Minecraft;
  */
 public class PartyList {
 
-    public static final ResourceLocation TEXTURE_ICON = ResourceLocation.fromNamespaceAndPath(MMOPartiesCommon.MODID,
-        "textures/icons.png");
+    // public static final ResourceLocation TEXTURE_ICON = ResourceLocation.fromNamespaceAndPath(MMOPartiesCommon.MODID,
+    //     "textures/icons.png");
+
+    public static final ResourceLocation TEXTURE_ICON = new ResourceLocation(MMOPartiesCommon.MODID, "textures/icons.png");
 
     private static Minecraft mc;
     private static int updateCounter = 0;

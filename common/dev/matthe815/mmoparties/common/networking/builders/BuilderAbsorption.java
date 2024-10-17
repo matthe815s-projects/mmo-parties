@@ -1,6 +1,7 @@
 package dev.matthe815.mmoparties.common.networking.builders;
 
 import dev.matthe815.mmoparties.forge.config.ConfigHolder;
+import dev.matthe815.mmoparties.common.core.MMOPartiesCommon;
 import dev.matthe815.mmoparties.common.gui.PartyList;
 import dev.matthe815.mmoparties.common.gui.UISpec;
 import io.netty.buffer.ByteBuf;
@@ -28,9 +29,13 @@ public class BuilderAbsorption implements BuilderData {
     }
 
     public static class NuggetBar implements PartyList.NuggetBar {
-        ResourceLocation FULL = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/heart/absorbing_full");
-        ResourceLocation HALF = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/heart/absorbing_half");
-        ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/heart/container");
+        // ResourceLocation FULL = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/heart/absorbing_full");
+        // ResourceLocation HALF = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/heart/absorbing_half");
+        // ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/heart/container");
+
+        ResourceLocation FULL = new ResourceLocation(MMOPartiesCommon.MODID, "textures/gui/absorbing_full.png");
+        ResourceLocation HALF = new ResourceLocation(MMOPartiesCommon.MODID, "textures/gui/absorbing_half.png");
+        ResourceLocation BACKGROUND = new ResourceLocation(MMOPartiesCommon.MODID, "textures/gui/absorbing_container.png");
 
         @Override
         public int Render(GuiGraphics gui, BuilderData data, int xOffset, int yOffset, boolean compact) {

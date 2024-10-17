@@ -28,9 +28,13 @@ public class BuilderHunger implements BuilderData {
     }
 
     public static class NuggetBar implements PartyList.NuggetBar {
-        ResourceLocation FULL = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/food_full");
-        ResourceLocation HALF = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/food_half");
-        ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/food_empty");
+        // ResourceLocation FULL = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/food_full");
+        // ResourceLocation HALF = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/food_half");
+        // ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/food_empty");
+
+        ResourceLocation FULL = new ResourceLocation("minecraft", "textures/gui/icons.png");
+        ResourceLocation HALF = new ResourceLocation("minecraft", "textures/gui/icons.png");
+        ResourceLocation BACKGROUND = new ResourceLocation("minecraft", "textures/gui/icons.png");
 
         @Override
         public int Render(GuiGraphics gui, BuilderData data, int xOffset, int yOffset, boolean compact) {

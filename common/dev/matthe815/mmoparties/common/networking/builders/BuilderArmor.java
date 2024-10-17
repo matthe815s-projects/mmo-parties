@@ -1,6 +1,7 @@
 package dev.matthe815.mmoparties.common.networking.builders;
 
 import dev.matthe815.mmoparties.forge.config.ConfigHolder;
+import dev.matthe815.mmoparties.common.core.MMOPartiesCommon;
 import dev.matthe815.mmoparties.common.gui.PartyList;
 import dev.matthe815.mmoparties.common.gui.UISpec;
 import io.netty.buffer.ByteBuf;
@@ -28,9 +29,13 @@ public class BuilderArmor implements BuilderData {
     }
 
     public static class NuggetBar implements PartyList.NuggetBar {
-        ResourceLocation FULL = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/armor_full");
-        ResourceLocation HALF = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/armor_half");
-        ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/armor_empty");
+        // ResourceLocation FULL = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/armor_full");
+        // ResourceLocation HALF = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/armor_half");
+        // ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/armor_empty");
+
+        ResourceLocation FULL = new ResourceLocation(MMOPartiesCommon.MODID, "textures/gui/armor_full.png");
+        ResourceLocation HALF = new ResourceLocation(MMOPartiesCommon.MODID, "textures/gui/armor_half.png");
+        ResourceLocation BACKGROUND = new ResourceLocation(MMOPartiesCommon.MODID, "textures/gui/armor_empty.png");
 
         @Override
         public int Render(GuiGraphics gui, BuilderData data, int xOffset, int yOffset, boolean compact) {

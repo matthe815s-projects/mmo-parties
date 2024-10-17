@@ -2,13 +2,14 @@ package dev.matthe815.mmoparties.forge.networking;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.google.common.base.Charsets;
 
 import dev.matthe815.mmoparties.forge.core.MMOParties;
 import dev.matthe815.mmoparties.common.stats.Party;
 import io.netty.buffer.ByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 public class MessageUpdateParty {
 
@@ -33,7 +34,9 @@ public class MessageUpdateParty {
 
 	public static class Handler
 	{
-		public static void handle(MessageUpdateParty pkt, CustomPayloadEvent.Context context) {
+		public static void handle(MessageUpdateParty pkt, Supplier<NetworkEvent.Context> supplier) {
+			NetworkEvent.Context context = supplier.get();
+			
 			List<String> players = new ArrayList<String>(Arrays.asList(pkt.members.split(",")));
 
 			if (MMOParties.localParty == null)
