@@ -1,0 +1,52 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "java (build)",
+			"paths": [
+				"${workspace}"
+			],
+			"isFullBuild": true,
+			"group": "build",
+			"problemMatcher": [],
+			"label": "java (build): Build Workspace",
+			"detail": "$(tools) Build all the Java projects in workspace."
+		},
+		{
+			"type": "gradle",
+			"id": "f:\\Programming\\mmo-partiesbuildmmo-parties",
+			"script": "build",
+			"description": "Assembles and tests this project.",
+			"group": "build",
+			"project": "mmo-parties",
+			"buildFile": "F:\\Programming\\mmo-parties\\build.gradle",
+			"rootProject": "mmo-parties",
+			"projectFolder": "f:\\Programming\\mmo-parties",
+			"workspaceFolder": "f:\\Programming\\mmo-parties",
+			"args": "",
+			"javaDebug": false,
+			"problemMatcher": [
+				"$gradle"
+			],
+			"label": "gradle: build"
+		},
+		{
+			"type": "gradle",
+			"id": "f:\\Programming\\mmo-partiesrunClientmmo-parties",
+			"script": "runClient",
+			"description": "",
+			"group": "forgegradle runs",
+			"project": "mmo-parties",
+			"buildFile": "F:\\Programming\\mmo-parties\\build.gradle",
+			"rootProject": "mmo-parties",
+			"projectFolder": "f:\\Programming\\mmo-parties",
+			"workspaceFolder": "f:\\Programming\\mmo-parties",
+			"args": "",
+			"javaDebug": false,
+			"problemMatcher": [
+				"$gradle"
+			],
+			"label": "gradle: runClient"
+		}
+	]
+}

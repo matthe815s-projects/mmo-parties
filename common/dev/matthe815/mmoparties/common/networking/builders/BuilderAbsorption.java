@@ -1,6 +1,7 @@
 package dev.matthe815.mmoparties.common.networking.builders;
 
 import dev.matthe815.mmoparties.forge.config.ConfigHolder;
+import dev.matthe815.mmoparties.common.core.MMOPartiesCommon;
 import dev.matthe815.mmoparties.common.gui.PartyList;
 import dev.matthe815.mmoparties.common.gui.UISpec;
 import io.netty.buffer.ByteBuf;
@@ -28,14 +29,10 @@ public class BuilderAbsorption implements BuilderData {
     }
 
     public static class NuggetBar implements PartyList.NuggetBar {
-        ResourceLocation FULL = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/heart/absorbing_full");
-        ResourceLocation HALF = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/heart/absorbing_half");
-        ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/heart/container");
-
         @Override
         public int Render(GuiGraphics gui, BuilderData data, int xOffset, int yOffset, boolean compact) {
             BuilderAbsorption builder = (BuilderAbsorption) data;
-            return PartyList.Draw(new UISpec(gui, FULL, HALF, BACKGROUND, xOffset, yOffset, 9, 9), builder.absorption, builder.absorption, compact,
+            return PartyList.Draw(new UISpec(gui, new UISpec(gui, 160, 0), new UISpec(gui, 169, 0), new UISpec(gui, 16, 0), xOffset, yOffset, 9, 9), builder.absorption, builder.absorption, compact,
                     ConfigHolder.CLIENT.showAbsorption.get() && builder.absorption > 0);
         }
     }

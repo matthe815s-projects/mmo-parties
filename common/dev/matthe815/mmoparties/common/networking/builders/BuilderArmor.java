@@ -1,6 +1,7 @@
 package dev.matthe815.mmoparties.common.networking.builders;
 
 import dev.matthe815.mmoparties.forge.config.ConfigHolder;
+import dev.matthe815.mmoparties.common.core.MMOPartiesCommon;
 import dev.matthe815.mmoparties.common.gui.PartyList;
 import dev.matthe815.mmoparties.common.gui.UISpec;
 import io.netty.buffer.ByteBuf;
@@ -28,14 +29,10 @@ public class BuilderArmor implements BuilderData {
     }
 
     public static class NuggetBar implements PartyList.NuggetBar {
-        ResourceLocation FULL = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/armor_full");
-        ResourceLocation HALF = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/armor_half");
-        ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/armor_empty");
-
         @Override
         public int Render(GuiGraphics gui, BuilderData data, int xOffset, int yOffset, boolean compact) {
             BuilderArmor builder = (BuilderArmor) data;
-            return PartyList.Draw(new UISpec(gui, FULL, HALF, BACKGROUND, xOffset, yOffset, 9, 9), builder.armor, builder.armor, compact,
+            return PartyList.Draw(new UISpec(gui, new UISpec(gui, 34, 9), new UISpec(gui, 25, 9), new UISpec(gui, 16, 9), xOffset, yOffset, 9, 9), builder.armor, builder.armor, compact,
                     ConfigHolder.CLIENT.showArmor.get() && builder.armor > 0);
         }
     }

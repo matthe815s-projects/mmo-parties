@@ -24,8 +24,9 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.network.ChannelBuilder;
-import net.minecraftforge.network.SimpleChannel;
+// import net.minecraftforge.network.ChannelBuilder;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -35,13 +36,13 @@ import org.lwjgl.glfw.GLFW;
  */
 @Mod(value = MMOParties.MODID)
 public class MMOParties extends MMOPartiesCommon {
-	private static final int PROTOCOL_VERSION = 2;
-	public static final SimpleChannel network = ChannelBuilder
-			.named(ResourceLocation.fromNamespaceAndPath(MODID, "sync"))
-			.clientAcceptedVersions((s, v) -> v == PROTOCOL_VERSION)
-			.serverAcceptedVersions((s, v) -> v == PROTOCOL_VERSION)
-			.networkProtocolVersion(PROTOCOL_VERSION)
-			.simpleChannel();
+	private static final String PROTOCOL_VERSION = "1";
+	public static final SimpleChannel network = NetworkRegistry.newSimpleChannel(
+	new ResourceLocation(MODID, "main"),
+		() -> PROTOCOL_VERSION,
+		PROTOCOL_VERSION::equals,
+		PROTOCOL_VERSION::equals
+	);
 	
 	public MMOParties ()
 	{
@@ -87,27 +88,27 @@ public class MMOParties extends MMOPartiesCommon {
 	 */
 	public void SetupNetworking()
 	{
-		network.messageBuilder(MessageUpdateParty.class)
+		network.messageBuilder(MessageUpdateParty.class, 0)
 				.encoder(MessageUpdateParty::encode)
 				.decoder(MessageUpdateParty::decode)
 				.consumerMainThread(MessageUpdateParty.Handler::handle)
 				.add();
-		network.messageBuilder(MessageSendMemberData.class)
+		network.messageBuilder(MessageSendMemberData.class, 1)
 				.encoder(MessageSendMemberData::encode)
 				.decoder(MessageSendMemberData::decode)
 				.consumerMainThread(MessageSendMemberData.Handler::handle)
 				.add();
-		network.messageBuilder(MessageHandleMenuAction.class)
+		network.messageBuilder(MessageHandleMenuAction.class, 2)
 				.encoder(MessageHandleMenuAction::encode)
 				.decoder(MessageHandleMenuAction::decode)
 				.consumerMainThread(MessageHandleMenuAction.Handler::handle)
 				.add();
-		network.messageBuilder(MessagePartyInvite.class)
+		network.messageBuilder(MessagePartyInvite.class, 3)
 				.encoder(MessagePartyInvite::encode)
 				.decoder(MessagePartyInvite::decode)
 				.consumerMainThread(MessagePartyInvite.Handler::handle)
 				.add();
-		network.messageBuilder(MessageOpenUI.class)
+		network.messageBuilder(MessageOpenUI.class,5)
 				.encoder(MessageOpenUI::encode)
 				.decoder(MessageOpenUI::decode)
 				.consumerMainThread(MessageOpenUI.Handler::handleServer)

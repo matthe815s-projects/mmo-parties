@@ -4,9 +4,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 
 public class UISpec {
-    public ResourceLocation texture;
-    public ResourceLocation textureHalf;
-    public ResourceLocation textureBack;
+    public UISpec texture;
+    public UISpec textureHalf;
+    public UISpec textureBack;
 
     public GuiGraphics renderer;
     public int x;
@@ -21,7 +21,7 @@ public class UISpec {
         this.y = y;
     }
 
-    public UISpec(GuiGraphics renderer, ResourceLocation texture, ResourceLocation textureHalf, ResourceLocation textureBackground, int x, int y, int width, int height)
+    public UISpec(GuiGraphics renderer, UISpec texture, UISpec textureHalf, UISpec textureBackground, int x, int y, int width, int height)
     {
         this.renderer = renderer;
         this.texture = texture;
