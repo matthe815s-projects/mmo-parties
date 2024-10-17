@@ -254,7 +254,7 @@ public class PartyList {
     static void DrawNugget(UISpec UI, float current, int dropletHalf, int x, int y)
     {
         // Draw background
-        Renderer.drawHalvedLayeredSprite(new UISpec(UI.renderer, UI.texture, UI.textureHalf, UI.textureBack, x, y, 9, 9), current, dropletHalf);
+        Renderer.drawHalvedLayeredSprite(new UISpec(UI.renderer, UI.texture, UI.textureHalf, UI.textureBack, x, y,9, 9), current, dropletHalf);
     }
 
     public static int DrawText(String text, UISpec location)
@@ -265,7 +265,7 @@ public class PartyList {
 
     public static int DrawResource(UISpec ui)
     {
-        ui.renderer.blit(ui.texture, ui.x, ui.y, 0, 0, ui.width, ui.height);
+        Renderer.drawSprite(ui.texture);
         return ui.height;
     }
 }
