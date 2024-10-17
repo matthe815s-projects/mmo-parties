@@ -36,7 +36,7 @@ public class BuilderLeader implements BuilderData {
         @Override
         public int Render(GuiGraphics gui, BuilderData data, int xOffset, int yOffset, boolean compact) {
             BuilderLeader builder = (BuilderLeader) data;
-            if (builder.isLeader) PartyList.DrawResource(new UISpec(gui, PartyList.TEXTURE_ICON, null, null, 0, 18, 9, 9));
+            //if (builder.isLeader) PartyList.DrawResource(new UISpec(gui, PartyList.TEXTURE_ICON, null, null, 0, 18, 9, 9));
             return builder.isLeader ? 9 : 0;
         }
     }
