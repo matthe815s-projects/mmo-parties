@@ -110,7 +110,9 @@ public class PartyScreen extends Screen {
                 int i = 1;
 
                 for (String player : GetApplicablePlayers()) {
-                    this.addRenderableWidget(CreateButton(player, i++, p_onPress_1_ -> MMOParties.network.send(PacketDistributor.SERVER.with(null), new MessageHandleMenuAction(player, EnumPartyGUIAction.INVITE)))); // Send UI event to the server.
+                    this.addRenderableWidget(CreateButton(player, i++, p_onPress_1_ -> {
+                        MMOParties.network.sendToServer(new MessageHandleMenuAction(player, EnumPartyGUIAction.INVITE));
+                    })); // Send UI event to the server.
                 }
 
                 break;

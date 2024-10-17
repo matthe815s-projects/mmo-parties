@@ -93,22 +93,22 @@ public class MMOParties extends MMOPartiesCommon {
 				.decoder(MessageUpdateParty::decode)
 				.consumerMainThread(MessageUpdateParty.Handler::handle)
 				.add();
-		network.messageBuilder(MessageSendMemberData.class, 0)
+		network.messageBuilder(MessageSendMemberData.class, 1)
 				.encoder(MessageSendMemberData::encode)
 				.decoder(MessageSendMemberData::decode)
 				.consumerMainThread(MessageSendMemberData.Handler::handle)
 				.add();
-		network.messageBuilder(MessageHandleMenuAction.class, 0)
+		network.messageBuilder(MessageHandleMenuAction.class, 2)
 				.encoder(MessageHandleMenuAction::encode)
 				.decoder(MessageHandleMenuAction::decode)
 				.consumerMainThread(MessageHandleMenuAction.Handler::handle)
 				.add();
-		network.messageBuilder(MessagePartyInvite.class, 0)
+		network.messageBuilder(MessagePartyInvite.class, 3)
 				.encoder(MessagePartyInvite::encode)
 				.decoder(MessagePartyInvite::decode)
 				.consumerMainThread(MessagePartyInvite.Handler::handle)
 				.add();
-		network.messageBuilder(MessageOpenUI.class,0 )
+		network.messageBuilder(MessageOpenUI.class,5)
 				.encoder(MessageOpenUI::encode)
 				.decoder(MessageOpenUI::decode)
 				.consumerMainThread(MessageOpenUI.Handler::handleServer)
