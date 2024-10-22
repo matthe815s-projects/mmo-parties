@@ -7,6 +7,7 @@ import dev.matthe815.mmoparties.forge.api.PartyHelper;
 import dev.matthe815.mmoparties.forge.api.relation.EnumRelation;
 import dev.matthe815.mmoparties.forge.config.ConfigHolder;
 import dev.matthe815.mmoparties.forge.core.MMOParties;
+import net.minecraft.client.telemetry.events.WorldLoadEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.animal.Wolf;

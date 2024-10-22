@@ -11,7 +11,6 @@ import net.minecraftforge.fml.common.Mod;
  * Each bar to be rendered is created on mod initialization.
  * @see CompatibilityHelper
  */
-@Mod.EventBusSubscriber
 public class PartyListForge {
     @SubscribeEvent
     public void onRenderGameOverlay(CustomizeGuiOverlayEvent gui) {

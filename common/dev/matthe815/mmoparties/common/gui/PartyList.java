@@ -1,6 +1,5 @@
 package dev.matthe815.mmoparties.common.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import dev.matthe815.mmoparties.common.core.MMOPartiesCommon;
 import dev.matthe815.mmoparties.forge.api.compatibility.CompatibilityHelper;
 import java.util.Objects;
