@@ -43,6 +43,7 @@ public class PartyList {
 
     public static void onRenderGameOverlay(GuiGraphics gui) {
         updateCounter++;
+        if (mc == null) mc = Minecraft.getInstance();
         if (MMOPartiesCommon.localParty == null || MMOPartiesCommon.localParty.local_players.isEmpty()) return;
 
         int lastOffset = 0;

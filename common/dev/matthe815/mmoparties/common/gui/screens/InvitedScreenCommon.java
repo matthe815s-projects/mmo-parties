@@ -15,7 +15,6 @@ import net.minecraft.network.chat.Component;
 public class InvitedScreenCommon extends Screen {
     public InvitedScreenCommon() {
         super(Component.translatable("rpgparties.gui.title.invite"));
-
     }
 
     public static void ShowToast() {

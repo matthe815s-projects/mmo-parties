@@ -102,13 +102,14 @@ public class MMOParties extends MMOPartiesCommon {
 				.decoder(MessageHandleMenuAction::decode)
 				.consumerMainThread(MessageHandleMenuAction.Handler::handle)
 				.add();
+		network.messageBuilder(MessagePartyInvite.class, 3)
+				.encoder(MessagePartyInvite::encode)
+				.decoder(MessagePartyInvite::decode)
+				.consumerMainThread(MessagePartyInvite.Handler::handle)
+				.add();
+
 
 		if (FMLEnvironment.dist == Dist.CLIENT) {
-			network.messageBuilder(MessagePartyInvite.class, 3)
-					.encoder(MessagePartyInvite::encode)
-					.decoder(MessagePartyInvite::decode)
-					.consumerMainThread(MessagePartyInvite.Handler::handle)
-					.add();
 
 			network.messageBuilder(MessageOpenUI.class,5)
 					.encoder(MessageOpenUI::encode)
