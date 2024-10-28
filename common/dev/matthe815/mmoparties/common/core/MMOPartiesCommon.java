@@ -36,6 +36,7 @@ public class MMOPartiesCommon {
 		RegisterCompatibility(new BuilderAbsorption(), new BuilderAbsorption.NuggetBar(), isDedicatedServer);
 		RegisterCompatibility(new BuilderHunger(), new BuilderHunger.NuggetBar(), isDedicatedServer);
 		RegisterCompatibility(new BuilderArmor(), new BuilderArmor.NuggetBar(), isDedicatedServer);
+		RegisterCompatibility(new BuilderWaypoint(), new BuilderWaypoint.NuggetBar(), isDedicatedServer);
 	}
 
 	/**

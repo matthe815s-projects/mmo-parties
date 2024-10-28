@@ -28,7 +28,7 @@ public class PartyList {
 
     private static Minecraft mc;
     private static int updateCounter = 0;
-    private static Random random;
+    private static Random random = new Random();
 
     private static boolean renderAscending = false;
     private static boolean renderOpposite = false;

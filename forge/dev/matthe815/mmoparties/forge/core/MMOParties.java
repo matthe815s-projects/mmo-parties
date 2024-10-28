@@ -10,22 +10,18 @@ import dev.matthe815.mmoparties.forge.events.EventCommonForge;
 import dev.matthe815.mmoparties.forge.gui.PartyListForge;
 import dev.matthe815.mmoparties.forge.networking.*;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.telemetry.events.WorldLoadEvent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.network.NetworkRegistry;
@@ -46,7 +42,7 @@ public class MMOParties extends MMOPartiesCommon {
 		PROTOCOL_VERSION::equals,
 		PROTOCOL_VERSION::equals
 	);
-	
+
 	public MMOParties ()
 	{
 		super(FMLEnvironment.dist == Dist.DEDICATED_SERVER);
