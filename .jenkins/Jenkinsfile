@@ -24,21 +24,6 @@ pipeline {
             }
         }
 
-        stage('Publish Maven') {
-            steps {
-            }
-        }
-
-        stage('Publish CurseForge') {
-            steps {
-            }
-        }
-
-        stage('Publish Modrinth') {
-            steps {
-            }
-        }
-
         stage('Archive') {
             steps {
                 junit allowEmptyResults: true, testResults: '*/build/test-results/**/*.xml'
