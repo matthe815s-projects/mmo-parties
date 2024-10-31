@@ -5,6 +5,7 @@ pipeline {
     }
 
     environment {
+      ORG_GRADLE_PROJECT_curseforgeApikey = credentials("mmo-curseforge-key")
       ORG_GRADLE_PROJECT_BUILD_NUMBER = "${env.BUILD_NUMBER}"
     }
     stages {
@@ -19,6 +20,13 @@ pipeline {
         stage('Build') {
             steps {
                 sh "./gradlew build"
+            }
+        }
+
+        stage('Publish CurseForge') {
+            steps {
+                sh "./gradlew publishCurseforge"
+                }
             }
         }
 
