@@ -20,9 +20,11 @@ val minecraftVersionRangeStart: String by extra
 val modGroup: String by extra
 val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
+val modrinthId: String by extra
 val modJavaVersion: String by extra
 val forgeVersion: String by extra
 val curseforgeApikey: String? by project
+val modrinthToken: String? by project
 val modAuthor: String by extra
 val modDescription: String by extra
 val modName: String by extra
@@ -157,6 +159,15 @@ publishMods {
             end = minecraftVersion
         }
         javaVersions.add(JavaVersion.toVersion(modJavaVersion))
+    }
+
+    modrinth {
+        projectId = modrinthId
+        accessToken.set(modrinthToken)
+        minecraftVersionRange {
+            start = minecraftVersionRangeStart
+            end = minecraftVersion
+        }
     }
 }
 
