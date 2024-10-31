@@ -47,7 +47,6 @@ java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
     }
-    withSourcesJar()
 }
 
 minecraft {
