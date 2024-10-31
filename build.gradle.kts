@@ -145,7 +145,7 @@ publishMods {
     changelog = "Nightly build"
     type = BETA
     modLoaders.add("forge")
-    displayName.set("${project.version}-$minecraftVersion")
+    displayName.set("${project.version}.${buildNumber}-$minecraftVersion")
     version.set(project.version.toString())
 
     curseforge {
