@@ -74,8 +74,6 @@ public class MMOParties extends MMOPartiesCommon {
 		// Sets up all of the network packet handlers.
 		SetupNetworking();
 
-		ConfigHolder.insertConfig();
-
 		// Register event handlerse
 		MinecraftForge.EVENT_BUS.register(new EventCommonForge());
 		MinecraftForge.EVENT_BUS.register(new EventClientForge());
