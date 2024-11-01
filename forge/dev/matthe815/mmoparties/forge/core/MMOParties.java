@@ -24,8 +24,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.network.ChannelBuilder;
+import net.minecraftforge.network.SimpleChannel;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -35,14 +35,14 @@ import org.lwjgl.glfw.GLFW;
  */
 @Mod(value = MMOParties.MODID)
 public class MMOParties extends MMOPartiesCommon {
-	private static final String PROTOCOL_VERSION = "1";
-	public static final SimpleChannel network = NetworkRegistry.newSimpleChannel(
-	new ResourceLocation(MODID, "main"),
-		() -> PROTOCOL_VERSION,
-		PROTOCOL_VERSION::equals,
-		PROTOCOL_VERSION::equals
-	);
-
+	private static final int PROTOCOL_VERSION = 2;
+	public static final SimpleChannel network = ChannelBuilder
+			.named(ResourceLocation.fromNamespaceAndPath(MODID, "sync"))
+			.clientAcceptedVersions((s, v) -> v == PROTOCOL_VERSION)
+			.serverAcceptedVersions((s, v) -> v == PROTOCOL_VERSION)
+			.networkProtocolVersion(PROTOCOL_VERSION)
+			.simpleChannel();
+	
 	public MMOParties ()
 	{
 		super(FMLEnvironment.dist == Dist.DEDICATED_SERVER);
@@ -53,10 +53,10 @@ public class MMOParties extends MMOPartiesCommon {
 
 		// Construct game events.
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::OnSetup);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::OnClientInitialize);
 
 		if (FMLEnvironment.dist == Dist.CLIENT) {
 			FMLJavaModLoadingContext.get().getModEventBus().addListener(this::KeyBinds);
-			FMLJavaModLoadingContext.get().getModEventBus().addListener(this::OnClientInitialize);
 		}
 
 		MinecraftForge.EVENT_BUS.addListener(this::OnCommandRegister);
@@ -74,8 +74,12 @@ public class MMOParties extends MMOPartiesCommon {
 		// Sets up all of the network packet handlers.
 		SetupNetworking();
 
+		ConfigHolder.insertConfig();
+
 		// Register event handlerse
 		MinecraftForge.EVENT_BUS.register(new EventCommonForge());
+		MinecraftForge.EVENT_BUS.register(new EventClientForge());
+		MinecraftForge.EVENT_BUS.register(new PartyListForge());
 	}
 
 	/**
@@ -83,36 +87,31 @@ public class MMOParties extends MMOPartiesCommon {
 	 */
 	public void SetupNetworking()
 	{
-		network.messageBuilder(MessageUpdateParty.class, 0)
+		network.messageBuilder(MessageUpdateParty.class)
 				.encoder(MessageUpdateParty::encode)
 				.decoder(MessageUpdateParty::decode)
 				.consumerMainThread(MessageUpdateParty.Handler::handle)
 				.add();
-		network.messageBuilder(MessageSendMemberData.class, 1)
+		network.messageBuilder(MessageSendMemberData.class)
 				.encoder(MessageSendMemberData::encode)
 				.decoder(MessageSendMemberData::decode)
 				.consumerMainThread(MessageSendMemberData.Handler::handle)
 				.add();
-		network.messageBuilder(MessageHandleMenuAction.class, 2)
+		network.messageBuilder(MessageHandleMenuAction.class)
 				.encoder(MessageHandleMenuAction::encode)
 				.decoder(MessageHandleMenuAction::decode)
 				.consumerMainThread(MessageHandleMenuAction.Handler::handle)
 				.add();
-		network.messageBuilder(MessagePartyInvite.class, 3)
+		network.messageBuilder(MessagePartyInvite.class)
 				.encoder(MessagePartyInvite::encode)
 				.decoder(MessagePartyInvite::decode)
 				.consumerMainThread(MessagePartyInvite.Handler::handle)
 				.add();
-
-
-		if (FMLEnvironment.dist == Dist.CLIENT) {
-
-			network.messageBuilder(MessageOpenUI.class,5)
-					.encoder(MessageOpenUI::encode)
-					.decoder(MessageOpenUI::decode)
-					.consumerMainThread(MessageOpenUI.Handler::handleServer)
-					.add();
-		}
+		network.messageBuilder(MessageOpenUI.class)
+				.encoder(MessageOpenUI::encode)
+				.decoder(MessageOpenUI::decode)
+				.consumerMainThread(MessageOpenUI.Handler::handleServer)
+				.add();
 	}
 
 	public void OnServerInitialize(ServerStartingEvent event) {
@@ -131,10 +130,7 @@ public class MMOParties extends MMOPartiesCommon {
 	 * @param event
 	 */
 	public void OnClientInitialize(FMLClientSetupEvent event)
-	{
-		MinecraftForge.EVENT_BUS.register(new PartyListForge());
-		MinecraftForge.EVENT_BUS.register(new EventClientForge());
-	}
+	{}
 
 	/**
 	 * Handles registering the mod commands as well as permissions.

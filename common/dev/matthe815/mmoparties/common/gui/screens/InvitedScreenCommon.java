@@ -15,6 +15,7 @@ import net.minecraft.network.chat.Component;
 public class InvitedScreenCommon extends Screen {
     public InvitedScreenCommon() {
         super(Component.translatable("rpgparties.gui.title.invite"));
+
     }
 
     public static void ShowToast() {
@@ -34,7 +35,7 @@ public class InvitedScreenCommon extends Screen {
 
     @Override
     public void render(GuiGraphics stack, int mouseX, int mouseY, float ticks) {
-        this.renderBackground(stack);
+        this.renderBackground(stack, mouseX, mouseY, ticks);
         stack.drawCenteredString(this.font, this.title.getString(), this.width / 2, 8, 0XFFFFFF);
         stack.drawCenteredString(this.font, Component.translatable("rpgparties.message.party.invite.from", MMOPartiesCommon.partyInviter), this.width / 2, 20, 0XFFFFFF);
         super.render(stack, mouseX, mouseY, ticks);
@@ -52,7 +53,7 @@ public class InvitedScreenCommon extends Screen {
 
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            gui.blit(BACKGROUND_LOCATION, 0, 0, 0, 0, this.width(), this.height());
+            gui.blit(MENU_BACKGROUND, 0, 0, 0, 0, this.width(), this.height());
 
             // Render an item
             // p_230444_2_.getMinecraft().getItemRenderer().render(new ItemStack(Items.PLAYER_HEAD), 6, 6);

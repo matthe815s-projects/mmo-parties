@@ -1,5 +1,6 @@
 package dev.matthe815.mmoparties.common.gui;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.matthe815.mmoparties.common.core.MMOPartiesCommon;
 import dev.matthe815.mmoparties.forge.api.compatibility.CompatibilityHelper;
 import java.util.Objects;
@@ -21,10 +22,8 @@ import net.minecraft.client.Minecraft;
  */
 public class PartyList {
 
-    // public static final ResourceLocation TEXTURE_ICON = ResourceLocation.fromNamespaceAndPath(MMOPartiesCommon.MODID,
-    //     "textures/icons.png");
-
-    public static final ResourceLocation TEXTURE_ICON = new ResourceLocation(MMOPartiesCommon.MODID, "textures/icons.png");
+    public static final ResourceLocation TEXTURE_ICON = ResourceLocation.fromNamespaceAndPath(MMOPartiesCommon.MODID,
+        "textures/icons.png");
 
     private static Minecraft mc;
     private static int updateCounter = 0;
@@ -37,13 +36,12 @@ public class PartyList {
 
     public PartyList() {
         super();
-        random = new Random();
-        mc = Minecraft.getInstance();
     }
 
     public static void onRenderGameOverlay(GuiGraphics gui) {
         updateCounter++;
-        if (mc == null) mc = Minecraft.getInstance();
+        if (mc == null) mc=Minecraft.getInstance();
+
         if (MMOPartiesCommon.localParty == null || MMOPartiesCommon.localParty.local_players.isEmpty()) return;
 
         int lastOffset = 0;
@@ -197,6 +195,8 @@ public class PartyList {
             RenderExtraHealth(UI, max, (extraHearts + 20) * 2);
         }
 
+        RenderSystem.setShaderTexture(0, UI.texture);
+
         // Loop for each additional max nugget.
         for (int i = 0; i < maxLength / 2; i++) {
             int dropletHalf = i * 2 + 1;
@@ -254,7 +254,7 @@ public class PartyList {
     static void DrawNugget(UISpec UI, float current, int dropletHalf, int x, int y)
     {
         // Draw background
-        Renderer.drawHalvedLayeredSprite(new UISpec(UI.renderer, UI.texture, UI.textureHalf, UI.textureBack, x, y,9, 9), current, dropletHalf);
+        Renderer.drawHalvedLayeredSprite(new UISpec(UI.renderer, UI.texture, UI.textureHalf, UI.textureBack, x, y, 9, 9), current, dropletHalf);
     }
 
     public static int DrawText(String text, UISpec location)
@@ -265,7 +265,7 @@ public class PartyList {
 
     public static int DrawResource(UISpec ui)
     {
-        Renderer.drawSprite(ui.texture);
+        ui.renderer.blit(ui.texture, ui.x, ui.y, 0, 0, ui.width, ui.height);
         return ui.height;
     }
 }

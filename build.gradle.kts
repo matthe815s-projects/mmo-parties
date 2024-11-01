@@ -230,6 +230,11 @@ dependencies {
     // For more info:
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
+    implementation("net.sf.jopt-simple:jopt-simple:5.0.4") {
+        version {
+            strictly("5.0.4")
+        }
+    }
 }
 
 idea {

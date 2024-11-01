@@ -89,4 +89,24 @@ public class ConfigHolder {
         CLIENT = clientSpecPair.getLeft();
         CLIENT_SPEC = clientSpecPair.getRight();
     }
+
+    public static void insertConfig()
+    {
+        ConfigCommon.CLIENT.showAbsorption = CLIENT.showAbsorption.get();
+        ConfigCommon.CLIENT.showArmor = CLIENT.showArmor.get();
+        ConfigCommon.CLIENT.showHunger = CLIENT.showHunger.get();
+        ConfigCommon.CLIENT.anchorPoint = CLIENT.anchorPoint.get();
+        ConfigCommon.CLIENT.hideGUI = CLIENT.hideGUI.get();
+        ConfigCommon.CLIENT.hideSelf = CLIENT.hideSelf.get();
+        ConfigCommon.CLIENT.extraNumberType = CLIENT.extraNumberType.get();
+        ConfigCommon.CLIENT.numbersAsPercentage = CLIENT.numbersAsPercentage.get();
+        ConfigCommon.CLIENT.uiYOffset = CLIENT.uiYOffset.get();
+        ConfigCommon.CLIENT.useSimpleUI = CLIENT.useSimpleUI.get();
+
+        ConfigCommon.COMMON.allowInviteAll = COMMON.allowInviteAll.get();
+        ConfigCommon.COMMON.allowPartyTP = COMMON.allowPartyTP.get();
+        ConfigCommon.COMMON.autoAssignParties = COMMON.autoAssignParties.get();
+        ConfigCommon.COMMON.friendlyFireDisabled = COMMON.friendlyFireDisabled.get();
+        ConfigCommon.COMMON.debugMode = COMMON.debugMode.get();
+    }
 }

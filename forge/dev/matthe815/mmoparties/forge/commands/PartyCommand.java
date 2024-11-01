@@ -20,9 +20,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PacketDistributor.PacketTarget;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -168,8 +165,7 @@ public class PartyCommand {
 				break;
 
 			case "gui":
-				Level playerSenderWorld = player.getCommandSenderWorld();
-				if (!playerSenderWorld.isClientSide) MMOParties.network.send(PacketDistributor.PLAYER.with(() -> player), new MessageOpenUI()); // Send open message
+				if (!player.getCommandSenderWorld().isClientSide) MMOParties.network.send(new MessageOpenUI(), player.connection.getConnection()); // Send open message
 				else if (Minecraft.getInstance().hasSingleplayerServer()) EventClient.OpenPartyScreen();
  				break;
 
@@ -179,7 +175,7 @@ public class PartyCommand {
 				break;
 
 			case "add":
-				MMOParties.network.send(PacketDistributor.PLAYER.with(() -> player), new MessageUpdateParty("dev,devtestman2,dev3"));
+				MMOParties.network.send(new MessageUpdateParty("dev,devtestman2,dev3"), player.connection.getConnection());
 				break;
 			default:
 				break;

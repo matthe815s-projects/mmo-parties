@@ -1,20 +1,18 @@
 package dev.matthe815.mmoparties.forge.networking;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.function.Supplier;
 
 import com.google.common.base.Charsets;
 
 import dev.matthe815.mmoparties.common.config.ConfigCommon;
 import dev.matthe815.mmoparties.common.networking.PartyPacketDataBuilder;
 import dev.matthe815.mmoparties.common.networking.builders.BuilderData;
-import dev.matthe815.mmoparties.forge.config.ConfigHolder;
 import dev.matthe815.mmoparties.forge.core.MMOParties;
 import dev.matthe815.mmoparties.common.stats.Party;
 import dev.matthe815.mmoparties.common.stats.PartyMemberData;
 import dev.matthe815.mmoparties.common.stats.PlayerStats;
 import io.netty.buffer.ByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public class MessageSendMemberData {
 
@@ -80,17 +78,15 @@ public class MessageSendMemberData {
 				  .additionalData[index] = builderData;
 
 		  builderData.OnWrite(buf, msg.builder.player);
-		  if (ConfigHolder.COMMON.debugMode.get()) System.out.println("Wrote packet");
+		  if (ConfigCommon.COMMON.debugMode) System.out.println("Wrote packet");
 	  }
 
-	  if (ConfigHolder.COMMON.debugMode.get()) System.out.println(buf.array().toString());
+	  if (ConfigCommon.COMMON.debugMode) System.out.println(buf.array().toString());
   }
 
   public static class Handler {
-    public static void handle(MessageSendMemberData message, Supplier<NetworkEvent.Context> supplier) {
-		NetworkEvent.Context ctx = supplier.get();
-
-		if (ConfigHolder.COMMON.debugMode.get()) System.out.println("Packet");
+    public static void handle(MessageSendMemberData message, CustomPayloadEvent.Context ctx) {
+		if (ConfigCommon.COMMON.debugMode) System.out.println("Packet");
 		PartyMemberData player = new PartyMemberData(message.builder);
 
 		if (MMOParties.localParty == null) // Create a new party if one doesn't exist already.
@@ -100,7 +96,7 @@ public class MessageSendMemberData {
 		if (message.remove) {
 			MMOParties.localParty.data.remove(player.name);
 
-			if (ConfigHolder.COMMON.debugMode.get())
+			if (ConfigCommon.COMMON.debugMode)
 			{
 				System.out.println(MMOParties.localParty.data.size());
 			}
