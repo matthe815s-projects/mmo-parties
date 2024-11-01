@@ -2,7 +2,7 @@
 
 <img src="https://github.com/matthe815/mmo-parties/blob/1.12-develop/src/main/resources/assets/mmoparties/textures/logo.png?raw=true" height="150" width="150" /></br></br>
 <a href="https://discord.gg/invite/G6HrJk7BBc"><img src="https://img.shields.io/discord/606926504424767488?color=5865F2&logo=discord&logoColor=white" alt="Discord server" /></a>
-<a href=""><img src="https://img.shields.io/jenkins/build?jobUrl=https://jenkins.matthe815.dev/job/RPG-Parties/job/1.21-x/" /></a>
+<a href=""><img src="https://img.shields.io/jenkins/build?jobUrl=https://jenkins.matthe815.dev/job/RPG-Parties/job/1.21-x/&style=?style=plastic" /></a>
 </div>
 
 ## Contribution Guide
