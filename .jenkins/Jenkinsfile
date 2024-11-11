@@ -8,7 +8,8 @@ pipeline {
       ORG_GRADLE_PROJECT_curseforgeApikey = credentials("mmo-curseforge-key")
       ORG_GRADLE_PROJECT_modrinthToken = credentials("modrinth-auth-token")
       ORG_GRADLE_PROJECT_BUILD_NUMBER = "${env.BUILD_NUMBER}"
-    }a
+    }
+    
     stages {
         stage('Clean') {
             steps {
