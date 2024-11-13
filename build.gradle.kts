@@ -92,7 +92,7 @@ publishMods {
     file.set(tasks.jar.get().archiveFile)
     changelog = "Nightly build"
     type = BETA
-    modLoaders.add("forge")
+    modLoaders.add("fabric")
     displayName.set("${project.version}.${buildNumber}-$minecraftVersion")
     version.set(project.version.toString())
 
