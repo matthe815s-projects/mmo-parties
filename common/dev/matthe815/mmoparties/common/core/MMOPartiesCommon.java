@@ -5,6 +5,7 @@ import dev.matthe815.mmoparties.common.networking.PartyPacketDataBuilder;
 import dev.matthe815.mmoparties.common.networking.builders.*;
 import dev.matthe815.mmoparties.common.stats.Party;
 import dev.matthe815.mmoparties.common.stats.PlayerStats;
+import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.world.entity.player.Player;
 
@@ -16,7 +17,7 @@ import java.util.Map.Entry;
  * Contains some top-level cache management functionality.
  * @author Matthe815
  */
-public class MMOPartiesCommon {
+public class MMOPartiesCommon implements ModInitializer {
 	public static final String MODID = "mmoparties";
 	public static Party localParty;
 	public static String partyInviter;
@@ -30,13 +31,13 @@ public class MMOPartiesCommon {
 		// Registers all standard UI elements for the base mod barring any compatibility mods.
 		// Includes: Leader crown, name, status effects, health, absorption, hunger, and armor.
 		// Rendering occurs in the order of registration.
-		RegisterCompatibility(new BuilderLeader(), new BuilderLeader.Renderer(), isDedicatedServer);
-		RegisterCompatibility(new BuilderName(), new BuilderName.Renderer(), isDedicatedServer);
-		RegisterCompatibility(new BuilderHealth(), new BuilderHealth.NuggetBar(), isDedicatedServer);
-		RegisterCompatibility(new BuilderAbsorption(), new BuilderAbsorption.NuggetBar(), isDedicatedServer);
-		RegisterCompatibility(new BuilderHunger(), new BuilderHunger.NuggetBar(), isDedicatedServer);
-		RegisterCompatibility(new BuilderArmor(), new BuilderArmor.NuggetBar(), isDedicatedServer);
-		RegisterCompatibility(new BuilderWaypoint(), new BuilderWaypoint.NuggetBar(), isDedicatedServer);
+		RegisterCompatibility(new BuilderLeader(), new BuilderLeader.Renderer(), false);
+		RegisterCompatibility(new BuilderName(), new BuilderName.Renderer(), false);
+		RegisterCompatibility(new BuilderHealth(), new BuilderHealth.NuggetBar(), false);
+		RegisterCompatibility(new BuilderAbsorption(), new BuilderAbsorption.NuggetBar(), false);
+		RegisterCompatibility(new BuilderHunger(), new BuilderHunger.NuggetBar(), false);
+		RegisterCompatibility(new BuilderArmor(), new BuilderArmor.NuggetBar(), false);
+		RegisterCompatibility(new BuilderWaypoint(), new BuilderWaypoint.NuggetBar(), false);
 	}
 
 	/**
@@ -80,5 +81,10 @@ public class MMOPartiesCommon {
         List<PartyList.NuggetBar> bars = new ArrayList<>(Arrays.asList(PartyList.nuggetBars));
 		bars.add(bar);
 		PartyList.nuggetBars = bars.toArray(new PartyList.NuggetBar[0]); // Convert the list to an array.
+	}
+
+	@Override
+	public void onInitialize()
+	{
 	}
 }

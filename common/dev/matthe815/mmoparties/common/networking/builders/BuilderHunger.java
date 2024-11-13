@@ -1,11 +1,9 @@
 package dev.matthe815.mmoparties.common.networking.builders;
 
-import dev.matthe815.mmoparties.forge.config.ConfigHolder;
 import dev.matthe815.mmoparties.common.gui.PartyList;
 import dev.matthe815.mmoparties.common.gui.UISpec;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 public class BuilderHunger implements BuilderData {
@@ -31,7 +29,7 @@ public class BuilderHunger implements BuilderData {
         @Override
         public int Render(GuiGraphics gui, BuilderData data, int xOffset, int yOffset, boolean compact) {
             BuilderHunger builder = (BuilderHunger) data;
-            return PartyList.Draw(new UISpec(gui, new UISpec(gui, 52, 27), new UISpec(gui, 61, 27), new UISpec(gui, 16, 27), xOffset, yOffset, 9, 9), builder.hunger, 20, compact, ConfigHolder.CLIENT.showHunger.get());
+            return PartyList.Draw(new UISpec(gui, new UISpec(gui, 52, 27), new UISpec(gui, 61, 27), new UISpec(gui, 16, 27), xOffset, yOffset, 9, 9), builder.hunger, 20, compact, true);
         }
     }
 }

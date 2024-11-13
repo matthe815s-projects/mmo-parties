@@ -1,6 +1,6 @@
 package dev.matthe815.mmoparties.common.stats;
 
-import dev.matthe815.mmoparties.forge.helpers.CommandMessageHelper;
+import dev.matthe815.mmoparties.fabric.helpers.CommandMessageHelper;
 import net.minecraft.world.entity.player.Player;
 
 public class PlayerStats 
@@ -37,7 +37,6 @@ public class PlayerStats
 	public void Leave ()
 	{
 		if (party == null) return;
-		party.Leave(player);
 	}
 
 	public void StartTeleport(Player target) {

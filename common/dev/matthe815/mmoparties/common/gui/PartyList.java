@@ -1,7 +1,7 @@
 package dev.matthe815.mmoparties.common.gui;
 
 import dev.matthe815.mmoparties.common.core.MMOPartiesCommon;
-import dev.matthe815.mmoparties.forge.api.compatibility.CompatibilityHelper;
+import dev.matthe815.mmoparties.fabric.api.compatibility.CompatibilityHelper;
 import java.util.Objects;
 import java.util.Random;
 
@@ -9,7 +9,6 @@ import dev.matthe815.mmoparties.common.gui.rendering.Renderer;
 import dev.matthe815.mmoparties.common.networking.builders.BuilderData;
 import dev.matthe815.mmoparties.common.stats.PartyMemberData;
 
-import dev.matthe815.mmoparties.forge.config.ConfigHolder;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.client.Minecraft;
@@ -51,10 +50,10 @@ public class PartyList {
 
         for (PartyMemberData data : MMOPartiesCommon.localParty.data.values()) {
             // Hide yourself if the option is enabled.
-            if (ConfigHolder.CLIENT.hideSelf.get() && data.name.equals(mc.player.getName().getString())) continue;
+            //if (data.name.equals(mc.player.getName().getString())) continue;
 
             // Render a new player and track the additional offset for the next player.
-            lastOffset += RenderMember(new UISpec(gui, 0, lastOffset), data, playerNumber, (MMOPartiesCommon.localParty.local_players.size() > 4 || ConfigHolder.CLIENT.useSimpleUI.get()));
+            lastOffset += RenderMember(new UISpec(gui, 0, lastOffset), data, playerNumber, (MMOPartiesCommon.localParty.local_players.size() > 4));
             playerNumber++;
         }
     }
@@ -65,7 +64,8 @@ public class PartyList {
      */
     public static UISpec GetAnchorOffset(GuiGraphics graphics)
     {
-        switch (ConfigHolder.CLIENT.anchorPoint.get()) {
+        String anchorPoint = "top-left";
+        switch (anchorPoint) {
             case "top-left":
                 return new UISpec(graphics, 8, 0);
 
@@ -142,7 +142,7 @@ public class PartyList {
         int iconRows = 0, additionalOffset = 0;
         int yOffset = (15 * (playerNumber + 1)) + UI.y;
         int posX = defaultOffset.x;
-        int configOffsetY = ConfigHolder.CLIENT.uiYOffset.get();
+        int configOffsetY = 0;
 
         // Invert rendering of each player if in the bottom corners.
         if (renderAscending) yOffset = -yOffset;
@@ -184,18 +184,18 @@ public class PartyList {
         UI.x = UI.x / 2;
         int length = 0, bars = 0;
 
-        float maxLength = ConfigHolder.CLIENT.numbersAsPercentage.get() ? 20 : max;
+        float maxLength = true ? 20 : max;
 
         // Normalize hearts into a value of 20 if the config is enabled.
-        if (ConfigHolder.CLIENT.numbersAsPercentage.get()) {
-            int extraHearts = (int)((current - 20) / 2);
-
-            // If the renderer displays as additional hearts, it shouldn't percentage the current.
-            if (!Objects.equals(ConfigHolder.CLIENT.extraNumberType.get(), "additional")) current = (current / max) * 20;
-
-            // Render any health that goes beyond the cap.
-            RenderExtraHealth(UI, max, (extraHearts + 20) * 2);
-        }
+//        if (ConfigHolder.CLIENT.numbersAsPercentage.get()) {
+//            int extraHearts = (int)((current - 20) / 2);
+//
+//            // If the renderer displays as additional hearts, it shouldn't percentage the current.
+//            if (!Objects.equals(ConfigHolder.CLIENT.extraNumberType.get(), "additional")) current = (current / max) * 20;
+//
+//            // Render any health that goes beyond the cap.
+//            RenderExtraHealth(UI, max, (extraHearts + 20) * 2);
+//        }
 
         // Loop for each additional max nugget.
         for (int i = 0; i < maxLength / 2; i++) {
@@ -231,7 +231,8 @@ public class PartyList {
         int remainderX = UI.x + (10 * 8) + 4;
         UISpec remainderSpec = new UISpec(UI.renderer, remainderX, UI.y);
 
-        switch (ConfigHolder.CLIENT.extraNumberType.get()) {
+        String extraNumberType = "percentage";
+        switch (extraNumberType) {
             case "percentage": // This will show the x% after bars.
                 Renderer.drawString(remainderSpec, String.format("%s", Math.floor(extraHearts / max * 100)) + "%");
                 break;

@@ -1,9 +1,8 @@
 package dev.matthe815.mmoparties.common.events;
 
-import dev.matthe815.mmoparties.forge.api.PartyHelper;
-import dev.matthe815.mmoparties.forge.api.relation.EnumRelation;
-import dev.matthe815.mmoparties.forge.config.ConfigHolder;
-import dev.matthe815.mmoparties.forge.core.MMOParties;
+import dev.matthe815.mmoparties.fabric.api.PartyHelper;
+import dev.matthe815.mmoparties.fabric.api.relation.EnumRelation;
+import dev.matthe815.mmoparties.fabric.core.MMOParties;
 import dev.matthe815.mmoparties.common.stats.Party;
 import dev.matthe815.mmoparties.common.stats.PlayerStats;
 import net.minecraft.network.chat.Component;
@@ -24,7 +23,7 @@ public class EventCommon {
      * Handle a player joining a server/world.
      * @param player
      */
-    public static void onPlayerJoined(Player player)
+    public static void onPlayerJoined(ServerPlayer player)
     {
         if (!MMOParties.PlayerStats.containsKey(player)) MMOParties.PlayerStats.put(player, new PlayerStats( player ));
 
@@ -33,11 +32,9 @@ public class EventCommon {
 
         // Automatically assign the global party to this player.
         // Will not assign if the previous re-join party function goes through.
-        if (ConfigHolder.COMMON.autoAssignParties.get())
-            HandleGlobalParty(player);
     }
 
-    public static void RejoinLastParty(Player player)
+    public static void RejoinLastParty(ServerPlayer player)
     {
         for (ServerPlayer serverPlayer : player.getServer().getPlayerList().getPlayers()) {
             PlayerStats svStats = MMOParties.GetStatsByName(serverPlayer.getName().getString()); // Get the stats for this server player.
@@ -51,7 +48,7 @@ public class EventCommon {
         }
     }
 
-    public static void HandleGlobalParty(Player player)
+    public static void HandleGlobalParty(ServerPlayer player)
     {
         if (globalParty == null) globalParty = Party.CreateGlobalParty( player );
         else if (!globalParty.IsMember(player)) globalParty.Join(player, false);
@@ -61,7 +58,7 @@ public class EventCommon {
      * Handle a player leaving a server/world.
      * @param player
      */
-    public static void onPlayerLeave(Player player)
+    public static void onPlayerLeave(ServerPlayer player)
     {
         PlayerStats playerStats = MMOParties.GetStats(player);
         if (playerStats == null) return;
@@ -87,7 +84,6 @@ public class EventCommon {
      */
     public static boolean OnPlayerHurt(LivingEntity entity, Entity damageSource)
     {
-        if (!ConfigHolder.COMMON.friendlyFireDisabled.get()) return false; // Friendly fire is allowed so this doesn't matter.
         if (entity.getCommandSenderWorld().isClientSide) return false; // Perform on the server only.
         if (!(entity instanceof Player || entity instanceof Wolf) || !(damageSource instanceof Player)) return false;
 
@@ -112,7 +108,7 @@ public class EventCommon {
      * Process the game ticks, specifically for teleporting and updating the member's information.
      * @param player
      */
-    public static void OnPlayerGameTick(Player player)
+    public static void OnPlayerGameTick(ServerPlayer player)
     {
         PlayerStats stats = MMOParties.GetStats(player);
         if (stats == null) return; // Don't know why there wouldn't be a stats but Minecraft Forge is weird.

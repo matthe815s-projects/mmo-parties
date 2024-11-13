@@ -1,12 +1,9 @@
 package dev.matthe815.mmoparties.common.events;
 
 import dev.matthe815.mmoparties.common.gui.screens.PartyScreen;
-import dev.matthe815.mmoparties.forge.screens.InvitedScreenForge;
+import dev.matthe815.mmoparties.fabric.screens.InvitedScreenForge;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
 public class EventClient {
     /**
      * Handles opening of the party screens

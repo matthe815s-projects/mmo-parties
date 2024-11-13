@@ -1,8 +1,7 @@
 package dev.matthe815.mmoparties.common.networking.builders;
 
-import dev.matthe815.mmoparties.forge.core.MMOParties;
+import dev.matthe815.mmoparties.fabric.core.MMOParties;
 import dev.matthe815.mmoparties.common.gui.PartyList;
-import dev.matthe815.mmoparties.common.gui.UISpec;
 import dev.matthe815.mmoparties.common.stats.PlayerStats;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.gui.GuiGraphics;

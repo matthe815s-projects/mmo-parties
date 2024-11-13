@@ -5,10 +5,9 @@ pluginManagement {
                     forRepository { maven(url) }
                     filter(filter)
                 }
-        maven("https://maven.minecraftforge.net") {
-            content {
-                includeGroupByRegex("net\\.minecraftforge.*")
-            }
+        exclusiveMaven("https://maven.fabricmc.net/") {
+            includeGroup("net.fabricmc")
+            includeGroup("fabric-loom")
         }
         exclusiveMaven("https://maven.parchmentmc.org") {
             includeGroupByRegex("org\\.parchmentmc.*")
@@ -23,9 +22,6 @@ pluginManagement {
     }
     resolutionStrategy {
         eachPlugin {
-            if (requested.id.id == "net.minecraftforge.gradle") {
-                useModule("${requested.id}:ForgeGradle:${requested.version}")
-            }
             if (requested.id.id == "org.spongepowered.mixin") {
                 useModule("org.spongepowered:mixingradle:${requested.version}")
             }

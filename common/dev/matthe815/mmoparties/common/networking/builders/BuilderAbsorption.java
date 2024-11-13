@@ -1,12 +1,9 @@
 package dev.matthe815.mmoparties.common.networking.builders;
 
-import dev.matthe815.mmoparties.forge.config.ConfigHolder;
-import dev.matthe815.mmoparties.common.core.MMOPartiesCommon;
 import dev.matthe815.mmoparties.common.gui.PartyList;
 import dev.matthe815.mmoparties.common.gui.UISpec;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 public class BuilderAbsorption implements BuilderData {
@@ -33,7 +30,7 @@ public class BuilderAbsorption implements BuilderData {
         public int Render(GuiGraphics gui, BuilderData data, int xOffset, int yOffset, boolean compact) {
             BuilderAbsorption builder = (BuilderAbsorption) data;
             return PartyList.Draw(new UISpec(gui, new UISpec(gui, 160, 0), new UISpec(gui, 169, 0), new UISpec(gui, 16, 0), xOffset, yOffset, 9, 9), builder.absorption, builder.absorption, compact,
-                    ConfigHolder.CLIENT.showAbsorption.get() && builder.absorption > 0);
+                    builder.absorption > 0);
         }
     }
 }

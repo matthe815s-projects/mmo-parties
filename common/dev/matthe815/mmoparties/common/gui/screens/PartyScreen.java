@@ -1,16 +1,16 @@
 package dev.matthe815.mmoparties.common.gui.screens;
 
 import dev.matthe815.mmoparties.common.networking.builders.BuilderLeader;
-import dev.matthe815.mmoparties.forge.core.MMOParties;
-import dev.matthe815.mmoparties.forge.networking.EnumPartyGUIAction;
-import dev.matthe815.mmoparties.forge.networking.MessageHandleMenuAction;
+import dev.matthe815.mmoparties.fabric.core.MMOParties;
+import dev.matthe815.mmoparties.fabric.networking.EnumPartyGUIAction;
+import dev.matthe815.mmoparties.fabric.networking.MessageHandleMenuAction;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraftforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 
@@ -87,12 +87,11 @@ public class PartyScreen extends Screen {
             this.addRenderableWidget(widget);
         });
 
-        this.addRenderableWidget(CreateButton("rpgparties.gui.leave", 3 + MMOParties.localParty.local_players.size(), p_onPress_1_ -> MMOParties.network.send(PacketDistributor.SERVER.with(null), new MessageHandleMenuAction("", EnumPartyGUIAction.LEAVE))));
+        this.addRenderableWidget(CreateButton("rpgparties.gui.leave", 3 + MMOParties.localParty.local_players.size(), p_onPress_1_ -> ClientPlayNetworking.send(MessageHandleMenuAction.ID, MessageHandleMenuAction.encode("", EnumPartyGUIAction.LEAVE))));
 
         // Hide these options if not the leader.
         if (!((BuilderLeader)MMOParties.localParty.data.get(Minecraft.getInstance().player.getName().getString()).additionalData[0]).isLeader) return;
-
-        this.addRenderableWidget(CreateButton("rpgparties.gui.disband", 4 + MMOParties.localParty.local_players.size(), p_onPress_1_ -> MMOParties.network.send(PacketDistributor.SERVER.with(null), new MessageHandleMenuAction("", EnumPartyGUIAction.DISBAND))));
+        this.addRenderableWidget(CreateButton("rpgparties.gui.disband", 4 + MMOParties.localParty.local_players.size(), p_onPress_1_ -> ClientPlayNetworking.send(MessageHandleMenuAction.ID, MessageHandleMenuAction.encode("", EnumPartyGUIAction.DISBAND))));
     }
 
     @Override
@@ -111,7 +110,7 @@ public class PartyScreen extends Screen {
 
                 for (String player : GetApplicablePlayers()) {
                     this.addRenderableWidget(CreateButton(player, i++, p_onPress_1_ -> {
-                        MMOParties.network.sendToServer(new MessageHandleMenuAction(player, EnumPartyGUIAction.INVITE));
+                        ClientPlayNetworking.send(MessageHandleMenuAction.ID, MessageHandleMenuAction.encode(player, EnumPartyGUIAction.INVITE));
                     })); // Send UI event to the server.
                 }
 
