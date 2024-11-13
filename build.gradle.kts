@@ -93,7 +93,7 @@ publishMods {
     changelog = "Nightly build"
     type = BETA
     modLoaders.add("fabric")
-    displayName.set("${project.version}.${buildNumber}-$minecraftVersion")
+    displayName.set("${project.version}.${buildNumber}-$minecraftVersion-fabric")
     version.set(project.version.toString())
 
     curseforge {
